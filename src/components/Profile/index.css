@@ -1,0 +1,118 @@
+/* Đặt tên class cụ thể hơn với prefix "pf-" */
+.pf-container {
+    display: flex;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar cho phần cài đặt profile */
+.pf-container .pf-sidebar {
+    width: 200px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #ddd;
+}
+
+/* Nút bấm trong sidebar */
+.pf-container .pf-sidebar button {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    padding: 10px;
+    text-align: left;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s;
+}
+
+/* Nút bấm được active */
+.pf-container .pf-sidebar button.active {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Nút bấm khi hover */
+.pf-container .pf-sidebar button:hover {
+    color: #007bff;
+}
+
+/* Khu vực nội dung */
+.pf-container .pf-content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Nội dung thông tin tài khoản */
+.pf-container .pf-account-info,
+.pf-container .pf-change-password {
+    max-width: 600px;
+    margin: auto;
+}
+
+/* Ảnh đại diện và nút xoá ảnh */
+.pf-container .pf-pic {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pf-container .pf-pic img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.pf-container .delete-pic {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Style cho form */
+.pf-container .pf-account-info form,
+.pf-container .pf-change-password form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pf-container .pf-account-info label,
+.pf-container .pf-change-password label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Input, select, và button */
+.pf-container .pf-account-info input,
+.pf-container .pf-account-info select,
+.pf-container .pf-change-password input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.pf-container .save-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 150px;
+}
+
+.pf-container .save-button:hover {
+    background-color: #0056b3;
+}

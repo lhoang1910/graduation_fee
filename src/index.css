@@ -1,0 +1,16 @@
+.layout-app {
+    display: flex;
+}
+
+.main-content {
+    flex-grow: 1;
+    transition: margin-left 0.3s;
+}
+
+.main-content.sidebar-open {
+    margin-left: 260px; /* Sidebar width when open */
+}
+
+.main-content.sidebar-collapsed {
+    margin-left: 80px; /* Sidebar width when collapsed */
+}

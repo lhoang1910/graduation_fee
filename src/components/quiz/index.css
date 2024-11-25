@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.quiz-editor {
+    display: flex;
+    height: 100vh;
+}
+
+.left-panel,
+.right-panel {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.left-panel {
+    width: 30%;
+    border-right: 1px solid #ddd;
+    background-color: #fff;
+}
+
+.right-panel {
+    flex: 1;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+textarea,
+input[type="text"],
+button {
+    display: block;
+    margin-bottom: 15px;
+    padding: 10px;
+    width: 100%;
+}
+
+textarea {
+    resize: none;
+    height: 80px;
+}
+
+button {
+    cursor: pointer;
+}
+
+button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.save-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
