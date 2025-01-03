@@ -11,19 +11,21 @@ import Quiz from "./components/quiz/index.jsx";
 import './index.css';
 import Profile from "./components/Profile/index.jsx";
 import Classes from "./components/Classes/index.jsx";
+import ExamPage from './pages/exam/index.jsx';
+import ExamCreating from './components/ExamCreating/index.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('access_token');
-        const currentPath = window.location.pathname;
+    // useEffect(() => {
+    //     const token = localStorage.getItem('access_token');
+    //     const currentPath = window.location.pathname;
 
-        if (!token && currentPath !== '/login' && currentPath !== '/register') {
-            navigate('/login');
-        }
-    }, [navigate]);
+    //     if (!token && currentPath !== '/login' && currentPath !== '/register') {
+    //         navigate('/login');
+    //     }
+    // }, [navigate]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -35,7 +37,7 @@ const Layout = () => {
             <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
                 <Header isSidebarOpen={isSidebarOpen}/>
                 <Outlet/>
-                <Footer/>
+                {/* <Footer/> */}
             </div>
         </div>
     );
@@ -51,7 +53,11 @@ export default function App() {
                 { index: true, element: <Home /> },
                 { path: "classes", element: <Classes /> },
                 { path: "quiz", element: <Quiz /> },
-                { path: "profile", element: <Profile /> }
+                { path: "profile", element: <Profile /> },
+                { path: "exam", element: <ExamPage /> },
+                { path: "examcreating", element: <ExamCreating /> }
+
+
             ],
         },
         {

@@ -6,6 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { Menu, MenuItem, IconButton, Fade, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { Avatar } from 'antd';
 
 const Header = ({ isSidebarOpen }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -72,11 +73,21 @@ const Header = ({ isSidebarOpen }) => {
                     Tạo đề thi
                 </button>
                 <IconButton onClick={handleAvatarClick}>
-                    <img
+                    {/* <img
                         src="https://via.placeholder.com/30"
                         alt="User"
                         className="profile-avatar"
-                    />
+                    /> */}
+                          <Avatar
+        style={{
+          backgroundColor: "red",
+          verticalAlign: 'middle',
+        }}
+        size="large"
+        gap={1}
+      >
+        K
+      </Avatar>
                 </IconButton>
 
                 <Dialog open={openDialog} onClose={handleCreateMenuClose}>

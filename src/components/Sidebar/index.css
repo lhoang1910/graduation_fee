@@ -113,18 +113,18 @@ h2 {
 .toggle-btn {
     position: absolute;
     top: 50%;
-    right: -20px;
+    right: 0    px;
     transform: translateY(-50%);
     background: #4a00e0;
     color: #fff;
     border: none;
-    font-size: 20px; /* Tăng cỡ chữ */
+    font-size: 20px;/*  Tăng cỡ chữ */
     font-weight: bold;
     cursor: pointer;
     z-index: 10;
     padding: 10px 12px;
     border-radius: 50%;
-    transition: background-color 0.3s;
+    /* transition: background-color 0.3s; */
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
