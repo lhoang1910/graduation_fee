@@ -23,7 +23,7 @@ const Layout = () => {
     //     const currentPath = window.location.pathname;
 
     //     if (!token && currentPath !== '/login' && currentPath !== '/register') {
-    //         navigate('/login');
+    //         navigate(' /login');
     //     }
     // }, [navigate]);
 
