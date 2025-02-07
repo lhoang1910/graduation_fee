@@ -15,6 +15,7 @@ import ExamPage from './pages/exam/index.jsx';
 import ExamCreating from './components/ExamCreating/index.jsx';
 import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
 import ChangePassword from './pages/changepassword/index.jsx';
+import AdminPage from './pages/admin/AdminPage.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -57,7 +58,9 @@ export default function App() {
                 { path: "quiz", element: <Quiz /> },
                 { path: "profile", element: <Profile /> },
                 { path: "exam", element: <ExamPage /> },
-                { path: "examcreating", element: <ExamCreating /> }
+                { path: "examcreating", element: <ExamCreating /> },
+                { path: "admin", element: <AdminPage /> }
+
 
 
             ],

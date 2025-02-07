@@ -1,6 +1,6 @@
 import React, { useState,useEffect,useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {callLogin, callRegister} from "../../services/api.js";
+import {callLogin, callRegister, callUserDetail} from "../../services/api.js";
 import {message, notification} from "antd";
 import { useDispatch } from 'react-redux';
 import {
@@ -52,7 +52,14 @@ function LoginPage() {
             if (res?.success) {
                 localStorage.setItem('access_token', res.data.token);
                 message.success(res?.message);
-                navigate('/');
+                const resUserDetail = await callUserDetail();
+                console.log("detail",resUserDetail)
+                if(resUserDetail?.data?.role ==="Quản trị viên"){
+                    navigate('/admin');
+
+                }else{
+                    navigate("/");
+                }
             } else {
                 notification.error({
                     message: 'Đăng nhập thất bại',
