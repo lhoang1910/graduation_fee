@@ -1,6 +1,6 @@
 import React, { useState,useEffect,useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {callLogin, callRegister} from "../../services/api.js";
+import {callForgotPassword, callLogin, callRegister} from "../../services/api.js";
 import {message, notification} from "antd";
 import { useDispatch } from 'react-redux';
 import {
@@ -9,7 +9,7 @@ import {
     useQueryClient,
 
   } from '@tanstack/react-query'
-function LoginPage() {
+function ForgotPasswordPage() {
 
 
     const queryClient = useQueryClient();
@@ -24,18 +24,14 @@ function LoginPage() {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 
-    const isLoginEnabled = username.trim() !== '' && password.trim() !== '';
+    const isLoginEnabled = username.trim() !== '';
 
     const hasNotAcc = () => {
         navigate("/register")
-        forgot-password
-    }
-    const forgotAcc = () => {
-        navigate("/forgot-password")
     }
 
 
-    const handleLogin = async () => {
+    const handleForgotPassword = async () => {
     
             if (!emailRegex.test(username)) {
                 emailRef?.current?.focus();
@@ -46,13 +42,14 @@ function LoginPage() {
                 return;
             }
         if (isLoginEnabled) {
-            const res = await callLogin(username, password);
-            console.log("from login",res);
+            const res = await callForgotPassword(username);
+            console.log("from forgot password",res);
 
             if (res?.success) {
-                localStorage.setItem('access_token', res.data.token);
+                // localStorage.setItem('access_token', res.data.token);
                 message.success(res?.message);
-                navigate('/');
+
+                navigate(`/change-password?userId=${res.data}`);
             } else {
                 notification.error({
                     message: 'Đăng nhập thất bại',
@@ -69,39 +66,25 @@ function LoginPage() {
             </div>
             <div style={styles.rightSection}>
                 <div style={styles.formContainer}>
-                    <h2 style={styles.title}>Đăng nhập</h2>
-                    <button style={styles.googleButton}>
-                        <img src="https://studio.eduquiz.vn/assets/images/auth/google_icon.png" alt="Google Icon" style={styles.googleIcon} />
-                        Đăng nhập bằng Google
-                    </button>
-                    <div style={styles.divider}>
-                        <span style={styles.dividerLine}></span>
-                        <span style={styles.orText}>hoặc tiếp tục với</span>
-                        <span style={styles.dividerLine}></span>
-                    </div>
+                    <h2 style={styles.title}>Quên mật khẩu</h2>
+
+ 
                     <input
                         type="text"
-                        placeholder="Nhập tài khoản hoặc email"
+                        placeholder="Nhập email của bạn để lấy lại mật khẩu"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         style={styles.input}
                         ref={emailRef}
                     />
-                    <input
-                        type="password"
-                        placeholder="Nhập mật khẩu của bạn"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={styles.input}
-                        ref={passwordRef}
-                    />
-                    <a href="#" style={styles.forgotPassword} onClick={()=>{forgotAcc()}}>Quên mật khẩu</a>
+
+                    <a href="#" style={styles.forgotPassword} onClick={()=>{navigate("/login")}}>Đăng nhập</a>
                     <div style={styles.registerContainer}>
                         <span>Bạn chưa có tài khoản? </span>
                         <a onClick={hasNotAcc} style={styles.registerLink}>Đăng Kí ngay</a>
                     </div>
                     <button
-                        onClick={handleLogin}
+                        onClick={handleForgotPassword}
                         style={{
                             ...styles.loginButton,
                             backgroundColor: isLoginEnabled ? '#5F4CCE' : '#ccc',
@@ -109,7 +92,7 @@ function LoginPage() {
                         }}
                         disabled={!isLoginEnabled}
                     >
-                        Đăng nhập
+                        Lấy lại mật khẩu
                     </button>
                 </div>
             </div>
@@ -246,4 +229,4 @@ const styles = {
     },
 };
 
-export default LoginPage;
+export default ForgotPasswordPage;

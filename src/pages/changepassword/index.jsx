@@ -1,37 +1,32 @@
 import React, {useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import {callRegister} from '../../services/api';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
+import {callRegister, callResetPassword} from '../../services/api';
 import { message, notification } from 'antd';
 
-function RegisterForm() {
-    // const [username, setUsername] = useState('');
-    // const [password, setPassword] = useState('');
-    // const [confirmPassword, setConfirmPassword] = useState('');
-    // const [errors, setErrors] = useState({});
-    const [fullName, setFullName] = useState('');
-const [phoneNumber, setPhoneNumber] = useState('');
-const [dob, setDob] = useState('');
-const [username, setUsername] = useState('');
+function ChangePassword() {
+
+    const [code, setCode] = useState('');
+
 const [password, setPassword] = useState('');
 const [confirmPassword, setConfirmPassword] = useState('');
 const [errors, setErrors] = useState({});
-const [gender, setGender] = useState('');
-const phoneReg =/^(0|\+84)(3[2-9]|5[2689]|7[0-9]|8[1-9]|9[0-9])[0-9]{7}$/
-const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const [searchParams] = useSearchParams();
+const userId = searchParams.get("userId");
+
 
     const navigate = useNavigate();
 
     const handleRegister = async () => {
         if (isRegisterEnabled) {
-            const res = await callRegister(username, password, confirmPassword,fullName,phoneNumber,gender,dob);
-            console.log("call register",res);
+            const res = await callResetPassword(userId,code,password,confirmPassword);
+            console.log("call reset password",res);
 
             if (res?.success) {
                 message.success(res?.data);
                 navigate('/login');
             } else {
                 notification.error({
-                    message: 'Đăng ký thất bại',
+                    message: 'Đặt lại mật khẩu thất bại',
                     description: res?.message || 'Đã có lỗi xảy ra',
                 });
             }
@@ -39,30 +34,9 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     };
 
     const validateFields = () => {
-        console.log("Full Name:", fullName);
-    console.log("Phone Number:", phoneNumber);
-    console.log("Date of Birth:", dob);
-    console.log("Username:", username);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
-    console.log("Gender:", gender);
-    console.log("Errors:", errors);
+
         const newErrors = {};
-        if (fullName.trim() === '') {
-            newErrors.fullName = 'Họ và tên không được để trống';
-        }
-        if (phoneNumber.trim() === '') {
-            newErrors.phoneNumber = 'Số điện thoại không được để trống';
-        }else if(!phoneReg.test(phoneNumber)){
-            newErrors.phoneNumber = 'Số điện thoại không hợp lệ';
 
-        }
-        if (username.trim() === '') {
-            newErrors.username = 'Tài khoản hoặc email không được để trống';
-        }else if(!mailReg.test(username)){
-            newErrors.username = 'Email không hợp lệ';
-
-        }
         if (password.trim() === '') {
             newErrors.password = 'Mật khẩu không được để trống';
         } else if (password.length < 6) {
@@ -73,24 +47,17 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
         } else if (confirmPassword !== password) {
             newErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
         }
-        if (dob.trim() === '') {
-            newErrors.dob = 'Ngày sinh không được để trống';
+        if (code.trim() === '') {
+            newErrors.code = 'Mã xác nhận không được để trống';
         }
-        if (gender.trim() === '') {
-            newErrors.gender = 'Giới tính không được để trống';
-        }
+
 
         setErrors(newErrors);
     };
 
 
         const isRegisterEnabled =
-        fullName.trim() !== '' &&
-        phoneNumber.trim() !== '' &&
-        username.trim() !== '' &&
-        dob.trim() !== '' &&
-        gender.trim() !== '' &&
-        username.trim() !== '' &&
+        code.trim() !== ''  &&
         password.trim() !== '' &&
         confirmPassword.trim() !== '' &&
         password === confirmPassword; 
@@ -235,55 +202,27 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     </div>
     <div style={styles.rightSection}>
         <div style={styles.formContainer}>
-            <h2 style={styles.title}>Đăng Kí</h2>
-            <button style={styles.googleButton}>
-                <img src="https://studio.eduquiz.vn/assets/images/auth/google_icon.png" alt="Google Icon"
-                     style={styles.googleIcon}/>
-                Đăng kí bằng Google
-            </button>
-            <div style={styles.divider}>
-                <span style={styles.dividerLine}></span>
-                <span style={styles.orText}>hoặc tiếp tục với</span>
-                <span style={styles.dividerLine}></span>
-            </div>
+            <h2 style={styles.title}>Lấy lại mật khẩu</h2>
+
             
             <input
                 type="text"
-                placeholder="Họ và tên"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                placeholder=" Nhập mã xác nhận đã gửi về email"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
                 onBlur={validateFields}
                 style={styles.input}
             />
             {/* {errors.fullName && <span style={styles.errorText}>{errors.fullName}</span>} */}
-             <span style={styles.errorText}>{errors.fullName}</span>
+             <span style={styles.errorText}>{errors.code}</span>
 
 
-            <input
-                type="text"
-                placeholder="Số điện thoại"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                onBlur={validateFields}
-                style={styles.input}
-            />
-            {/* {errors.phoneNumber && <span style={styles.errorText}>{errors.phoneNumber}</span>} */}
-            <span style={styles.errorText}>{errors.phoneNumber}</span>
+ 
 
-            <input
-                type="email"
-                placeholder="Email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                onBlur={validateFields}
-                style={styles.input}
-            />
-            {/* {errors.username && <span style={styles.errorText}>{errors.username}</span>} */}
-            <span style={styles.errorText}>{errors.username}</span>
 
             <input
                 type="password"
-                placeholder="Nhập mật khẩu của bạn"
+                placeholder="Nhập mật khẩu mới của bạn"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={validateFields}
@@ -294,7 +233,7 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
             <input
                 type="password"
-                placeholder="Xác nhận mật khẩu của bạn"
+                placeholder="Xác nhận mật khẩu mới của bạn"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 onBlur={validateFields}
@@ -303,27 +242,6 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
             {/* {errors.confirmPassword && <span style={styles.errorText}>{errors.confirmPassword}</span>} */}
             <span style={styles.errorText}>{errors.confirmPassword}</span>
 
-            <input
-                type="date"
-                placeholder="Ngày sinh"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                onBlur={validateFields}
-                style={styles.input}
-                max={new Date().toISOString().split("T")[0]} 
-
-            />
-            {/* {errors.dob && <span style={styles.errorText}>{errors.dob}</span>} */}
-            <span style={styles.errorText}>{errors.dob}</span>
-            <select value={gender}                 onBlur={validateFields}
- onChange={(e) => setGender(e.target.value)} style={{ ...styles.input, appearance: 'none', padding: '0.8rem' ,boxSizing: "content-box" }}>
-                <option value="">Chọn giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-            </select>
-            {/* {errors.gender && <span style={styles.errorText}>{errors.gender}</span>} */}
-            <span style={styles.errorText}>{errors.gender}</span>
 
             <div style={styles.registerContainer}>
                 <span>Bạn đã có tài khoản? </span>
@@ -338,7 +256,7 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
                 }}
                 disabled={!isRegisterEnabled}
             >
-                Đăng Kí
+                Xác nhận
             </button>
         </div>
     </div>
@@ -347,4 +265,4 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     );
 }
 
-export default RegisterForm;
+export default ChangePassword;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
-import { Form, Input, Select, DatePicker, Button, message, notification } from "antd";
+import { Form, Input, Select, DatePicker, Button, message, notification, Avatar } from "antd";
 import {callChangePassword, callUpdateUserProfile, callUserDetail} from "../../services/api.js";
 import dayjs from 'dayjs';
 
@@ -69,16 +69,21 @@ const Profile = () => {
 
 const AccountInfo = ({ userInfo, setUserInfo, fetchUserDetails }) => {
     const [form] = Form.useForm();
-
+    const genders ={
+        "1":"Nam","2":"Nữ","3":"Khác"
+    }
     useEffect(() => {
         form.setFieldsValue({
             email: userInfo.email,
             phone: userInfo.phone,
             fullName: userInfo.fullName,
-            gender: userInfo.gender,
-            birthDate: userInfo.birthDate ? dayjs(userInfo.birthDate) : null,
+            gender:  genders[userInfo.gender],
+            birthDate: userInfo.birthDate ? dayjs( convertDateFormat (userInfo.birthDate)) : null,
         });
     }, [userInfo, form]);
+    console.log("day", convertDateFormat (userInfo.birthDate))
+    console.log(dayjs( convertDateFormat (userInfo.birthDate))); // Đối tượng Dayjs từ chuỗi "YYYY-MM-DD"
+console.log(dayjs("16/09/2024", "DD/MM/YYYY").format("YYYY-MM-DD")); // Chuyển đổi sang YYYY-MM-DD
 
     const handleSubmit = async (values) => {
         try {
@@ -86,7 +91,7 @@ const AccountInfo = ({ userInfo, setUserInfo, fetchUserDetails }) => {
                 fullName: values.fullName,
                 phoneNumber: values.phone,
                 gender: values.gender === "male" ? 1 : values.gender === "female" ? 2 : 3,
-                birthDay: values.birthDate.format("DD-MM-YYYY"),
+                birthDate: values.birthDate.format("YYYY-MM-DD"),
             });
 
             if (response.success) {
@@ -110,10 +115,15 @@ const AccountInfo = ({ userInfo, setUserInfo, fetchUserDetails }) => {
     return (
         <div className="pf-account-info">
             <h2>Thông tin tài khoản</h2>
-            <div className="pf-pic">
-                <img src={userInfo.avatar} alt="Avatar" />
-                <button className="delete-pic">Xoá ảnh</button>
-            </div>
+            {/* <div className="pf-pic">
+                {
+                    userInfo?.avatar  ?         <>      <img src={userInfo.avatar} alt="Avatar" />
+                    <button className="delete-pic">Xoá ảnh</button> </>   :       <Avatar style={{ backgroundColor: 'GrayText', verticalAlign: 'middle' }} size="large" gap={6}>
+        {userInfo?.fullName}
+      </Avatar>
+                }
+
+            </div> */}
             <Form
                 form={form}
                 layout="vertical"
@@ -265,3 +275,7 @@ const ChangePassword = ({ userId }) => {
 };
 
 export default Profile;
+const convertDateFormat = (dateString) => {
+    const [day, month, year] = dateString.split("-");
+    return `${year}-${month}-${day}`;
+};

@@ -13,19 +13,21 @@ import Profile from "./components/Profile/index.jsx";
 import Classes from "./components/Classes/index.jsx";
 import ExamPage from './pages/exam/index.jsx';
 import ExamCreating from './components/ExamCreating/index.jsx';
+import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
+import ChangePassword from './pages/changepassword/index.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem('access_token');
-    //     const currentPath = window.location.pathname;
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        const currentPath = window.location.pathname;
 
-    //     if (!token && currentPath !== '/login' && currentPath !== '/register') {
-    //         navigate(' /login');
-    //     }
-    // }, [navigate]);
+        if (!token && currentPath !== '/login' && currentPath !== '/register') {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -66,6 +68,8 @@ export default function App() {
         },
         { path: "login", element: <LoginPage /> },
         { path: "register", element: <Register /> },
+        { path: "forgot-password", element: <ForgotPasswordPage /> },
+        { path: "change-password", element: <ChangePassword /> },
     ]);
 
     return (
