@@ -79,7 +79,10 @@ export const callListClass = (request) => {
 export const callDetailClass = ({id}) => {
     return baseApiCall(`/api/classes/id`, 'get', {}, true);
 };
-
+export const callCreateExamWithFile = (fileType,formData) => {
+    console.log("call ",formData)
+    return baseApiCall(`/api/question/detect?fileType=${fileType}`, 'post', formData, true);
+};
 export const callCreateExam = (request) => {
     return baseApiCall(`/api/exam/create`, 'post', request, true);
 };

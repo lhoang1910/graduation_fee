@@ -16,6 +16,9 @@ import ExamCreating from './components/ExamCreating/index.jsx';
 import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
 import ChangePassword from './pages/changepassword/index.jsx';
 import AdminPage from './pages/admin/AdminPage.jsx';
+import CreatingwithFile from './pages/examcreating/examcreatingwithfile.jsx';
+import ListExam from './components/exam/ListExam/ListExam.jsx';
+import ExamDetail from './components/exam/DetailExam/DetailExam.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -59,7 +62,17 @@ export default function App() {
                 { path: "profile", element: <Profile /> },
                 { path: "exam", element: <ExamPage /> },
                 { path: "examcreating", element: <ExamCreating /> },
-                { path: "admin", element: <AdminPage /> }
+                { path: "admin", element: <AdminPage /> },
+                {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
+                {path:"workspace/exams/news",element:<Quiz />},
+                {path:"workspace/exams/list",element:<ListExam />},
+                {path:"de-thi",element:<ExamDetail />}
+
+
+
+               
+
+
 
 
 
