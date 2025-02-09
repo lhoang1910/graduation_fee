@@ -1,4 +1,3 @@
-/* Sidebar general styling */
 .sidebar {
     width: 260px;
     height: 100vh;
@@ -22,10 +21,6 @@
     width: 260px;
 }
 
-.sidebar.closed {
-    width: 80px;
-}
-
 .sidebar-header {
     display: flex;
     align-items: center;
@@ -45,6 +40,7 @@ h2 {
     margin: 0;
     color: #4a00e0;
     font-weight: bold;
+    display: inline-block;
 }
 
 .menu {
@@ -65,6 +61,7 @@ h2 {
     padding: 12px;
     transition: background-color 0.3s;
     color: #333;
+    justify-content: space-between;
 }
 
 .menu-title i {
@@ -73,9 +70,17 @@ h2 {
     color: #4a00e0;
 }
 
+.menu-title span {
+    display: inline-block;
+}
+
 .menu-title:hover {
     background-color: #f0f0f0;
     color: #4a00e0;
+}
+
+.sidebar.collapsed .menu-title span {
+    display: none;
 }
 
 .submenu {
@@ -113,35 +118,20 @@ h2 {
 .toggle-btn {
     position: absolute;
     top: 50%;
-    right: 0    px;
+    right: 0;
     transform: translateY(-50%);
     background: #4a00e0;
     color: #fff;
     border: none;
-    font-size: 20px;/*  Tăng cỡ chữ */
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
     z-index: 10;
     padding: 10px 12px;
     border-radius: 50%;
-    /* transition: background-color 0.3s; */
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-btn:hover {
     background-color: #3700b3;
 }
-
-.icon-user::before { content: '👤'; }
-.icon-library::before { content: '📚'; }
-.icon-recent::before { content: '🕒'; }
-.icon-favorite::before { content: '❤️'; }
-.icon-results::before { content: '📊'; }
-.icon-explore::before { content: '🌎'; }
-.icon-leaderboard::before { content: '🏆'; }
-.icon-management::before { content: '📂'; }
-.icon-exam::before { content: '✍️'; }
-.icon-classroom::before { content: '🏫'; }
-.icon-category::before { content: '📑'; }
-.icon-package::before { content: '🎁'; }
-.icon-settings::before { content: '⚙️'; }

@@ -70,7 +70,7 @@ export default function App() {
                 {path:"workspace/exams/news",element:<Quiz />},
                 {path:"workspace/exams/list",element:<ListExam />},
                 {path:"de-thi",element:<ExamDetail />},
-                { path: "limitation", element: <Limitations /> },
+                { path: "limitations", element: <Limitations /> },
             ],
         },
         {
@@ -81,7 +81,7 @@ export default function App() {
         { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPasswordPage /> },
         { path: "change-password", element: <ChangePassword /> },
-        { path: "payment-tmp-page", element: <PaymentTmpPage /> }
+        { path: "payment-tmp-page", element: <PaymentTmpPage /> },
     ]);
 
     return (

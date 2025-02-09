@@ -1,0 +1,116 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+.card {
+    background-color: #fff;
+    padding: 20px;
+    width: 350px;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(0);
+    transition: transform 0.3s ease-out;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.card-list {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.card-list li {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 10px;
+    font-size: 1.3rem;
+}
+
+.highlight-text {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.highlight-text-head {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #e74c3c;
+    text-align: center;
+    margin: 0;
+    padding: 10px 0;
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+
+.close-btn {
+    display: block;
+    width: 48%;
+    padding: 10px;
+    background-color: #e74c3c;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+    background-color: #c0392b;
+}
+
+.upgrade-btn {
+    display: block;
+    width: 48%;
+    padding: 10px;
+    background-color: #27ae60;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.upgrade-btn:hover {
+    background-color: #2ecc71;
+}

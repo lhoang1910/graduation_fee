@@ -46,6 +46,10 @@ export const baseApiCall = async (url, method, payload = {}, secure = false) => 
     }
 };
 
+export const callCurrentUserLimitation = () => {
+    return baseApiCall(`/api/limitations/current`, 'get', {}, true);
+}
+
 export const callIPNHanlde = (param) => {
     return baseApiCall(`/api/payment/vnpay_ipn?${param}`, 'post', {}, true);
 }

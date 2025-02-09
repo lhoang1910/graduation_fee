@@ -1,5 +1,6 @@
 import './index.css';
 import React, { useState, useEffect } from 'react';
+import { RiVipCrownLine } from "react-icons/ri";
 import BugReportIcon from '@mui/icons-material/BugReport';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -12,20 +13,34 @@ import { Avatar, Card, Modal,Typography,Col,Row, notification } from 'antd';
 const { Title, Text } = Typography;
 
 import { CodeOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
+import ServicePackage from "../CurrentLimitation/index.jsx";
+import {callCurrentUserLimitation} from "../../services/api.js";
 
 const Header = ({ isSidebarOpen }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isProfile, setIsProfile] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [isLimitationModalOpen, setIsLimitationModalOpen] = useState(false);
+    const [limitation, setLimitation] = useState(null);
     const navigate = useNavigate();
+
+    const fetchUserLimitation = async () => {
+        const res = await callCurrentUserLimitation();
+        return res?.data;
+    };
 
     const handleAvatarClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
     const handleReportBug = () => {
-        setIsModalOpen(true);
+        setIsReportModalOpen(true);
+    };
+
+    const handleLimitationClick = () => {
+        setIsLimitationModalOpen(true);
     };
 
     const handleCreateMenuClick = () => {
@@ -69,6 +84,16 @@ const Header = ({ isSidebarOpen }) => {
         }
     }, [isProfile, navigate]);
 
+    const getLimitationViewName = () => {
+        useEffect(() => {
+            fetchUserLimitation().then(setLimitation);
+        }, []);
+        if (limitation?.limitationCode && limitation?.limitationName) {
+            return limitation?.limitationCode + "-" + limitation?.limitationName
+        }
+        return "Gói dịch vụ"
+    }
+
     return (
         <div className={`header ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
             {/* Nội dung Header */}
@@ -90,12 +115,18 @@ const Header = ({ isSidebarOpen }) => {
                     Báo lỗi
                 </button>
 
-                <ReportBugModal isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
+                <ReportBugModal isOpen={isReportModalOpen} setIsOpen={setIsReportModalOpen}/>
                 {/* Nút Tạo đề thi */}
                 <button className="create-button" onClick={showModal}>
-                    <AddBoxIcon className="icon" />
+                    <AddBoxIcon className="icon"/>
                     Tạo đề thi
                 </button>
+                <button
+                    className="create-button" onClick={handleLimitationClick}>
+                    <RiVipCrownLine className="icon"/>
+                    <span className="font-medium">{getLimitationViewName()}</span>
+                </button>
+                <ServicePackage isOpen={isLimitationModalOpen} setIsOpen={setIsLimitationModalOpen} limitation={limitation}/>
                 <IconButton onClick={handleAvatarClick}>
                     {/* <img
                         src="https://via.placeholder.com/30"
@@ -134,72 +165,78 @@ const Header = ({ isSidebarOpen }) => {
                     </DialogActions>
                 </Dialog>
                 <Modal
-                title="Tạo đề thi mới"
-                open={isModalOpen}
-                onCancel={closeModal}
-                footer={null}
-                width={800}
-                style={{textAlign:"center"}}
-            >
-                <Row gutter={16} justify="center">
-                    {/* Card 1 */}
-                    <Col span={8}>
-                        <Card
-                            hoverable
-                            style={{
-                                textAlign: "center",
-                                borderRadius: "10px",
-                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                            }}
-                            onClick={() => notification.error({message:"Chức năng tạo dề thi từ AI đang được phát triển"})}
-                        >
-                            <FileTextOutlined style={{ fontSize: "40px", color: "#722ed1" }} />
-                            <Title level={4} style={{ marginTop: "10px" }}>
-                                Trợ lý AI
-                            </Title>
-                            <Text>Tạo đề thi nhanh hơn với trợ lý AI</Text>
-                        </Card>
-                    </Col>
+                    title="Tạo đề thi mới"
+                    open={isModalOpen}
+                    onCancel={closeModal}
+                    footer={null}
+                    width={800}
+                    style={{textAlign: "center"}}
+                >
+                    <Row gutter={16} justify="center">
+                        {/* Card 1 */}
+                        <Col span={8}>
+                            <Card
+                                hoverable
+                                style={{
+                                    textAlign: "center",
+                                    borderRadius: "10px",
+                                    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                                }}
+                                onClick={() => notification.error({message: "Chức năng tạo dề thi từ AI đang được phát triển"})}
+                            >
+                                <FileTextOutlined style={{fontSize: "40px", color: "#722ed1"}}/>
+                                <Title level={4} style={{marginTop: "10px"}}>
+                                    Trợ lý AI
+                                </Title>
+                                <Text>Tạo đề thi nhanh hơn với trợ lý AI</Text>
+                            </Card>
+                        </Col>
 
-                    {/* Card 2 */}
-                    <Col span={8}>
-                        <Card
-                            hoverable
-                            style={{
-                                textAlign: "center",
-                                borderRadius: "10px",
-                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                            }}
-                            onClick={() => {closeModal();navigate("/workspace/exams/create-with-file?tab=upload_file_quiz")}}
-                        >
-                            <CodeOutlined style={{ fontSize: "40px", color: "#13c2c2" }} />
-                            <Title level={4} style={{ marginTop: "10px" }}>
-                            Import từ file
-                            </Title>
-                            <Text>Tạo đề thi nhanh bằng cách import file pdf hoặc docx</Text>
-                        </Card>
-                    </Col>
+                        {/* Card 2 */}
+                        <Col span={8}>
+                            <Card
+                                hoverable
+                                style={{
+                                    textAlign: "center",
+                                    borderRadius: "10px",
+                                    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                                }}
+                                onClick={() => {
+                                    closeModal();
+                                    navigate("/workspace/exams/create-with-file?tab=upload_file_quiz")
+                                }}
+                            >
+                                <CodeOutlined style={{fontSize: "40px", color: "#13c2c2"}}/>
+                                <Title level={4} style={{marginTop: "10px"}}>
+                                    Import từ file
+                                </Title>
+                                <Text>Tạo đề thi nhanh bằng cách import file pdf hoặc docx</Text>
+                            </Card>
+                        </Col>
 
-                    {/* Card 3 */}
-                    <Col span={8}>
-                        <Card
-                            hoverable
-                            style={{
-                                textAlign: "center",
-                                borderRadius: "10px",
-                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-                            }}
-                            onClick={() => {closeModal();navigate("/workspace/exams/news")}}
-                        >
-                            <EditOutlined style={{ fontSize: "40px", color: "#fadb14" }} />
-                            <Title level={4} style={{ marginTop: "10px" }}>
-                                Trình soạn thảo
-                            </Title>
-                            <Text>Tạo đề thi từ đầu và chỉnh sửa thủ công</Text>
-                        </Card>
-                    </Col>
-                </Row>
-            </Modal>
+                        {/* Card 3 */}
+                        <Col span={8}>
+                            <Card
+                                hoverable
+                                style={{
+                                    textAlign: "center",
+                                    borderRadius: "10px",
+                                    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                                }}
+                                onClick={() => {
+                                    closeModal();
+                                    navigate("/workspace/exams/news")
+                                }}
+                            >
+                                <EditOutlined style={{fontSize: "40px", color: "#fadb14"}}/>
+                                <Title level={4} style={{marginTop: "10px"}}>
+                                    Trình soạn thảo
+                                </Title>
+                                <Text>Tạo đề thi từ đầu và chỉnh sửa thủ công</Text>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Modal>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
@@ -214,11 +251,11 @@ const Header = ({ isSidebarOpen }) => {
                     }}
                 >
                     <MenuItem onClick={() => handleClose(true)}>
-                        <BadgeIcon className="icon" />
+                        <BadgeIcon className="icon"/>
                         Hồ sơ
                     </MenuItem>
                     <MenuItem onClick={() => handleClose(false)}>
-                        <LogoutIcon className="icon" />
+                        <LogoutIcon className="icon"/>
                         Đăng xuất
                     </MenuItem>
                 </Menu>
