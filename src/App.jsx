@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from "react-
 import Header from "./components/Header/index.jsx";
 import Footer from "./components/Footer/index.jsx";
 import SideBar from "./components/Sidebar/index.jsx";
-import Home from "./components/Home/Home.jsx";
+import Index from "./components/Home/index.jsx";
 import Register from "./pages/register/index.jsx";
 import NotFound from "./pages/notfound/index.jsx";
 import LoginPage from "./pages/login/index.jsx";
@@ -59,7 +59,7 @@ export default function App() {
             element: <Layout />,
             errorElement: <NotFound />,
             children: [
-                { index: true, element: <Home /> },
+                { index: true, element: <Index /> },
                 { path: "classes", element: <Classes /> },
                 { path: "quiz", element: <Quiz /> },
                 { path: "profile", element: <Profile /> },

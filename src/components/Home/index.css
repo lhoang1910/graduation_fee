@@ -1,0 +1,62 @@
+.dashboard {
+    width: 95%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.summary {
+    display: flex;
+    justify-content: space-between;
+}
+
+.summary-box {
+    width: 22%;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.icon {
+    font-size: 30px;
+}
+
+.recent-access {
+    margin-top: 20px;
+}
+
+.recent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recent-list {
+    display: flex;
+    gap: 15px;
+}
+
+.recent-item {
+    width: 22%;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.exam-button {
+    width: 100%;
+    padding: 8px;
+    background: #8c52ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

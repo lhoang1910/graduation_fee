@@ -17,6 +17,10 @@
     width: 80px;
 }
 
+.s {
+    font-weight: bold;
+}
+
 .sidebar.open {
     width: 260px;
 }
@@ -118,19 +122,31 @@ h2 {
 .toggle-btn {
     position: absolute;
     top: 50%;
-    right: 0;
+    right: -15px;
     transform: translateY(-50%);
-    background: #4a00e0;
-    color: #fff;
+    background: #f5f5f5;
+    color: #888;
     border: none;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     z-index: 10;
-    padding: 10px 12px;
+    padding: 10px;
     border-radius: 50%;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    transition: background 0.3s, color 0.3s;
 }
+
+.toggle-btn:hover {
+    background: #e0e0e0;
+    color: #555;
+}
+
 
 .toggle-btn:hover {
     background-color: #3700b3;

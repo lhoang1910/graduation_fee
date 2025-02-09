@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Input, Button, notification } from "antd";
+import { Modal, Input, notification } from "antd";
 import { callCreateReport } from "../../services/api.js";
 
 const ReportBugModal = ({ isOpen, setIsOpen }) => {
@@ -12,7 +12,7 @@ const ReportBugModal = ({ isOpen, setIsOpen }) => {
             notification.success({
                 message: resUserDetail?.message,
             });
-            setIsOpen(false); // Close the modal after success
+            setIsOpen(false);
         } else {
             notification.error({
                 message: resUserDetail?.message,

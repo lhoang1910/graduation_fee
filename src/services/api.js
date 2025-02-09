@@ -46,6 +46,10 @@ export const baseApiCall = async (url, method, payload = {}, secure = false) => 
     }
 };
 
+export const callCurrentUserDashboard = () => {
+    return baseApiCall(`/api/users/dashboard`, 'get', {}, true)
+}
+
 export const callCurrentUserLimitation = () => {
     return baseApiCall(`/api/limitations/current`, 'get', {}, true);
 }
@@ -92,8 +96,8 @@ export const callListClass = (searchingKeys, pageNumber, pageSize, typeView) => 
     return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView}, true);
 };
 
-export const callListLimitation = (pageNumber, pageSize, searchingKeys) => {
-    return baseApiCall(`/api/limitations/all`, 'post', {pageNumber, pageSize, searchingKeys}, true);
+export const callListLimitation = (pageNumber, pageSize, searchingKeys, startPrice, endPrice) => {
+    return baseApiCall(`/api/limitations/all`, 'post', {pageNumber, pageSize, searchingKeys, startPrice, endPrice}, true);
 }
 
 export const callLimitationDetail = (limitationId) => {
