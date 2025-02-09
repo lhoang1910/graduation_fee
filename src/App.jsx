@@ -16,6 +16,9 @@ import ExamCreating from './components/ExamCreating/index.jsx';
 import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
 import ChangePassword from './pages/changepassword/index.jsx';
 import AdminPage from './pages/admin/AdminPage.jsx';
+import CreatingwithFile from './pages/examcreating/examcreatingwithfile.jsx';
+import ListExam from './components/exam/ListExam/ListExam.jsx';
+import ExamDetail from './components/exam/DetailExam/DetailExam.jsx';
 import ListLimitations from "./components/Limitations/index.jsx";
 import PaymentTmpPage from "./pages/tmp/index.jsx";
 import Limitations from "./components/Limitations/index.jsx";
@@ -63,6 +66,10 @@ export default function App() {
                 { path: "exam", element: <ExamPage /> },
                 { path: "examcreating", element: <ExamCreating /> },
                 { path: "admin", element: <AdminPage /> },
+                {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
+                {path:"workspace/exams/news",element:<Quiz />},
+                {path:"workspace/exams/list",element:<ListExam />},
+                {path:"de-thi",element:<ExamDetail />},
                 { path: "limitation", element: <Limitations /> },
             ],
         },

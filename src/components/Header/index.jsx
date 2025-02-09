@@ -8,6 +8,11 @@ import { Menu, MenuItem, IconButton, Fade, Dialog, DialogActions, DialogContent,
 import { useNavigate } from "react-router-dom";
 import { Avatar } from 'antd';
 import ReportBugModal from "../Report/index.jsx";
+import { Avatar, Card, Modal,Typography,Col,Row, notification } from 'antd';
+// import { Modal, Card, Row, Col, Typography } from "antd";
+const { Title, Text } = Typography;
+
+import { CodeOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
 
 const Header = ({ isSidebarOpen }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -25,7 +30,7 @@ const Header = ({ isSidebarOpen }) => {
     };
 
     const handleCreateMenuClick = () => {
-        navigate("/quiz")
+        setOpenDialog(true)
     };
 
     const handleClose = (profile) => {
@@ -38,7 +43,19 @@ const Header = ({ isSidebarOpen }) => {
     };
 
     const handleDialogOptionClick = (option) => {
-        navigate("/quiz")
+        setOpenDialog(true)
+    };
+
+    const showModal = () => {
+      setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+      setIsModalOpen(false);
+    };
+
+    const closeModal = () => {
+      setIsModalOpen(false);
     };
 
     useEffect(() => {
@@ -76,8 +93,8 @@ const Header = ({ isSidebarOpen }) => {
 
                 <ReportBugModal isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
                 {/* Nút Tạo đề thi */}
-                <button className="create-button" onClick={handleCreateMenuClick}>
-                    <AddBoxIcon className="icon"/>
+                <button className="create-button" onClick={showModal}>
+                    <AddBoxIcon className="icon" />
                     Tạo đề thi
                 </button>
                 <IconButton onClick={handleAvatarClick}>
@@ -117,7 +134,73 @@ const Header = ({ isSidebarOpen }) => {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                <Modal
+                title="Tạo đề thi mới"
+                open={isModalOpen}
+                onCancel={closeModal}
+                footer={null}
+                width={800}
+                style={{textAlign:"center"}}
+            >
+                <Row gutter={16} justify="center">
+                    {/* Card 1 */}
+                    <Col span={8}>
+                        <Card
+                            hoverable
+                            style={{
+                                textAlign: "center",
+                                borderRadius: "10px",
+                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onClick={() => notification.error({message:"Chức năng tạo dề thi từ AI đang được phát triển"})}
+                        >
+                            <FileTextOutlined style={{ fontSize: "40px", color: "#722ed1" }} />
+                            <Title level={4} style={{ marginTop: "10px" }}>
+                                Trợ lý AI
+                            </Title>
+                            <Text>Tạo đề thi nhanh hơn với trợ lý AI</Text>
+                        </Card>
+                    </Col>
 
+                    {/* Card 2 */}
+                    <Col span={8}>
+                        <Card
+                            hoverable
+                            style={{
+                                textAlign: "center",
+                                borderRadius: "10px",
+                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onClick={() => {closeModal();navigate("/workspace/exams/create-with-file?tab=upload_file_quiz")}}
+                        >
+                            <CodeOutlined style={{ fontSize: "40px", color: "#13c2c2" }} />
+                            <Title level={4} style={{ marginTop: "10px" }}>
+                            Import từ file
+                            </Title>
+                            <Text>Tạo đề thi nhanh bằng cách import file pdf hoặc docx</Text>
+                        </Card>
+                    </Col>
+
+                    {/* Card 3 */}
+                    <Col span={8}>
+                        <Card
+                            hoverable
+                            style={{
+                                textAlign: "center",
+                                borderRadius: "10px",
+                                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onClick={() => {closeModal();navigate("/workspace/exams/news")}}
+                        >
+                            <EditOutlined style={{ fontSize: "40px", color: "#fadb14" }} />
+                            <Title level={4} style={{ marginTop: "10px" }}>
+                                Trình soạn thảo
+                            </Title>
+                            <Text>Tạo đề thi từ đầu và chỉnh sửa thủ công</Text>
+                        </Card>
+                    </Col>
+                </Row>
+            </Modal>
                 <Menu
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
@@ -132,11 +215,11 @@ const Header = ({ isSidebarOpen }) => {
                     }}
                 >
                     <MenuItem onClick={() => handleClose(true)}>
-                        <BadgeIcon className="icon"/>
+                        <BadgeIcon className="icon" />
                         Hồ sơ
                     </MenuItem>
                     <MenuItem onClick={() => handleClose(false)}>
-                        <LogoutIcon className="icon"/>
+                        <LogoutIcon className="icon" />
                         Đăng xuất
                     </MenuItem>
                 </Menu>
