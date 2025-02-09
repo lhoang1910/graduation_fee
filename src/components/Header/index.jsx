@@ -6,7 +6,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { Menu, MenuItem, IconButton, Fade, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-import { Avatar } from 'antd';
 import ReportBugModal from "../Report/index.jsx";
 import { Avatar, Card, Modal,Typography,Col,Row, notification } from 'antd';
 // import { Modal, Card, Row, Col, Typography } from "antd";
