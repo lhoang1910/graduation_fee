@@ -16,6 +16,9 @@ import ExamCreating from './components/ExamCreating/index.jsx';
 import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
 import ChangePassword from './pages/changepassword/index.jsx';
 import AdminPage from './pages/admin/AdminPage.jsx';
+import ListLimitations from "./components/Limitations/index.jsx";
+import PaymentTmpPage from "./pages/tmp/index.jsx";
+import Limitations from "./components/Limitations/index.jsx";
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -59,10 +62,8 @@ export default function App() {
                 { path: "profile", element: <Profile /> },
                 { path: "exam", element: <ExamPage /> },
                 { path: "examcreating", element: <ExamCreating /> },
-                { path: "admin", element: <AdminPage /> }
-
-
-
+                { path: "admin", element: <AdminPage /> },
+                { path: "limitation", element: <Limitations /> },
             ],
         },
         {
@@ -73,6 +74,7 @@ export default function App() {
         { path: "register", element: <Register /> },
         { path: "forgot-password", element: <ForgotPasswordPage /> },
         { path: "change-password", element: <ChangePassword /> },
+        { path: "payment-tmp-page", element: <PaymentTmpPage /> }
     ]);
 
     return (

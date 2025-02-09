@@ -3,6 +3,7 @@ import { Table, Input, DatePicker, Button, Space, Tag, Modal, Form, message } fr
 import { SearchOutlined, EditOutlined, DeleteOutlined, LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import {callListClass, callUserDetail} from "../../services/api.js";
+import CreateClassModel from "./Create/index.jsx";
 
 const { RangePicker } = DatePicker;
 
@@ -20,8 +21,7 @@ const ClassList = () => {
         updateAtFrom: null,
         updateAtTo: null,
     });
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [form] = Form.useForm();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -34,7 +34,7 @@ const ClassList = () => {
                 pageSize: pagination.pageSize,
                 pageNumber: pagination.current - 1,
             };
-            const response = await callListClass(request);
+            const response = await callListClass(filters.searchingKeys, request.pageNumber, request.pageSize, "CLASS_MEMBER_VIEW");
             if (response && response.data) {
                 console.log('Class List Data:', response.data);
                 setData(response.data || []);
@@ -64,28 +64,9 @@ const ClassList = () => {
         });
     };
 
-    const showModal = () => {
-        setIsModalVisible(true);
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
-        form.resetFields();
-    };
-
-    const handleCreateClass = async (values) => {
-        // try {
-        //     const response = await createClassApi(values); // Gọi API tạo lớp
-        //     if (response && response.success) {
-        //         message.success('Tạo lớp học thành công!');
-        //         fetchData(); // Refresh danh sách lớp học
-        //         handleCancel(); // Đóng modal
-        //     }
-        // } catch (error) {
-        //     console.error('Error creating class:', error);
-        //     message.error('Tạo lớp học thất bại. Vui lòng thử lại!');
-        // }
-    };
+    const handleCreateClass = () => {
+        setIsModalOpen(true);
+    }
 
     const columns = [
         {
@@ -167,9 +148,10 @@ const ClassList = () => {
                 <Button type="primary" onClick={fetchData}>
                     Lọc
                 </Button>
-                <Button type="primary" icon={<PlusOutlined />} onClick={showModal}>
+                <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateClass}>
                     Tạo mới lớp học
                 </Button>
+                <CreateClassModel isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
             </Space>
 
             {/* Bảng dữ liệu */}
@@ -186,45 +168,6 @@ const ClassList = () => {
                 }}
                 onChange={handleTableChange}
             />
-
-            <Modal
-                title="Tạo mới lớp học"
-                visible={isModalVisible}
-                onCancel={handleCancel}
-                footer={null}
-            >
-                <Form form={form} onFinish={handleCreateClass} layout="vertical">
-                    <Form.Item
-                        name="classCode"
-                        label="Mã lớp"
-                        rules={[{ required: true, message: 'Vui lòng nhập mã lớp!' }]}
-                    >
-                        <Input placeholder="Nhập mã lớp" />
-                    </Form.Item>
-                    <Form.Item
-                        name="className"
-                        label="Tên lớp"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên lớp!' }]}
-                    >
-                        <Input placeholder="Nhập tên lớp" />
-                    </Form.Item>
-                    <Form.Item
-                        name="limitSlot"
-                        label="Số lượng thành viên tối đa"
-                        rules={[{ required: true, message: 'Vui lòng nhập số lượng thành viên!' }]}
-                    >
-                        <Input type="number" placeholder="Nhập số lượng thành viên tối đa" />
-                    </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            Lưu
-                        </Button>
-                        <Button style={{ marginLeft: 8 }} onClick={handleCancel}>
-                            Hủy
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Modal>
         </div>
     );
 };

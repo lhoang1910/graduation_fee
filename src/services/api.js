@@ -46,6 +46,10 @@ export const baseApiCall = async (url, method, payload = {}, secure = false) => 
     }
 };
 
+export const callIPNHanlde = (param) => {
+    return baseApiCall(`/api/payment/vnpay_ipn?${param}`, 'post', {}, true);
+}
+
 export const callForgotPassword = (email) => {
     return baseApiCall('/api/auth/forget-password', 'post', {email}, false);
 };
@@ -60,6 +64,14 @@ export const callLogin = (email, password) => {
     return baseApiCall('/api/auth/login', 'post', {email, password}, false);
 };
 
+export const callCreateReport = (title, content) => {
+    return baseApiCall('/api/report/create', 'post', {title, content}, true);
+}
+
+export const callCreateClass = (className) => {
+    return baseApiCall('/api/classes/create', 'post', {className}, true);
+}
+
 export const callUserDetail = () => {
     return baseApiCall('/api/users/me', 'get', {}, true);
 };
@@ -72,9 +84,17 @@ export const callChangePassword = (userId, request) => {
     return baseApiCall(`/api/users/${userId}/update-password`, 'post', request, true);
 };
 
-export const callListClass = (request) => {
-    return baseApiCall(`/api/classes/`, 'post', request, true);
+export const callListClass = (searchingKeys, pageNumber, pageSize, typeView) => {
+    return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView}, true);
 };
+
+export const callListLimitation = (pageNumber, pageSize, searchingKeys) => {
+    return baseApiCall(`/api/limitations/all`, 'post', {pageNumber, pageSize, searchingKeys}, true);
+}
+
+export const callLimitationDetail = (limitationId) => {
+    return baseApiCall(`/api/limitations/${limitationId}`, 'get', {},true);
+}
 
 export const callDetailClass = ({id}) => {
     return baseApiCall(`/api/classes/id`, 'get', {}, true);

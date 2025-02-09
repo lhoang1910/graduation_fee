@@ -7,15 +7,21 @@ import BadgeIcon from '@mui/icons-material/Badge';
 import { Menu, MenuItem, IconButton, Fade, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import { Avatar } from 'antd';
+import ReportBugModal from "../Report/index.jsx";
 
 const Header = ({ isSidebarOpen }) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isProfile, setIsProfile] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     const handleAvatarClick = (event) => {
         setAnchorEl(event.currentTarget);
+    };
+
+    const handleReportBug = () => {
+        setIsModalOpen(true);
     };
 
     const handleCreateMenuClick = () => {
@@ -64,12 +70,14 @@ const Header = ({ isSidebarOpen }) => {
             {/* Các nút và Avatar */}
             <div className="action-buttons">
                 <button className="report-button">
-                    <BugReportIcon className="icon" />
+                    <BugReportIcon className="icon" onClick={handleReportBug}/>
                     Báo lỗi
                 </button>
+
+                <ReportBugModal isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
                 {/* Nút Tạo đề thi */}
                 <button className="create-button" onClick={handleCreateMenuClick}>
-                    <AddBoxIcon className="icon" />
+                    <AddBoxIcon className="icon"/>
                     Tạo đề thi
                 </button>
                 <IconButton onClick={handleAvatarClick}>
@@ -78,16 +86,16 @@ const Header = ({ isSidebarOpen }) => {
                         alt="User"
                         className="profile-avatar"
                     /> */}
-                          <Avatar
-        style={{
-          backgroundColor: "red",
-          verticalAlign: 'middle',
-        }}
-        size="large"
-        gap={1}
-      >
-        K
-      </Avatar>
+                    <Avatar
+                        style={{
+                            backgroundColor: "red",
+                            verticalAlign: 'middle',
+                        }}
+                        size="large"
+                        gap={1}
+                    >
+                        K
+                    </Avatar>
                 </IconButton>
 
                 <Dialog open={openDialog} onClose={handleCreateMenuClose}>
@@ -124,11 +132,11 @@ const Header = ({ isSidebarOpen }) => {
                     }}
                 >
                     <MenuItem onClick={() => handleClose(true)}>
-                        <BadgeIcon className="icon" />
+                        <BadgeIcon className="icon"/>
                         Hồ sơ
                     </MenuItem>
                     <MenuItem onClick={() => handleClose(false)}>
-                        <LogoutIcon className="icon" />
+                        <LogoutIcon className="icon"/>
                         Đăng xuất
                     </MenuItem>
                 </Menu>

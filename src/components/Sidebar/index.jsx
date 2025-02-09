@@ -38,9 +38,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     {isManagementOpen && isOpen && (
                         <ul className="submenu">
                             <li><i className="icon-exam"></i> Đề thi</li>
-                            <li onClick={() => {navigate("/classes")    }}><i className="icon-classroom" ></i> Lớp học tập</li>
+                            <li onClick={() => {navigate("/classes")}}><i className="icon-classroom" ></i> Lớp học tập</li>
                             <li><i className="icon-category"></i> Chuyên mục</li>
-                            <li><i className="icon-package"></i> Gói dịch vụ</li>
+                            <li onClick={() => {navigate("/limitations")}}><i className="icon-package"></i> Gói dịch vụ</li>
                             <li><i className="icon-settings"></i> Cài đặt</li>
                         </ul>
                     )}
