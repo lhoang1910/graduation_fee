@@ -20,7 +20,7 @@ const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
         const res = await callBuyLimitation(limitation.id, monthAmount, paymentType);
         if (res?.success){
             // notification.success(res.message)
-            window.location.href = res?.data?.data;
+            window.location.href = res?.data;
         } else notification.error(res.message);
         setIsOpen(false);
     };
