@@ -1,35 +1,31 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import "./index.css";
-import {callCurrentUserDashboard} from "../../services/api.js";
-// import {Item} from ".././exam/ListExam/Item.jsx"
+import { callCurrentUserDashboard } from "../../services/api.js";
 
 const Home = () => {
-
     const [userDashboard, setUserDashboard] = useState(null);
 
-    const fetchUserDashboard = async () => {
-        const res = await callCurrentUserDashboard();
-        return res?.data;
-    };
-
-    const getUserDashboard = () => {
-        useEffect(() => {
-            fetchUserDashboard().then(setUserDashboard);
-        }, []);
-        return userDashboard;
-    }
+    useEffect(() => {
+        const fetchUserDashboard = async () => {
+            const res = await callCurrentUserDashboard();
+            setUserDashboard(res?.data);
+        };
+        fetchUserDashboard();
+    }, []);
 
     const getOrDefault = (amount) => {
         return amount ? amount : 0;
-    }
+    };
 
     return (
         <div className="dashboard">
             <div className="header">
-                <h2>{getUserDashboard()?.fullName}&nbsp;-&nbsp;Dashboard</h2>
-                <strong>Tham gia từ&nbsp;: {getUserDashboard()?.createdAt
-                    ? new Date(getUserDashboard()?.createdAt).toLocaleDateString("vi-VN")
-                    : "Không xác định"}</strong>
+                <h2>{userDashboard?.fullName}&nbsp;-&nbsp;Dashboard</h2>
+                <strong>
+                    Tham gia từ&nbsp;: {userDashboard?.createdAt
+                    ? new Date(userDashboard?.createdAt).toLocaleDateString("vi-VN")
+                    : "Không xác định"}
+                </strong>
             </div>
 
             <div className="summary">
@@ -37,28 +33,28 @@ const Home = () => {
                     <div className="icon">📖</div>
                     <div className="content">
                         <p>Số lớp học đã tạo</p>
-                        <h3>{getOrDefault(getUserDashboard()?.createdClassAmount)}</h3>
+                        <h3>{getOrDefault(userDashboard?.createdClassAmount)}</h3>
                     </div>
                 </div>
                 <div className="summary-box">
                     <div className="icon">📄</div>
                     <div className="content">
                         <p>Số đề thi đã tạo</p>
-                        <h3>{getOrDefault(getUserDashboard()?.createdExamAmount)}</h3>
+                        <h3>{getOrDefault(userDashboard?.createdExamAmount)}</h3>
                     </div>
                 </div>
                 <div className="summary-box">
                     <div className="icon">📊</div>
                     <div className="content">
                         <p>Số lớp học đang tham gia</p>
-                        <h3>{getOrDefault(getUserDashboard()?.joinedClassAmount)}</h3>
+                        <h3>{getOrDefault(userDashboard?.joinedClassAmount)}</h3>
                     </div>
                 </div>
                 <div className="summary-box">
                     <div className="icon">📋</div>
                     <div className="content">
                         <p>Số đề thi đã làm</p>
-                        <h3>{getOrDefault(getUserDashboard()?.doExamAmount)}</h3>
+                        <h3>{getOrDefault(userDashboard?.doExamAmount)}</h3>
                     </div>
                 </div>
             </div>
@@ -101,10 +97,10 @@ const Home = () => {
 };
 
 const mockData = [
-    {title: "Tin 4 web-mb", date: "07/10/2024", questions: 141, attempts: 112, author: "Đức Duy"},
-    {title: "Từ vựng", date: "05/10/2024", questions: 36, attempts: 9, author: "tiếng anh 1"},
-    {title: "ATTT - GK", date: "04/10/2024", questions: 49, attempts: 10, author: "ATTT"},
-    {title: "Logic.thh", date: "03/10/2024", questions: 100, attempts: 79, author: "huyen huong"}
+    { title: "Tin 4 web-mb", date: "07/10/2024", questions: 141, attempts: 112, author: "Đức Duy" },
+    { title: "Từ vựng", date: "05/10/2024", questions: 36, attempts: 9, author: "tiếng anh 1" },
+    { title: "ATTT - GK", date: "04/10/2024", questions: 49, attempts: 10, author: "ATTT" },
+    { title: "Logic.thh", date: "03/10/2024", questions: 100, attempts: 79, author: "huyen huong" }
 ];
 
 export default Home;

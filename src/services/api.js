@@ -46,6 +46,10 @@ export const baseApiCall = async (url, method, payload = {}, secure = false) => 
     }
 };
 
+export const callBuyLimitation = (limitationId, monthAmount, paymentType) => {
+    return baseApiCall(`/api/limitations/buy/${limitationId}`, 'post', {monthAmount, paymentType},true)
+}
+
 export const callCurrentUserDashboard = () => {
     return baseApiCall(`/api/users/dashboard`, 'get', {}, true)
 }

@@ -3,12 +3,15 @@ import { FaChalkboardTeacher, FaClipboardList, FaUsers, FaMoneyBillWave } from "
 import {callListLimitation} from "../../services/api.js";
 import './index.css'
 import {RiVipCrownLine} from "react-icons/ri"
+import BuyLimitationModal from "./Buy/index.jsx";
 
 const LimitationList = () => {
     const [limitations, setLimitations] = useState([]);
     const [searchingKeys, setSearchingKeys] = useState("");
     const [startPrice, setStartPrice] = useState("");
     const [endPrice, setEndPrice] = useState("");
+    const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+    const [selectedLimitation, setSelectedLimitation] = useState(null)
 
     const fetchData = async () => {
         try {
@@ -22,6 +25,11 @@ const LimitationList = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const handleBuyClick = (limitation) => {
+        setSelectedLimitation(limitation);
+        setIsBuyModalOpen(true);
+    };
 
     return (
         <div className="container">
@@ -58,9 +66,16 @@ const LimitationList = () => {
                         <p><FaClipboardList /> Số lần tạo đề thi tối đa: {item.createExam} lần</p>
                         <p><FaUsers /> Số thành viên tối đa / 1 lớp: {item.maxMemberPerClass} thành viên</p>
                         <p><FaMoneyBillWave /> Giá: {item.price.toLocaleString()} VND / tháng</p>
-                        <button className="buy-button">Mua ngay</button>
+                        <button className="buy-button" onClick={() => handleBuyClick(item)}>Mua ngay</button>
                     </div>
                 ))}
+                {isBuyModalOpen && (
+                    <BuyLimitationModal
+                        limitation={selectedLimitation}
+                        isOpen={isBuyModalOpen}
+                        setIsOpen={setIsBuyModalOpen}
+                    />
+                )}
             </div>
         </div>
     );
