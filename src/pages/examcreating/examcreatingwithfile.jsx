@@ -1,14 +1,18 @@
 import React from "react";
-import { Layout, Menu, Tabs, Upload, Typography, Card, message } from "antd";
+import { Layout, Menu, Tabs, Upload, Typography, Card, message, notification } from "antd";
 import { UploadOutlined, FileTextOutlined } from "@ant-design/icons";
 import { callCreateExam, callCreateExamWithFile } from "../../services/api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateQuestions } from "../../redux/examCreating/examCreating.Slice";
 
 const { Sider, Content } = Layout;
 const { Text, Title } = Typography;
 
 const CreatingwithFile = () => {
+    const dispatch = useDispatch();
+
     const navigate = useNavigate();
     const uploadProps = {
         accept: ".pdf,.docx",
@@ -49,11 +53,13 @@ const CreatingwithFile = () => {
                 console.log("response create exam with file ",response);
                 if (response.success) {
                     console.log("file to json",response);
+                    dispatch(updateQuestions(response.data))
                    navigate("/workspace/exams/news")
                 
                     onSuccess("ok"); 
                 } else {
                     console.error("File upload failed");
+                    notification.error({message:response.message})
                     onError(new Error("Upload failed")); 
                 }
             } catch (error) {

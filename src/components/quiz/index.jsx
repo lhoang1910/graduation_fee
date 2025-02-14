@@ -191,7 +191,7 @@ const Quiz = () => {
 
                 </Tabs.TabPane>
 
-                <Tabs.TabPane tab="Đề thi" key="2">
+                {/* <Tabs.TabPane tab="Đề thi" key="2">
                 <div style={styles.editor}>
             <div style={styles.leftPanel}>
                 <h2 style={styles.h2}>Danh sách câu hỏi</h2>
@@ -330,8 +330,8 @@ const Quiz = () => {
                 Lưu bài thi
             </button>
         </div>
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Comments" key="3">
+                </Tabs.TabPane> */}
+                <Tabs.TabPane tab="Đề thi" key="3">
                     <div style={{ display: "flex", gap: "20px" }}>
                         </div>
                         <QuestionForm></QuestionForm>
@@ -364,7 +364,6 @@ const ExamForm = ({setActiveTab}) => {
     //     const [limitation, setLimitation] = useState(null); // Giới hạn số lượt làm bài
     //     const [scoreType, setScoreType] = useState("Chấm điểm theo câu hỏi"); // Cách tính điểm
     const exam = useSelector((state) => state.examCreating);
-    console.log("exam",exam)
     const dispatch = useDispatch();
 
     const handleChange = (field, value) => {
@@ -376,7 +375,7 @@ const ExamForm = ({setActiveTab}) => {
             exam
         });
 
-        setActiveTab("2");
+        setActiveTab("3");
     };
 
     return (
@@ -468,10 +467,12 @@ const ExamForm = ({setActiveTab}) => {
                     <Input.TextArea
                         placeholder="Nhập email, cách nhau bằng dấu phẩy (,)"
                         rows={3}
-                        value={exam.executorEmails.join(", ")}
+                        // value={exam.executorEmails.join(", ")}
+                        value={exam.executorEmail.join(", ")}
+
                         onChange={(e) =>
                             handleChange(
-                                "executorEmails",
+                                "executorEmail",
                                 e.target.value.split(",").map((email) => email.trim())
                             )
                         }

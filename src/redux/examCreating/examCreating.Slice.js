@@ -1,58 +1,19 @@
-// import { createSlice } from "@reduxjs/toolkit";
 
-// const initialState = {
-//     examName: "",
-//     description: "",
-//     examPermissionType: "Công khai",
-//     classCode: "",
-//     executorEmails: [],
-//     time: 60,
-//     effectiveDate: null,
-//     expirationDate: null,
-//     randomAmount: 5,
-//     limitation: null,
-//     scoreType: "Chấm điểm theo câu hỏi",
-//     questions:[                {
-//         "id": null,
-//         "index": null,
-//         "questionCode": null,
-//         "answer": "",
-//         "attachmentPath": null,
-//         "correct": false
-//     },]
-// };
-
-// const examSlice = createSlice({
-//     name: "exam",
-//     initialState,
-//     reducers: {
-//         setExamField: (state, action) => {
-//             console.log("action payload",action.payload)
-//             const { field, value } = action.payload;
-//             state[field] = value;
-//         },
-//         resetExam: () => initialState,
-         
-//     },
-// });
-
-// export const { setExamField, resetExam } = examSlice.actions;
-// export default examSlice.reducer;
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     examName: "",
     description: "",
     examPermissionType: "Công khai",
-    // classCode: "",
-    // executorEmails: [],
+    classCode: "",
+    executorEmail: [],
     time: 60,
     effectiveDate: null,
     expirationDate: null,
     randomAmount: 5,
     limitation: null,
     scoreType: "Chấm điểm theo câu hỏi",
-    "totalQuestion": 20           ,       // số lượng câu hỏi sẽ xuất hiện trong bài thi - bắt buộc
+    "totalQuestion": 20           ,       
 
     questions: [
         {
@@ -89,6 +50,9 @@ const examSlice = createSlice({
     name: "exam",
     initialState,
     reducers: {
+        updateQuestions: (state, action) => {
+            state.questions = action.payload; // Thay thế mảng questions hiện tại bằng mảng mới
+        },
         // Cập nhật một trường dữ liệu chung
         setExamField: (state, action) => {
             const { field, value } = action.payload;
@@ -146,5 +110,5 @@ const examSlice = createSlice({
     },
 });
 
-export const { setExamField, resetExam, addQuestion, removeQuestion, addAnswer, removeAnswer } = examSlice.actions;
+export const { setExamField, resetExam, addQuestion, removeQuestion, addAnswer, removeAnswer,updateQuestions } = examSlice.actions;
 export default examSlice.reducer;
