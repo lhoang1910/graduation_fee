@@ -133,7 +133,7 @@ const ListExam = () => {
                     </Col>
                 ))}
             </Row>
-            {exams.content.length === 0 && loading===false && <Empty  description="Không thấy đề thi"></Empty>}
+            {exams.content?.length === 0 && loading===false && <Empty  description="Không thấy đề thi"></Empty>}
 
             </Spin>
 
