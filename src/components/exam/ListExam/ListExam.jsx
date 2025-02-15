@@ -36,7 +36,7 @@ const ListExam = () => {
             setLoading(true);
 
             const response = await callListExam({
-                "searchingKeys": searchKeywords,    // kí tự được nhập trên ô tìm kiếm 
+                "searchingKeys": searchKeywords.trim(),    // kí tự được nhập trên ô tìm kiếm 
                 "typeView": "EXECUTOR_VIEW",         // Xem danh sách đề thi đã tạo: AUTHOR_VIEW, Xem danh sách đề thi: EXECUTOR_VIEW, xem danh sách đề thi trong class: CLASS_EXAM_VIEW 
                 // "classCode": "",         //  Nếu typeView = "CLASS_EXAM_VIEW" -> phải truyền thêm classCode (Có thể lấy từ detail class)
                 "pageNumber": currentPage-1,

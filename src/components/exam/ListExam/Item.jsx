@@ -1,10 +1,13 @@
 import React from "react";
 import { Card, Button } from "antd";
 import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const Item = ({ item, likes, dislikes, handleLike, handleDislike }) => {
+    const navigate = useNavigate();
     return (
         <Card
+        onClick={(e)=>{navigate(`/de-thi/${item.id}`)}}
             hoverable
             cover={
                 <img

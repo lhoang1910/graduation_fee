@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Layout, Button, Form, Input, Radio, Space, Typography, Row, Col, Checkbox, Divider, notification } from "antd";
+import { Layout, Button, Form, Input, Radio, Space, Typography, Row, Col, Checkbox, Divider, notification, Spin } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { callCreateExam } from "../../services/api";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,8 @@ const { TextArea } = Input;
 const { Text } = Typography;
 
 const QuestionForm = () => {
+    const [loading, setLoading] = useState(false);
+
     const location = useLocation();
   const { message } = location.state || {};
     const [form] = Form.useForm();
@@ -209,6 +211,7 @@ const examRequest = useSelector(state=>state.examCreating);
                 // request = examRequestWithoutClassCode;
                 request = examRequest;
               }
+              setLoading(true);
            const response = await callCreateExam({...request,questions:exam.questions});
             // console.log({...examRequest,questions:exam.questions})
             notification.info({message:response.message})
@@ -221,6 +224,8 @@ const examRequest = useSelector(state=>state.examCreating);
         } catch (error) {
             console.log(error)
 
+        }finally{
+            setLoading(false)
         }
     }
     const updateExplainText = (newText) => {
@@ -251,7 +256,10 @@ const examRequest = useSelector(state=>state.examCreating);
       }, [dispatch]);
     
     return (
+        <Spin  spinning={loading}>
+
         <Layout style={{ minHeight: "100vh", padding: "20px", backgroundColor: "#f4f6f9" }}>
+
             {/* Sidebar bên trái */}
             <Sider width={250} style={styles.sidebar}>
                 <h3>Danh mục câu hỏi</h3>
@@ -422,6 +430,7 @@ const examRequest = useSelector(state=>state.examCreating);
                 </Content>
             </Layout>
         </Layout>
+        </Spin>
     );
 };
 

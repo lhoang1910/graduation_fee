@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input ,Avatar} from "antd";
 import { DownloadOutlined, PlayCircleOutlined, BookOutlined, LikeOutlined, DislikeOutlined,SendOutlined } from "@ant-design/icons";
-
+import { useParams } from "react-router-dom";
 const { TabPane } = Tabs;
 
 const ExamDetail = () => {
+    const { id } = useParams();
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [comments, setComments] = useState([
         {
             id: 1,
