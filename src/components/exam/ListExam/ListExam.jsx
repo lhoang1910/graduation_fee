@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { Card, Col, Row, Pagination, Input, Space, Button, Spin } from "antd";
+import { Card, Col, Row, Pagination, Input, Space, Button, Spin, Empty } from "antd";
 import { SearchOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import Item from "./Item";
 import { callListExam } from "../../../services/api";
@@ -28,13 +28,15 @@ const ListExam = () => {
     const [dislikes, setDislikes] = useState({}); // Trạng thái lượt không thích
     const [exams, setExams] = useState({});
     console.log(currentPage);
+    const [searchKeywords, setSearchKeywords] = useState("");
+
     useEffect(() => {
         const fetchUsers = async () => {
           try {
             setLoading(true);
 
             const response = await callListExam({
-                "searchingKeys": "",    // kí tự được nhập trên ô tìm kiếm 
+                "searchingKeys": searchKeywords,    // kí tự được nhập trên ô tìm kiếm 
                 "typeView": "EXECUTOR_VIEW",         // Xem danh sách đề thi đã tạo: AUTHOR_VIEW, Xem danh sách đề thi: EXECUTOR_VIEW, xem danh sách đề thi trong class: CLASS_EXAM_VIEW 
                 // "classCode": "",         //  Nếu typeView = "CLASS_EXAM_VIEW" -> phải truyền thêm classCode (Có thể lấy từ detail class)
                 "pageNumber": currentPage-1,
@@ -52,7 +54,7 @@ const ListExam = () => {
         };
     
         fetchUsers();
-      }, [currentPage]);
+      }, [currentPage,searchKeywords]);
     const handleLike = (id) => {
         setLikes((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
     };
@@ -63,7 +65,6 @@ const ListExam = () => {
     };
 
     // Lọc dữ liệu theo trang
-    const paginatedData = mockData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
     return (
         <div style={{ padding: "20px" }}>
@@ -77,6 +78,8 @@ const ListExam = () => {
                         placeholder="Nhập từ khóa tìm kiếm..."
                         prefix={<SearchOutlined />}
                         style={{ width: "300px" }}
+                        value={searchKeywords}
+                        onChange={(e)=>{setSearchKeywords(e.target.value)}}
                     />
                 </Space>
             </Space>
@@ -130,6 +133,8 @@ const ListExam = () => {
                     </Col>
                 ))}
             </Row>
+            {exams.content.length === 0 && loading===false && <Empty  description="Không thấy đề thi"></Empty>}
+
             </Spin>
 
             {/* Pagination */}
