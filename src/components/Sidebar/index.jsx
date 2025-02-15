@@ -88,7 +88,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     </div>
                     {isExamOpen && isOpen && (
                         <ul className="submenu">
-                            <li onClick={() => navigate("/my-exams")}>
+                            <li onClick={() => navigate("/quiz/exam/search")}>
                                 <FaRegHeart style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Đề thi của tôi'}
                             </li>
@@ -96,7 +96,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Đề thi gần đây'}
                             </li>
-                            <li onClick={() => navigate("/created-exams")}>
+                            <li onClick={() => navigate("/workspace/exams/list")}>
                                 <FaClipboardList style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Đề thi đã tạo'}
                             </li>

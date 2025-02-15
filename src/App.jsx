@@ -69,6 +69,8 @@ export default function App() {
                 {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
                 {path:"workspace/exams/news",element:<Quiz />},
                 {path:"workspace/exams/list",element:<ListExam />},
+                {path:"quiz/exam/search",element:<ListExam />},
+
                 {path:"de-thi/:id",element:<ExamDetail />},
                 { path: "limitations", element: <Limitations /> },
             ],
