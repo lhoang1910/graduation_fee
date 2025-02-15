@@ -1,8 +1,10 @@
 
-import React, { useState } from "react";
-import { Card, Col, Row, Pagination, Input, Space, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Col, Row, Pagination, Input, Space, Button, Spin } from "antd";
 import { SearchOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import Item from "./Item";
+import { callListExam } from "../../../services/api";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const mockData = Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
@@ -16,12 +18,41 @@ const mockData = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 const ListExam = () => {
-    const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get("page")) || 1);
     const pageSize = 8; // Số lượng card mỗi trang
     const [likes, setLikes] = useState({}); // Trạng thái lượt thích
     const [dislikes, setDislikes] = useState({}); // Trạng thái lượt không thích
+    const [exams, setExams] = useState({});
+    console.log(currentPage);
+    useEffect(() => {
+        const fetchUsers = async () => {
+          try {
+            setLoading(true);
 
-    // Xử lý sự kiện Like
+            const response = await callListExam({
+                "searchingKeys": "",    // kí tự được nhập trên ô tìm kiếm 
+                "typeView": "EXECUTOR_VIEW",         // Xem danh sách đề thi đã tạo: AUTHOR_VIEW, Xem danh sách đề thi: EXECUTOR_VIEW, xem danh sách đề thi trong class: CLASS_EXAM_VIEW 
+                // "classCode": "",         //  Nếu typeView = "CLASS_EXAM_VIEW" -> phải truyền thêm classCode (Có thể lấy từ detail class)
+                "pageNumber": currentPage-1,
+                "pageSize": 8
+            })
+            if (!response.success) {
+              throw new Error("Lỗi khi tải dữ liệu!");
+            }
+            setExams(response.data);
+          } catch (err) {
+            // setError(err.message);
+          } finally {
+            setLoading(false);
+        }
+        };
+    
+        fetchUsers();
+      }, [currentPage]);
     const handleLike = (id) => {
         setLikes((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
     };
@@ -37,6 +68,8 @@ const ListExam = () => {
     return (
         <div style={{ padding: "20px" }}>
             {/* Header */}
+            <Spin  align="center" gap="middle" size="large" spinning={loading}>
+
             <Space direction="vertical" style={{ width: "100%" }}>
                 <Space style={{ justifyContent: "space-between", width: "100%" }}>
                     <h2>Danh sách đề thi</h2>
@@ -50,7 +83,7 @@ const ListExam = () => {
 
             {/* Grid */}
             <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
-                {paginatedData.map((item) => (
+                {exams.content?.map((item) => (
                     <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
                         {/* <Card
                             hoverable
@@ -97,15 +130,17 @@ const ListExam = () => {
                     </Col>
                 ))}
             </Row>
+            </Spin>
 
             {/* Pagination */}
             <Pagination
                 style={{ textAlign: "center", marginTop: "20px" }}
                 current={currentPage}
-                pageSize={pageSize}
-                total={mockData.length}
-                onChange={(page) => setCurrentPage(page)}
+                pageSize={8}
+                total={exams.totalElements}
+                onChange={(page) => {setCurrentPage(page);navigate(`?page=${page}`)}}
             />
+
         </div>
     );
 };

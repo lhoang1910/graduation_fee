@@ -118,3 +118,6 @@ export const callCreateExamWithFile = (fileType,formData) => {
 export const callCreateExam = (request) => {
     return baseApiCall(`/api/exam/create`, 'post', request, true);
 };
+export const callListExam = (request) => {
+    return baseApiCall(`/api/exam/list`, 'post', request, true);
+};
