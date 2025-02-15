@@ -121,3 +121,7 @@ export const callCreateExam = (request) => {
 export const callListExam = (request) => {
     return baseApiCall(`/api/exam/list`, 'post', request, true);
 };
+export const callDetailExam = (id) => {
+    console.log("hí hó")
+    return baseApiCall(`/api/exam/${id}`, 'get',{}, true);
+};

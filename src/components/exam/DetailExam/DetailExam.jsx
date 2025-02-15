@@ -1,13 +1,17 @@
-import React, { useState } from "react";
-import { Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input ,Avatar} from "antd";
+import React, { useEffect, useState } from "react";
+import { Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input ,Avatar, Empty, Spin} from "antd";
 import { DownloadOutlined, PlayCircleOutlined, BookOutlined, LikeOutlined, DislikeOutlined,SendOutlined } from "@ant-design/icons";
+import { callDetailExam } from "../../../services/api";
 import { useParams } from "react-router-dom";
+
 const { TabPane } = Tabs;
 
 const ExamDetail = () => {
-    const { id } = useParams();
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { id } = useParams(); // Lấy id từ URL
+
+    const [loading, setLoading] = useState(false);
+    const [exam, setExam] = useState(null);
+
     const [comments, setComments] = useState([
         {
             id: 1,
@@ -48,25 +52,45 @@ const ExamDetail = () => {
         }
     };
 
-    const exam = {
-        examCode: "EX12345",
-        examName: "Toán 13",
-        description: "Đề thi học kỳ môn Toán dành cho khối lớp 13.",
-        time: 90, // Thời gian làm bài (phút)
-        effectiveDate: "07/02/2025 08:00",
-        expirationDate: null, // Null sẽ hiển thị biểu tượng vô cực
-        randomAmount: 5,
-        totalQuestion: 20,
-        limitation: 3, // Số lượt làm bài tối đa
-        scoreType: "Chấm điểm từng câu",
-        executionAmount: 120, // Tổng số thí sinh đã làm bài
-        likes: 54,
-        unlikes: 10,
-    };
+    // const exam = {
+    //     examCode: "EX12345",
+    //     examName: "Toán 13",
+    //     description: "Đề thi học kỳ môn Toán dành cho khối lớp 13.",
+    //     time: 90, // Thời gian làm bài (phút)
+    //     effectiveDate: "07/02/2025 08:00",
+    //     expirationDate: null, // Null sẽ hiển thị biểu tượng vô cực
+    //     randomAmount: 5,
+    //     totalQuestion: 20,
+    //     limitation: 3, // Số lượt làm bài tối đa
+    //     scoreType: "Chấm điểm từng câu",
+    //     executionAmount: 120, // Tổng số thí sinh đã làm bài
+    //     likes: 54,
+    //     unlikes: 10,
+    // };
 
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            setLoading(true);
+
+            const response = await callDetailExam(id);
+            setExam(response.data);
+            console.log(exam);
+
+          } catch (error) {
+            // setError(error.message);
+            console.log(error)
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchData();
+      }, [id]); 
     return (
+        <Spin spinning={loading} >
         <div style={{ padding: "20px" }}>
-            <Card>
+                    {exam && <div>            <Card>
                 <Row gutter={[16, 16]}>
                     {/* Left section: Exam details */}
                     <Col xs={24} sm={16}>
@@ -83,7 +107,15 @@ const ExamDetail = () => {
                                 <p><b>Mã đề thi:</b> {exam.examCode}</p>
                                 <p><b>Mô tả:</b> {exam.description}</p>
                                 <p><b>Thời gian làm bài:</b> {exam.time} phút</p>
-                                <p><b>Thời gian bắt đầu:</b> {exam.effectiveDate}</p>
+                                <p><b>Thời gian bắt đầu:</b> { new Date(exam.effectiveDate).toLocaleString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // Hiển thị 24h
+  })}</p>
                                 <p>
                                     <b>Thời gian hết hạn:</b>{" "}
                                     {exam.expirationDate ? (
@@ -192,8 +224,12 @@ const ExamDetail = () => {
                     </div>
                 </TabPane>
 
-            </Tabs>
+            </Tabs></div>}
+            {!exam && !loading && <Empty description={"Không thấy đề thi"}></Empty>}
+
+
         </div>
+        </Spin>
     );
 };
 
