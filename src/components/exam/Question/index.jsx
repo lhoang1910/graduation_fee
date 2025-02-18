@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { chosenAnswer } from "../../../redux/exam/examSlice";
 import { useEffect } from "react";
 
-function Question({ question, index }) {
+function  Question({ question, index,type="" }) {
 
   const dispatch = useDispatch();
   const handleChange = (event,i) => {
@@ -19,7 +19,7 @@ function Question({ question, index }) {
     <div style={styles.question}>
       <Flex justify="space-between">
         <span className={style.title}>{`Câu ${index + 1}`}</span>
-        <span  className={style.title} style={styles.modeTitle}>Một đáp án</span>
+       { type==="result" && <span  className={style.title} style={styles.modeTitle}>Chọn một hoặc nhiều đáp án</span>}
       </Flex>
       <div>
         <span  style={styles.questionTitle} className={style.title}>{question.question}</span>
@@ -27,36 +27,40 @@ function Question({ question, index }) {
         <ul style={{listStyleType:"none",padding:"0"}}>
 
 
-         {/* <FormControl>
-  <RadioGroup
-    aria-labelledby="demo-radio-buttons-group-label"
-    name="radio-buttons-group"
-  >
-     {question.answers.map((e,i)=>(
-          <FormControlLabel value={i} control={<Radio />} label={e.answer} />
 
-          // <li key={i}><Flex align="center" style={styles.answer} gap={16} vertical={false} justify="flex-start">
-          //      <RadioButtonCheckedSharpIcon   htmlColor="blue" fontSize="medium"/> 
-          //     <Radio checkedIcon={<RadioButtonCheckedSharpIcon />} />
 
-          //      <span  style={styles.answerContent} className={style.title}>{e.answer}</span> 
-          // </Flex></li>
-      ))}
-    
-  </RadioGroup>
-</FormControl>  */}
-
-   <FormControl sx={{ m: 1 }} component="fieldset" variant="standard">
-        <FormGroup>
+   <FormControl sx={{ m: 1 }} component="fieldset" variant="standard" style={{width:"100%"}}>
+        <FormGroup style={{width:"100%"}}>
           {
-          question.answers.map((e,i)=>(          <FormControlLabel
+       type!=="result"  &&  question.answers.map((e,i)=>(          <FormControlLabel
             onChange={(event)=>{handleChange(event,i)}} 
           key={e.id}
             control={
-              <Checkbox   name={i.toString()} />
+              <Checkbox checked={e.chosen}   name={i.toString()} />
             }
             label={e.answer}
           />))}
+          { type==="result" &&  question.answers.map((e,i)=>(          <FormControlLabel
+            sx={{ width: "100%",  "& .MuiFormControlLabel-label": {
+              width: "100%", // Đảm bảo label trải dài
+              whiteSpace: "normal", // Cho phép xuống dòng nếu cần
+              wordBreak: "break-word", // Ngắt từ khi quá dài
+              fontSize: "16px", // Điều chỉnh kích thước chữ
+              color: "#333", // Thay đổi màu chữ nếu cần
+
+            },}}
+
+              onChange={(event)=>{console.log(e)}} 
+              style={{width:"100%"}}
+            key={e.id}
+              control={
+                <Checkbox checked={e.chosen} disabled={true} name={i.toString()} />
+              }
+              // label={  <div     >{e.answer}</div>           
+
+              label={  <div style={{backgroundColor:`${e.chosen && "#f5222d"}`,backgroundColor:`${e.correct ? "#52c41a": (e.chosen&&"#f5222d")}`,padding:"5px"}}>{e.answer}</div>           
+            }
+            />))}
 
 
 
@@ -97,3 +101,26 @@ const styles = {
   
 }
 export default Question;
+// const answer ={answer
+//   : 
+//   "he"
+//   attachmentPath
+//   : 
+//   null
+//   chosen
+//   : 
+//   false
+//   correct
+//   : 
+//   false}
+
+
+
+
+
+
+
+
+
+// Màu xanh lá (Đáp án đúng ✅): Thường là #52c41a hoặc #28a745 trong thiết kế giao diện.
+// Màu đỏ (Đáp án sai ❌): Thường là #f5222d hoặc #dc3545.

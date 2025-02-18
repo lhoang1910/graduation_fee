@@ -125,3 +125,9 @@ export const callDetailExam = (id) => {
     console.log("hí hó")
     return baseApiCall(`/api/exam/${id}`, 'get',{}, true);
 };
+export const callStartExam = (id) => {
+    return baseApiCall(`/api/exam/${id}/start-exam`, 'post',{}, true);
+};
+export const callSubmitExam = (examId,historyId,payload) => {
+    return baseApiCall(`/api/exam/${examId}/submit-exam/${historyId}`, 'post',payload, true);
+};

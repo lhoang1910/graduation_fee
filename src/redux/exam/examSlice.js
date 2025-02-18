@@ -1,17 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { examFetchData } from "../../utils/dumydata";
+import { callStartExam } from "../../services/api";
 
 const initialState = {};
 
 export const fetchExam = createAsyncThunk(
   "exam/fetchExam",
-  async (itemId, thunkApi) => {
-    // const res = await fetch("https://catfact.ninja/fact");
-    // const data = await res.json();
-    // return data;
+  async (id, thunkApi) => {
+return await callStartExam(id)
   }
-);
+);      
 export const examSlice = createSlice({
   name: "exam",
   initialState: {
@@ -33,19 +32,27 @@ export const examSlice = createSlice({
     },
     chosenAnswer: (state, action) => {
       const { answer, indexQuestion, value } = action.payload;
-      state.exam.questionResults[indexQuestion].answers[answer].chosen = value;
+      console.log(state.exam);
+      state.exam.data.questionResults[indexQuestion].answers[answer].chosen = value;
       console.log("done");
+    },
+    setExam: (state, action) => {
+      state.exam = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchExam.fulfilled, (state, action) => {
-      state.exam = examFetchData.data;
+      state.exam = action.payload;
     });
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { increment, decrement, incrementByAmount, chosenAnswer } =
+export const { increment,setExam ,decrement, incrementByAmount, chosenAnswer } =
   examSlice.actions;
 
 export default examSlice.reducer;
+
+
+
+

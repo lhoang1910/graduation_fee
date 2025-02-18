@@ -130,7 +130,7 @@ const examRequest = useSelector(state=>state.examCreating);
     const updateAnswerText = (index, newText) => {
         setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions]; // Sao chép mảng questions để tránh thay đổi trực tiếp state
-            const selectedQ = updatedQuestions[selectedQuestion]; // Lấy câu hỏi hiện tại
+            const selectedQ = { ...updatedQuestions[selectedQuestion] }; // Sao chép câu hỏi hiện tại
             const updatedAnswers = [...selectedQ.answers];
 
             
@@ -138,7 +138,10 @@ const examRequest = useSelector(state=>state.examCreating);
                 ...updatedAnswers[index],
                 answer: newText,
             };
+            // selectedQ = {...selectedQ,answers:updatedAnswers}
             selectedQ.answers=updatedAnswers;
+            updatedQuestions[selectedQuestion] = selectedQ;
+
             return {
                 ...prevExam,
                 questions: updatedQuestions,

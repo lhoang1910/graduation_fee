@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input ,Avatar, Empty, Spin} from "antd";
 import { DownloadOutlined, PlayCircleOutlined, BookOutlined, LikeOutlined, DislikeOutlined,SendOutlined } from "@ant-design/icons";
 import { callDetailExam } from "../../../services/api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
 const ExamDetail = () => {
-    const { id } = useParams(); // Lấy id từ URL
+    const navigate = useNavigate(); // Khởi t
 
     const [loading, setLoading] = useState(false);
     const [exam, setExam] = useState(null);
@@ -67,6 +67,7 @@ const ExamDetail = () => {
     //     likes: 54,
     //     unlikes: 10,
     // };
+    const { id } = useParams(); // Lấy id từ URL
 
     useEffect(() => {
         const fetchData = async () => {
@@ -144,8 +145,14 @@ const ExamDetail = () => {
                                         type="primary"
                                         icon={<PlayCircleOutlined />}
                                         style={{ backgroundColor: "#9254de" }}
+                                        // onClick={()=>{navigate(`quiz/${exam.id}`))}}
+                                        disabled={  new Date() < new Date(exam.effectiveDate)}
+                                        onClick={()=>{navigate(`/quiz/${exam.id}`,{replace:true}) }}
+
                                     >
-                                        Bắt đầu ôn thi
+                                        { new Date() < new Date(exam.effectiveDate) && "Đề thi chưa mở"}
+                                        { new Date() >= new Date(exam.effectiveDate) && "Vào thi"}
+
                                     </Button>
 
                                 </Space>

@@ -22,6 +22,7 @@ import ExamDetail from './components/exam/DetailExam/DetailExam.jsx';
 import ListLimitations from "./components/Limitations/index.jsx";
 import PaymentTmpPage from "./pages/tmp/index.jsx";
 import Limitations from "./components/Limitations/index.jsx";
+import ExamResults from './pages/examresult/index.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -63,14 +64,14 @@ export default function App() {
                 { path: "classes", element: <Classes /> },
                 { path: "quiz", element: <Quiz /> },
                 { path: "profile", element: <Profile /> },
-                { path: "exam", element: <ExamPage /> },
+                { path: "quiz/:id", element: <ExamPage /> },
                 { path: "examcreating", element: <ExamCreating /> },
                 { path: "admin", element: <AdminPage /> },
                 {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
                 {path:"workspace/exams/news",element:<Quiz />},
                 {path:"workspace/exams/list",element:<ListExam />},
                 {path:"quiz/exam/search",element:<ListExam />},
-
+                {path:"quiz/exam/result",element:< ExamResults/>},
                 {path:"de-thi/:id",element:<ExamDetail />},
                 { path: "limitations", element: <Limitations /> },
             ],

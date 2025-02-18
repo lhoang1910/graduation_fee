@@ -1,12 +1,14 @@
 import { Col, Row } from "antd";
-import Question from "../Question";
+import Question from "../Question/index";
 import { FontDownloadOutlined } from "@mui/icons-material";
 import style from "../index.module.css";
 import hoverStyle from "./index.module.css";
 import { Button } from "@mui/material";
 import { useSelector } from "react-redux";
 function QuestionMenu({ examRef }) {
-  const exam = useSelector((state) => state.exam.exam?.questionResults);
+
+  const exam = useSelector(state=>state.exam?.exam?.data);
+  console.log("exam",exam)
   const onClickTileHandle = (index) => {
     // console.log(examRef?.current.children[index]);
     examRef?.current.children[index].scrollIntoView({
@@ -28,7 +30,7 @@ function QuestionMenu({ examRef }) {
             {/* {arr.map((val,i)=>(      <Col className={hoverStyle.hover} onClick={()=>{onClickTileHandle(i)}} style={styles.questionTile} key={i} span={4}><span>{`${val}`}</span></Col>
 ))} */}
             {
-              exam?.map((val, i) => {
+              exam?.questionResults.map((val, i) => {
                   const isChosen =      isChosenQuestion(val?.answers);           
                 return (
 
