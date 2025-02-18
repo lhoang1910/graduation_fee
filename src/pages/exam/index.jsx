@@ -11,7 +11,7 @@ import { CircularProgress } from "@mui/material";
 import { callDetailExam, callStartExam } from "../../services/api";
 import { useParams } from "react-router-dom";
 function ExamPage() {
-  const [isLoading,setIsLoading]  = useState(true)
+  const [isLoading,setIsLoading]  = useState(false)
   const { id } = useParams(); 
     const [detailExam, setDetailExam] = useState(null);
         useEffect(() => {

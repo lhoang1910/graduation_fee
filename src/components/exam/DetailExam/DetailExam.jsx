@@ -3,6 +3,7 @@ import { Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input ,Avatar, Empt
 import { DownloadOutlined, PlayCircleOutlined, BookOutlined, LikeOutlined, DislikeOutlined,SendOutlined } from "@ant-design/icons";
 import { callDetailExam } from "../../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
+import ExamineeTable from "./Results";
 
 const { TabPane } = Tabs;
 
@@ -147,7 +148,7 @@ const ExamDetail = () => {
                                         style={{ backgroundColor: "#9254de" }}
                                         // onClick={()=>{navigate(`quiz/${exam.id}`))}}
                                         disabled={  new Date() < new Date(exam.effectiveDate)}
-                                        onClick={()=>{navigate(`/quiz/${exam.id}`,{replace:true}) }}
+                                        onClick={()=>{navigate(`/quiz/${exam.id}`) }}
 
                                     >
                                         { new Date() < new Date(exam.effectiveDate) && "Đề thi chưa mở"}
@@ -179,7 +180,7 @@ const ExamDetail = () => {
             <Tabs defaultActiveKey="2" style={{ marginTop: "20px" }}>
      
                 <TabPane tab="Kết quả" key="2">
-                    Kết quả
+                    <ExamineeTable examId={exam.id}></ExamineeTable>
                 </TabPane>
 
                 <TabPane tab="Bình luận" key="4">
