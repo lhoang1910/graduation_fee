@@ -11,7 +11,7 @@ import { CircularProgress } from "@mui/material";
 import { callDetailExam, callStartExam } from "../../services/api";
 import { useParams } from "react-router-dom";
 function ExamPage() {
-  const [isLoading,setIsLoading]  = useState(false)
+  const [isLoading,setIsLoading]  = useState(true)
   const { id } = useParams(); 
     const [detailExam, setDetailExam] = useState(null);
         useEffect(() => {
@@ -43,6 +43,7 @@ useEffect(() => {
     // Hàm gọi API
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const response = await callStartExam(id); // URL API của bạn
         if (!response.success) {
           notification.error({message:response.message})
@@ -58,6 +59,7 @@ useEffect(() => {
           }
 
 
+
         }
         // const result = await response.json();
         // setData(result); // Cập nhật dữ liệu từ API
@@ -65,7 +67,7 @@ useEffect(() => {
         // setError(error); // Cập nhật lỗi nếu có
         notification.error({message:error.message})
       } finally {
-        // setLoading(false); // Khi gọi API xong, thay đổi trạng thái loading
+        setIsLoading(false); // Khi gọi API xong, thay đổi trạng thái loading
       }
     };
 

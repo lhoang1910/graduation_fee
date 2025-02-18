@@ -1,11 +1,13 @@
 import { Button, Divider, Flex, notification, Spin } from "antd";
 import TimerCountdown from "../Timer";
 import style from "../index.module.css"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { callSubmitExam } from "../../../services/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { setExam } from "../../../redux/exam/examSlice";
 function ExamInformation({detailExam,setIsLoading}) {
   const { id } = useParams();
+  const dispatch=useDispatch();
   const navigate= useNavigate()
   const exam = useSelector(state=>state.exam?.exam)
   const submitHandler =async ()=>{
@@ -14,6 +16,7 @@ function ExamInformation({detailExam,setIsLoading}) {
       const response = await callSubmitExam(id,exam.data?.historyId,{questionResults:exam.data?.questionResults});
       console.log(response)
       if(response.success){
+        dispatch(setExam(null))
         navigate("/quiz/exam/result",{replace:true, state: { result: response }})
       }else{
         notification.error({message:response.message});
