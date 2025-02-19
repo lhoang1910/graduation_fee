@@ -21,6 +21,7 @@ import ExamDetail from './components/exam/DetailExam/DetailExam.jsx';
 import PaymentTmpPage from "./pages/tmp/index.jsx";
 import Limitations from "./components/Limitations/index.jsx";
 import MomoPaymentTmpPage from "./pages/momo/index.jsx";
+import ExamResults from './pages/examresult/index.jsx';
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -64,13 +65,15 @@ export default function App() {
                 { path: "recent-class", element: <Classes typeView={"RECENT_VIEW"}/> },
                 { path: "quiz", element: <Quiz /> },
                 { path: "profile", element: <Profile /> },
-                { path: "exam", element: <ExamPage /> },
+                { path: "quiz/:id", element: <ExamPage /> },
                 { path: "examcreating", element: <ExamCreating /> },
                 { path: "admin", element: <AdminPage /> },
                 {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
                 {path:"workspace/exams/news",element:<Quiz />},
                 {path:"workspace/exams/list",element:<ListExam />},
-                {path:"de-thi",element:<ExamDetail />},
+                {path:"quiz/exam/search",element:<ListExam />},
+                {path:"quiz/exam/result",element:< ExamResults/>},
+                {path:"de-thi/:id",element:<ExamDetail />},
                 { path: "limitations", element: <Limitations /> },
             ],
         },

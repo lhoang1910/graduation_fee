@@ -1,7 +1,7 @@
 import React, { useState,useEffect,useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {callLogin, callRegister, callUserDetail} from "../../services/api.js";
-import {message, notification} from "antd";
+import {message, notification, Spin} from "antd";
 import { useDispatch } from 'react-redux';
 import {
     useQuery,
@@ -17,7 +17,7 @@ function LoginPage() {
     const [password, setPassword] = useState('');
     const emailRef = useRef(null)
     const passwordRef = useRef(null)
-
+    const [loading,setLoading]  = useState(false)
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -46,9 +46,10 @@ function LoginPage() {
                 return;
             }
         if (isLoginEnabled) {
+            setLoading(true);
             const res = await callLogin(username, password);
             console.log("from login",res);
-
+            setLoading(false);
             if (res?.success) {
                 localStorage.setItem('access_token', res.data.token);
                 message.success(res?.message);
@@ -75,6 +76,7 @@ function LoginPage() {
                 <img src="https://studio.eduquiz.vn/assets/images/auth/login.png" alt="Background Illustration" style={styles.backgroundImage} />
             </div>
             <div style={styles.rightSection}>
+
                 <div style={styles.formContainer}>
                     <h2 style={styles.title}>Đăng nhập</h2>
                     <button style={styles.googleButton}>
@@ -107,7 +109,9 @@ function LoginPage() {
                         <span>Bạn chưa có tài khoản? </span>
                         <a onClick={hasNotAcc} style={styles.registerLink}>Đăng Kí ngay</a>
                     </div>
-                    <button
+                    <Spin style={{width:"100%"}}  wrapperClassName="full-width-spin" spinning={loading}>
+
+                        <button
                         onClick={handleLogin}
                         style={{
                             ...styles.loginButton,
@@ -118,7 +122,10 @@ function LoginPage() {
                     >
                         Đăng nhập
                     </button>
+                    </Spin>
+
                 </div>
+
             </div>
         </div>
     );

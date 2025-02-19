@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Layout, Button, Form, Input, Radio, Space, Typography, Row, Col, Checkbox, Divider, notification } from "antd";
+import { Layout, Button, Form, Input, Radio, Space, Typography, Row, Col, Checkbox, Divider, notification, Spin } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { callCreateExam } from "../../services/api";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { resetExam, updateQuestions } from "../../redux/examCreating/examCreating.Slice";
 
 const { Content, Sider } = Layout;
 const { TextArea } = Input;
 const { Text } = Typography;
 
 const QuestionForm = () => {
-    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
-    const [questions, setQuestions] = useState([1]); // Danh sách số thứ tự câu hỏi
+    const location = useLocation();
+  const { message } = location.state || {};
+    const [form] = Form.useForm();
+    const questions = useSelector((state) => state.examCreating.questions);
+
     const [selectedQuestion, setSelectedQuestion] = useState(0); // Câu hỏi được chọn
 const examRequest = useSelector(state=>state.examCreating);
     const [correctAnswer, setCorrectAnswer] = useState(1); // ID của đáp án đúng
@@ -26,104 +32,19 @@ const examRequest = useSelector(state=>state.examCreating);
         "limitation": null,
         "scoreType": "Chấm điểm theo câu hỏi",
         "totalQuestion": 20,
-        "questions": [
-            {
-                "id": null,
-                "code": null,
-                "attachmentPath": null,
-                "question": "Chọn câu sai về khí quản?",
-                "type": 0,
-                "answers": [
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Chạy tiếp theo thanh quản từ bờ dưới sụn nhẫn",
-                        "attachmentPath": null,
-                        "correct": true
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Từ ngang mức đốt sống cổ V đến đĩa gian đốt sống N IV-V",
-                        "attachmentPath": null,
-                        "correct": false
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Tạo bởi các vòng sụn xếp chồng lên nhau",
-                        "attachmentPath": null,
-                        "correct": false
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Tận hết tại cựa khí quản",
-                        "attachmentPath": null,
-                        "correct": false
-                    }
-                ],
-                "explain": "Do m ngu",
-                "explainFilePath": null
-            },
-            {
-                "id": null,
-                "code": null,
-                "attachmentPath": null,
-                "question": "Chọn câu đúng về phế quản chính?",
-                "type": 0,
-                "answers": [
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Bên phải rộng hơn, ngắn hơn, thẳng đứng hơn bên trái",
-                        "attachmentPath": null,
-                        "correct": false
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Dị vật đường thở thường rơi vào phế quản chính trái",
-                        "attachmentPath": null,
-                        "correct": false
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Sau khi vào rốn phổi, phế quản chính phải tách ra 3 nhánh",
-                        "attachmentPath": null,
-                        "correct": false
-                    },
-                    {
-                        "id": null,
-                        "index": null,
-                        "questionCode": null,
-                        "answer": "Sau khi vào rốn phổi, phế quản chính trái tách ra 3 nhánh",
-                        "attachmentPath": null,
-                        "correct": false
-                    }
-                ],
-                "explain": null,
-                "explainFilePath": null
-            },
-        ]
+        "questions": questions
     })
-    console.log(exam);
     // Thêm câu hỏi mới
     const updateQuestionContent = (e) => {
         const updatedQuestions = [...exam.questions];
-        updatedQuestions[selectedQuestion].question = e.target.value;
-        setExam( (exam)=>({ ...exam, questions: updatedQuestions }))
-        form.setFieldsValue({ questionContent: newQuestionText });
+        updatedQuestions[selectedQuestion] = {
+            ...updatedQuestions[selectedQuestion], // Tạo bản sao của câu hỏi cần cập nhật
+            question: e.target.value, // Cập nhật câu hỏi
+        };        setExam( (exam)=>({ ...exam, questions: updatedQuestions }))
+        form.setFieldsValue({ questionContent: e.target.value });
     };
     useEffect(() => {
+        console.log("question",exam.questions)
         form.setFieldsValue({
             questionContent: exam.questions[selectedQuestion]?.question || "",
         });
@@ -209,7 +130,7 @@ const examRequest = useSelector(state=>state.examCreating);
     const updateAnswerText = (index, newText) => {
         setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions]; // Sao chép mảng questions để tránh thay đổi trực tiếp state
-            const selectedQ = updatedQuestions[selectedQuestion]; // Lấy câu hỏi hiện tại
+            const selectedQ = { ...updatedQuestions[selectedQuestion] }; // Sao chép câu hỏi hiện tại
             const updatedAnswers = [...selectedQ.answers];
 
             
@@ -217,7 +138,10 @@ const examRequest = useSelector(state=>state.examCreating);
                 ...updatedAnswers[index],
                 answer: newText,
             };
+            // selectedQ = {...selectedQ,answers:updatedAnswers}
             selectedQ.answers=updatedAnswers;
+            updatedQuestions[selectedQuestion] = selectedQ;
+
             return {
                 ...prevExam,
                 questions: updatedQuestions,
@@ -232,16 +156,79 @@ const examRequest = useSelector(state=>state.examCreating);
         setCorrectAnswer(id);
     };
     const handleCreateExam = async()=>{
+
         try {
-            
-           const response = await callCreateExam({...examRequest,questions:exam.questions});
+            if (examRequest.examName.trim() === "") {
+                notification.error({message:"Tên đề thi trống"});
+                return;
+              }
+              if (examRequest.effectiveDate === null) {
+                notification.error({message:"Thêm thời gian đề thi có hiệu lực"});
+                return;
+              }
+              if(examRequest.examPermissionType==="Người được cấp quyền"  ){
+
+
+              }
+              if(examRequest.examPermissionType==="Thành viên lớp học" && examRequest.classCode.trim() ==="" ){
+                notification.error({message:"Thêm mã lớp học"});
+                return;
+
+              }
+            const invalidQuestions = exam.questions.filter((question, index) => {
+                if (!question.question || !question.answers || question.answers.length === 0) {
+                  notification.error( { message:`Câu hỏi ${index + 1} không được để trống câu hỏi hoặc đáp án`});
+                  return true;
+                }
+          
+                const invalidAnswers = question.answers.filter(answer => !answer.answer || answer.correct === undefined);
+                if (invalidAnswers.length > 0) {
+                    notification.error( {message:`Câu hỏi ${index + 1} có câu trả lời không hợp lệ`});
+                  return true;
+                }
+                const hasCorrectAnswer = question.answers.some(answer => answer.correct === true);
+                if(!hasCorrectAnswer){
+                    notification.error( {message:`Thêm đáp án vào câu hỏi ${index + 1}`});
+                    return true;
+                }
+
+          
+                return false;
+              });
+          
+              if (invalidQuestions.length > 0) {
+                return;
+              }
+
+              let request  ;
+              if(examRequest.examPermissionType==="Người được cấp quyền"  ){
+                const { classCode, ...examRequestWithoutExecutorEmail } = examRequest;
+                request = examRequestWithoutExecutorEmail;
+
+              }else  if(examRequest.examPermissionType==="Thành viên lớp học" ){
+                const { executorEmail, ...examRequestWithoutClassCode } = examRequest;
+                request = examRequestWithoutClassCode;
+
+              }else{
+                // const { executorEmails, ...examRequestWithoutClassCode } = examRequest;
+                // request = examRequestWithoutClassCode;
+                request = examRequest;
+              }
+              setLoading(true);
+           const response = await callCreateExam({...request,questions:exam.questions});
             // console.log({...examRequest,questions:exam.questions})
             notification.info({message:response.message})
-            console.log("repsonse exam",response.message)
-            
+            if(response.success){
+                dispatch(resetExam());
+                console.log("repsonse exam",response.message)
+                
+            }
+  
         } catch (error) {
             console.log(error)
 
+        }finally{
+            setLoading(false)
         }
     }
     const updateExplainText = (newText) => {
@@ -261,8 +248,21 @@ const examRequest = useSelector(state=>state.examCreating);
         });
     };
     
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        return () => {
+
+    
+          dispatch(updateQuestions(exam.questions));
+        };
+      }, [dispatch]);
+    
     return (
+        <Spin  spinning={loading}>
+
         <Layout style={{ minHeight: "100vh", padding: "20px", backgroundColor: "#f4f6f9" }}>
+
             {/* Sidebar bên trái */}
             <Sider width={250} style={styles.sidebar}>
                 <h3>Danh mục câu hỏi</h3>
@@ -375,7 +375,12 @@ const examRequest = useSelector(state=>state.examCreating);
                             const updatedAnswers = updatedQuestions[selectedQuestion].answers.map((a,i) =>
                             i === index ? { ...a, correct: !a.correct } : a
                             );
-                            updatedQuestions[selectedQuestion].answers = updatedAnswers;
+                            const updatedQuestion = { 
+                                ...updatedQuestions[selectedQuestion], 
+                                answers: updatedAnswers  // Cập nhật lại answers
+                              };
+                              updatedQuestions[selectedQuestion] = updatedQuestion;
+
                 
                             return { ...prevExam, questions: updatedQuestions };
                         });
@@ -428,6 +433,7 @@ const examRequest = useSelector(state=>state.examCreating);
                 </Content>
             </Layout>
         </Layout>
+        </Spin>
     );
 };
 

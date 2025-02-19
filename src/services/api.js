@@ -131,3 +131,19 @@ export const callCreateExamWithFile = (fileType,formData) => {
 export const callCreateExam = (request) => {
     return baseApiCall(`/api/exam/create`, 'post', request, true);
 };
+export const callListExam = (request) => {
+    return baseApiCall(`/api/exam/list`, 'post', request, true);
+};
+export const callDetailExam = (id) => {
+    console.log("hí hó")
+    return baseApiCall(`/api/exam/${id}`, 'get',{}, true);
+};
+export const callStartExam = (id) => {
+    return baseApiCall(`/api/exam/${id}/start-exam`, 'post',{}, true);
+};
+export const callSubmitExam = (examId,historyId,payload) => {
+    return baseApiCall(`/api/exam/${examId}/submit-exam/${historyId}`, 'post',payload, true);
+};
+export const callExamResults = (payload) => {
+    return baseApiCall(`/api/exam/results`, 'post',payload, true);
+};

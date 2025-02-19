@@ -1,10 +1,13 @@
 import React from "react";
 import { Card, Button } from "antd";
 import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const Item = ({ item, likes, dislikes, handleLike, handleDislike }) => {
+    const navigate = useNavigate();
     return (
         <Card
+        onClick={(e)=>{navigate(`/de-thi/${item.id}`)}}
             hoverable
             cover={
                 <img
@@ -16,20 +19,20 @@ const Item = ({ item, likes, dislikes, handleLike, handleDislike }) => {
             actions={[
                 <span onClick={() => handleLike(item.id)} style={{ cursor: "pointer" }}>
                     <LikeOutlined />
-                    <span style={{ marginLeft: 8 }}>{likes[item.id] || 0}</span>
+                    <span style={{ marginLeft: 8 }}>{item.likes || 0}</span>
                 </span>,
                 <span onClick={() => handleDislike(item.id)} style={{ cursor: "pointer" }}>
                     <DislikeOutlined />
-                    <span style={{ marginLeft: 8 }}>{dislikes[item.id] || 0}</span>
+                    <span style={{ marginLeft: 8 }}>{item.unlike || 0}</span>
                 </span>,
             ]}
         >
             <Card.Meta
-                title={item.title}
+                title={item.examName}
                 description={
                     <div>
-                        <p>Ngày thi: {item.date}</p>
-                        <p>Câu hỏi: {item.stats.questions}</p>
+                        {/* <p>Ngày thi: {item.date}</p> */}
+                        <p>Câu hỏi: {item.totalQuestion}</p>
                     </div>
                 }
             />

@@ -14,3 +14,10 @@
 .main-content.sidebar-collapsed {
     margin-left: 80px; /* Sidebar width when collapsed */
 }
+/* .ant-spin-nested-loading {
+    width: 100%;
+} */
+ .full-width-spin {
+  width: 100%; /* Chiều rộng bằng với cha */
+
+}
