@@ -62,6 +62,10 @@ export const callIPNHanlde = (param) => {
     return baseApiCall(`/api/payment/vnpay_ipn?${param}`, 'post', {}, true);
 }
 
+export const callMomoIPNHanlde = (param) => {
+    return baseApiCall(`/api/payment/momo_ipn?${param}`, 'post', {}, true);
+}
+
 export const callForgotPassword = (email) => {
     return baseApiCall('/api/auth/forget-password', 'post', {email}, false);
 };
@@ -84,6 +88,10 @@ export const callCreateClass = (className) => {
     return baseApiCall('/api/classes/create', 'post', {className}, true);
 }
 
+export const callUpdateClass = (classId, className) => {
+    return baseApiCall(`/api/classes/${classId}/update`, 'post', {className}, true);
+}
+
 export const callUserDetail = () => {
     return baseApiCall('/api/users/me', 'get', {}, true);
 };
@@ -96,8 +104,8 @@ export const callChangePassword = (userId, request) => {
     return baseApiCall(`/api/users/${userId}/update-password`, 'post', request, true);
 };
 
-export const callListClass = (searchingKeys, pageNumber, pageSize, typeView) => {
-    return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView}, true);
+export const callListClass = (searchingKeys, pageNumber, pageSize, typeView, sortCriteria) => {
+    return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView, sortCriteria}, true);
 };
 
 export const callListLimitation = (pageNumber, pageSize, searchingKeys, startPrice, endPrice) => {
@@ -111,6 +119,11 @@ export const callLimitationDetail = (limitationId) => {
 export const callDetailClass = ({id}) => {
     return baseApiCall(`/api/classes/id`, 'get', {}, true);
 };
+
+export const callDeleteClass = (classId) => {
+    return baseApiCall(`/api/classes/${classId}/delete`, 'delete', {},true);
+}
+
 export const callCreateExamWithFile = (fileType,formData) => {
     console.log("call ",formData)
     return baseApiCall(`/api/question/detect?fileType=${fileType}`, 'post', formData, true);

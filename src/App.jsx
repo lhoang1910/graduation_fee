@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from "react-router-dom";
 import Header from "./components/Header/index.jsx";
-import Footer from "./components/Footer/index.jsx";
 import SideBar from "./components/Sidebar/index.jsx";
 import Index from "./components/Home/index.jsx";
 import Register from "./pages/register/index.jsx";
@@ -19,9 +18,9 @@ import AdminPage from './pages/admin/AdminPage.jsx';
 import CreatingwithFile from './pages/examcreating/examcreatingwithfile.jsx';
 import ListExam from './components/exam/ListExam/ListExam.jsx';
 import ExamDetail from './components/exam/DetailExam/DetailExam.jsx';
-import ListLimitations from "./components/Limitations/index.jsx";
 import PaymentTmpPage from "./pages/tmp/index.jsx";
 import Limitations from "./components/Limitations/index.jsx";
+import MomoPaymentTmpPage from "./pages/momo/index.jsx";
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -60,7 +59,9 @@ export default function App() {
             errorElement: <NotFound />,
             children: [
                 { index: true, element: <Index /> },
-                { path: "classes", element: <Classes /> },
+                { path: "my-classes", element: <Classes typeView={"CLASS_MEMBER_VIEW"}/> },
+                { path: "created-class", element: <Classes typeView={"AUTHOR_VIEW"}/> },
+                { path: "recent-class", element: <Classes typeView={"RECENT_VIEW"}/> },
                 { path: "quiz", element: <Quiz /> },
                 { path: "profile", element: <Profile /> },
                 { path: "exam", element: <ExamPage /> },
@@ -82,6 +83,7 @@ export default function App() {
         { path: "forgot-password", element: <ForgotPasswordPage /> },
         { path: "change-password", element: <ChangePassword /> },
         { path: "payment-tmp-page", element: <PaymentTmpPage /> },
+        { path: "momo-tmp-page", element: <MomoPaymentTmpPage /> },
     ]);
 
     return (

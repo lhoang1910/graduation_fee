@@ -1,12 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { callBuyLimitation } from "../../../services/api.js";
 import { notification } from "antd";
 import { FaChalkboardTeacher, FaClipboardList, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import "./BuyLimitationModal.css";
 
 const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
-    const navigate = useNavigate();
     const paymentTypes = [
         { name: "VN_PAY", img: "https://cdn-new.topcv.vn/unsafe/150x/https://static.topcv.vn/company_logos/cong-ty-cp-giai-phap-thanh-toan-viet-nam-vnpay-6194ba1fa3d66.jpg" },
         { name: "MOMO", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTj4DcLo3V_-SgkelON0Qsr-D5G2zvYcOtBIg&s" },

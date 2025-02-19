@@ -64,11 +64,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 <FaRegHeart style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học của tôi'}
                             </li>
-                            <li onClick={() => navigate("/recent-classes")}>
+                            <li onClick={() => navigate("/created-class")}>
                                 <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học gần đây'}
                             </li>
-                            <li onClick={() => navigate("/created-classes")}>
+                            <li onClick={() => navigate("/recent-class")}>
                                 <FaClipboardList style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học đã tạo'}
                             </li>

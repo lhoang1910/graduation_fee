@@ -1,173 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Input, DatePicker, Button, Space, Tag, Modal, Form, message } from 'antd';
-import { SearchOutlined, EditOutlined, DeleteOutlined, LinkOutlined, PlusOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import {callListClass, callUserDetail} from "../../services/api.js";
-import CreateClassModel from "./Create/index.jsx";
+import React, { useEffect, useState } from 'react';
+import {callDeleteClass, callListClass} from '../../services/api.js';
+import { FaUsers, FaFileAlt, FaEdit, FaTrash, FaSignInAlt, FaSortUp, FaSortDown, FaPlus } from 'react-icons/fa';
+import './ClassList.css';
+import CreateClassModel from "./Create/Index.jsx";
+import {notification} from "antd";
+import UpdateClassModel from "./Update/Index.jsx";
 
-const { RangePicker } = DatePicker;
-
-const ClassList = () => {
+const ClassList = ({ typeView }) => {
+    const [pageNumber, setPageNumber] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+    const [sortCriteria, setSortCriteria] = useState([]);
+    const [searchingKeys, setSearchingKeys] = useState('');
     const [data, setData] = useState([]);
-    const [pagination, setPagination] = useState({
-        current: 1,
-        pageSize: 10,
-        total: 0,
-    });
-    const [filters, setFilters] = useState({
-        searchingKeys: '',
-        createAtFrom: null,
-        createAtTo: null,
-        updateAtFrom: null,
-        updateAtTo: null,
-    });
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const fetchData = async () => {
-        try {
-            const userResponse = await callUserDetail();
-            const userId = userResponse.data.id;
-
-            const request = {
-                ...filters,
-                userId: userId,
-                pageSize: pagination.pageSize,
-                pageNumber: pagination.current - 1,
-            };
-            const response = await callListClass(filters.searchingKeys, request.pageNumber, request.pageSize, "CLASS_MEMBER_VIEW");
-            if (response && response.data) {
-                console.log('Class List Data:', response.data);
-                setData(response.data || []);
-                setPagination({
-                    ...pagination,
-                    total: response.data.length,
-                });
-            }
-        } catch (error) {
-            console.error('Error fetching class data:', error);
-        }
-    };
+    const [totalPages, setTotalPages] = useState(1);
+    const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+    const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
+    const [selectedClassId, setSelectedClassId] = useState(null);
 
     useEffect(() => {
         fetchData();
-    }, [filters, pagination.current, pagination.pageSize]);
+    }, [typeView, pageNumber, pageSize, sortCriteria, searchingKeys]);
 
-    const handleFilterChange = (key, value) => {
-        setFilters({ ...filters, [key]: value });
+    const fetchData = async () => {
+        const res = await callListClass(searchingKeys, pageNumber, pageSize, typeView, sortCriteria);
+        if (res?.data) {
+            setData(res.data.content || []);
+            setTotalPages(res.data.totalPages || 1);
+        }
     };
 
-    const handleTableChange = (paginationConfig) => {
-        setPagination({
-            ...pagination,
-            current: paginationConfig.current,
-            pageSize: paginationConfig.pageSize,
+    const handleSearch = (e) => {
+        setSearchingKeys(e.target.value);
+        setPageNumber(0);
+    };
+
+    const toggleSort = (key) => {
+        setSortCriteria(prev => {
+            const existing = prev.find(s => s.key === key);
+            if (existing) {
+                return prev.map(s => s.key === key ? { key, asc: !s.asc } : s);
+            }
+            return [...prev, { key, asc: true }];
         });
     };
 
-    const handleCreateClass = () => {
-        setIsModalOpen(true);
+    const getTitle = () => {
+        switch (typeView) {
+            case 'CLASS_MEMBER_VIEW': return 'Danh sách lớp học của tôi';
+            case 'AUTHOR_VIEW': return 'Danh sách lớp học đã tạo';
+            case 'RECENT_VIEW': return 'Lớp học gần đây';
+            default: return 'Danh sách lớp học';
+        }
+    };
+
+    const handleCreateClassSuccess = () => {
+        fetchData();
+    };
+
+    const handleDeleteClass = async (classId) => {
+        if (!classId) {
+            notification.error("Lớp học không tồn tại")
+            return;
+        }
+        const res = await callDeleteClass(classId);
+        if (res?.success){
+            notification.success(res.message)
+            fetchData();
+        } else {
+            notification.error(res.message);
+        }
     }
 
-    const columns = [
-        {
-            title: 'Mã lớp',
-            dataIndex: 'classCode',
-            key: 'classCode',
-            render: (text) => <Tag color="blue">{text}</Tag>,
-        },
-        {
-            title: 'Tên lớp',
-            dataIndex: 'className',
-            key: 'className',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'limitSlot',
-            key: 'limitSlot',
-            render: (value) => (
-                <Space>
-                    <Tag color="green">Thành viên tối đa: {value}</Tag>
-                </Space>
-            ),
-        },
-        {
-            title: 'Người tạo',
-            dataIndex: 'createdByName',
-            key: 'createdByName',
-            render: (text, record) => (
-                <div>
-                    <strong>{text}</strong>
-                    <p style={{ margin: 0 }}>{record.createdByEmail}</p>
-                </div>
-            ),
-        },
-        {
-            title: 'Ngày tạo',
-            dataIndex: 'createAt',
-            key: 'createAt',
-            render: (date) => moment(date).format('DD-MM-YYYY'),
-        },
-        {
-            title: 'Hành động',
-            key: 'actions',
-            render: (_, record) => (
-                <Space>
-                    <Button icon={<EditOutlined />} type="link" />
-                    <Button icon={<DeleteOutlined />} type="link" danger />
-                    <Button icon={<LinkOutlined />} type="primary">
-                        Vào lớp học
-                    </Button>
-                </Space>
-            ),
-        },
-    ];
-
     return (
-        <div>
-            {/* Thanh Filter */}
-            <Space style={{ marginBottom: 16 }}>
-                <Input
-                    placeholder="Tìm kiếm..."
-                    prefix={<SearchOutlined />}
-                    onChange={(e) => handleFilterChange('searchingKeys', e.target.value)}
-                />
-                <RangePicker
-                    placeholder={['Ngày tạo từ', 'Ngày tạo đến']}
-                    onChange={(dates) =>
-                        handleFilterChange('createAtFrom', dates ? dates[0].toISOString() : null) ||
-                        handleFilterChange('createAtTo', dates ? dates[1].toISOString() : null)
-                    }
-                />
-                <RangePicker
-                    placeholder={['Ngày cập nhật từ', 'Ngày cập nhật đến']}
-                    onChange={(dates) =>
-                        handleFilterChange('updateAtFrom', dates ? dates[0].toISOString() : null) ||
-                        handleFilterChange('updateAtTo', dates ? dates[1].toISOString() : null)
-                    }
-                />
-                <Button type="primary" onClick={fetchData}>
-                    Lọc
-                </Button>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleCreateClass}>
-                    Tạo mới lớp học
-                </Button>
-                <CreateClassModel isOpen={isModalOpen} setIsOpen={setIsModalOpen}/>
-            </Space>
-
-            {/* Bảng dữ liệu */}
-            <Table
-                columns={columns}
-                dataSource={data}
-                rowKey="id"
-                pagination={{
-                    current: pagination.current,
-                    pageSize: pagination.pageSize,
-                    total: pagination.total,
-                    showSizeChanger: true,
-                    pageSizeOptions: ['10', '20', '30'],
-                }}
-                onChange={handleTableChange}
-            />
+        <div className="container">
+            <h1>{getTitle()}</h1>
+            <div className="search-container">
+                <select className="page-size-selector" onChange={(e) => setPageSize(Number(e.target.value))}>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                <input type="text" placeholder="Tìm kiếm lớp học..." onChange={handleSearch} className="search-box" />
+                <button className="create-class" onClick={() => setIsOpenCreateModal(true)}><FaPlus /> Tạo lớp</button>
+                <CreateClassModel isOpen={isOpenCreateModal} setIsOpen={setIsOpenCreateModal} onSuccess={handleCreateClassSuccess}/>
+                <UpdateClassModel isOpen={isOpenUpdateModal} setIsOpen={setIsOpenUpdateModal} onSuccess={handleCreateClassSuccess} classId={selectedClassId}/>
+            </div>
+            <div className="sort-container">
+                {['classCode', 'className', 'participationAmount', 'examineAmount'].map(key => {
+                    const sortObj = sortCriteria.find(s => s.key === key);
+                    return (
+                        <div key={key} className={`sort-item ${sortObj ? 'active' : ''}`} onClick={() => toggleSort(key)}>
+                            <span className="sort-label">
+                                {key === 'classCode' ? 'Mã lớp' : key === 'className' ? 'Tên lớp' : key === 'participationAmount' ? 'Số thành viên' : 'Số lượng đề thi'}
+                            </span>
+                            <div className="sort-icons">
+                                <FaSortUp className={`sort-arrow up ${sortObj?.asc ? 'active' : ''}`} />
+                                <FaSortDown className={`sort-arrow down ${sortObj && !sortObj.asc ? 'active' : ''}`} />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+            <br/><br/>
+            <div className="class-list">
+                {data.map((classItem) => (
+                    <div key={classItem.id} className="class-card">
+                        <img src="https://img.freepik.com/free-vector/interior-classroom_1308-26552.jpg" alt="class" />
+                        <h2>{classItem.className}</h2>
+                        <p>Mã lớp: {classItem.classCode}</p>
+                        <p><FaUsers /> {classItem.participationAmount}/{classItem.limitSlot}</p>
+                        <p><FaFileAlt /> {classItem.examineAmount}</p>
+                        <p>Tạo bởi: {classItem.createdByName}</p>
+                        <div className="card-buttons">
+                            <button className="enter-class"><FaSignInAlt /> Vào lớp</button>
+                            <button className="edit-class" onClick={() => {
+                                setSelectedClassId(classItem.id);
+                                setIsOpenUpdateModal(true)}}><FaEdit /> Sửa</button>
+                            <button className="delete-class" onClick={() => handleDeleteClass(classItem.id)}><FaTrash /> Xóa</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className="pagination">
+                <button disabled={pageNumber === 0} onClick={() => setPageNumber(pageNumber - 1)}>Trước</button>
+                <span>{pageNumber + 1} / {totalPages}</span>
+                <button disabled={pageNumber + 1 >= totalPages} onClick={() => setPageNumber(pageNumber + 1)}>Tiếp</button>
+            </div>
         </div>
     );
 };
