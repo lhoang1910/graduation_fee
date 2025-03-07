@@ -23,7 +23,7 @@ const ReportBugModal = ({ isOpen, setIsOpen }) => {
     return (
         <Modal
             title="Báo lỗi & Góp ý"
-            visible={isOpen}
+            open={isOpen}
             onCancel={() => setIsOpen(false)}
             onOk={handleSubmit}
             okText="Gửi"

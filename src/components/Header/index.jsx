@@ -110,7 +110,7 @@ const Header = ({ isSidebarOpen }) => {
 
             {/* Các nút và Avatar */}
             <div className="action-buttons">
-                <button className="report-button">
+                <button className="report-button" onClick={handleReportBug}>
                     <BugReportIcon className="icon" onClick={handleReportBug}/>
                     Báo lỗi
                 </button>
@@ -121,11 +121,11 @@ const Header = ({ isSidebarOpen }) => {
                     <AddBoxIcon className="icon"/>
                     Tạo đề thi
                 </button>
-                <button
-                    className="create-button" onClick={handleLimitationClick}>
-                    <RiVipCrownLine className="icon"/>
-                    <span className="font-medium">{getLimitationViewName()}</span>
-                </button>
+                {/*<button*/}
+                {/*    className="create-button" onClick={handleLimitationClick}>*/}
+                {/*    <RiVipCrownLine className="icon"/>*/}
+                {/*    <span className="font-medium">{getLimitationViewName()}</span>*/}
+                {/*</button>*/}
                 <ServicePackage isOpen={isLimitationModalOpen} setIsOpen={setIsLimitationModalOpen} limitation={limitation}/>
                 <IconButton onClick={handleAvatarClick}>
                     {/* <img
@@ -182,7 +182,10 @@ const Header = ({ isSidebarOpen }) => {
                                     borderRadius: "10px",
                                     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
                                 }}
-                                onClick={() => notification.error({message: "Chức năng tạo dề thi từ AI đang được phát triển"})}
+                                onClick={() => {
+                                    closeModal();
+                                    navigate("/workspace/exams/create-with-file?tab=upload_file_quiz")
+                                }}
                             >
                                 <FileTextOutlined style={{fontSize: "40px", color: "#722ed1"}}/>
                                 <Title level={4} style={{marginTop: "10px"}}>

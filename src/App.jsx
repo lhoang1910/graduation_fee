@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import {createBrowserRouter, RouterProvider, Outlet, useNavigate} from "react-router-dom";
 import Header from "./components/Header/index.jsx";
 import SideBar from "./components/Sidebar/index.jsx";
 import Index from "./components/Home/index.jsx";
@@ -9,7 +9,6 @@ import LoginPage from "./pages/login/index.jsx";
 import Quiz from "./components/quiz/index.jsx";
 import './index.css';
 import Profile from "./components/Profile/index.jsx";
-import Classes from "./components/Classes/index.jsx";
 import ExamPage from './pages/exam/index.jsx';
 import ExamCreating from './components/ExamCreating/index.jsx';
 import ForgotPasswordPage from './pages/forgotpassword/index.jsx';
@@ -22,6 +21,8 @@ import PaymentTmpPage from "./pages/tmp/index.jsx";
 import Limitations from "./components/Limitations/index.jsx";
 import MomoPaymentTmpPage from "./pages/momo/index.jsx";
 import ExamResults from './pages/examresult/index.jsx';
+import ClassList from "./components/Classes/index.jsx";
+import ClassDetail from "./components/Classes/Detail/index.jsx";
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -56,40 +57,42 @@ export default function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element: <Layout />,
-            errorElement: <NotFound />,
+            element: <Layout/>,
+            errorElement: <NotFound/>,
             children: [
-                { index: true, element: <Index /> },
-                { path: "my-classes", element: <Classes typeView={"CLASS_MEMBER_VIEW"}/> },
-                { path: "created-class", element: <Classes typeView={"AUTHOR_VIEW"}/> },
-                { path: "recent-class", element: <Classes typeView={"RECENT_VIEW"}/> },
-                { path: "quiz", element: <Quiz /> },
-                { path: "profile", element: <Profile /> },
-                { path: "quiz/:id", element: <ExamPage /> },
-                { path: "examcreating", element: <ExamCreating /> },
-                { path: "admin", element: <AdminPage /> },
-                {path:"workspace/exams/create-with-file",element:<CreatingwithFile></CreatingwithFile>},
-                {path:"workspace/exams/news",element:<Quiz />},
-                {path:"workspace/exams/list",element:<ListExam />},
-                {path:"quiz/exam/search",element:<ListExam />},
-                {path:"quiz/exam/result",element:< ExamResults/>},
-                {path:"de-thi/:id",element:<ExamDetail />},
-                { path: "limitations", element: <Limitations /> },
+                {index: true, element: <Index/>},
+                {path: "class/member-view", element: <ClassList/>},
+                {path: "class/author-view", element: <ClassList/>},
+                {path: "class/recent-view", element: <ClassList/>},
+                {path: "class/:id", element: <ClassDetail />},
+                {path: "quiz", element: <Quiz/>},
+                {path: "profile", element: <Profile/>},
+                {path: "quiz/:id", element: <ExamPage/>},
+                {path: "examcreating", element: <ExamCreating/>},
+                {path: "admin", element: <AdminPage/>},
+                {path: "workspace/exams/create-with-file", element: <CreatingwithFile></CreatingwithFile>},
+                {path: "workspace/exams/create-with-ai", element: <CreatingwithFile></CreatingwithFile>},
+                {path: "workspace/exams/news", element: <Quiz/>},
+                {path: "workspace/exams/list", element: <ListExam/>},
+                {path: "quiz/exam/search", element: <ListExam/>},
+                {path: "quiz/exam/result", element: < ExamResults/>},
+                {path: "de-thi/:id", element: <ExamDetail/>},
+                {path: "limitations", element: <Limitations/>},
             ],
         },
         {
             path: "*",
-            element: <NotFound />,
+            element: <NotFound/>,
         },
-        { path: "login", element: <LoginPage /> },
-        { path: "register", element: <Register /> },
-        { path: "forgot-password", element: <ForgotPasswordPage /> },
-        { path: "change-password", element: <ChangePassword /> },
-        { path: "payment-tmp-page", element: <PaymentTmpPage /> },
-        { path: "momo-tmp-page", element: <MomoPaymentTmpPage /> },
+        {path: "login", element: <LoginPage/>},
+        {path: "register", element: <Register/>},
+        {path: "forgot-password", element: <ForgotPasswordPage/>},
+        {path: "change-password", element: <ChangePassword/>},
+        {path: "payment-tmp-page", element: <PaymentTmpPage/>},
+        {path: "momo-tmp-page", element: <MomoPaymentTmpPage/>},
     ]);
 
     return (
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
     );
 }

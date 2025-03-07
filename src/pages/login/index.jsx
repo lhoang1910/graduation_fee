@@ -109,19 +109,22 @@ function LoginPage() {
                         <span>Bạn chưa có tài khoản? </span>
                         <a onClick={hasNotAcc} style={styles.registerLink}>Đăng Kí ngay</a>
                     </div>
-                    <Spin style={{width:"100%"}}  wrapperClassName="full-width-spin" spinning={loading}>
+                    <Spin style={{width: "100%"}} wrapperClassName="full-width-spin" spinning={loading}>
 
                         <button
-                        onClick={handleLogin}
-                        style={{
-                            ...styles.loginButton,
-                            backgroundColor: isLoginEnabled ? '#5F4CCE' : '#ccc',
-                            cursor: isLoginEnabled ? 'pointer' : 'not-allowed',
-                        }}
-                        disabled={!isLoginEnabled}
-                    >
-                        Đăng nhập
-                    </button>
+                            onClick={handleLogin}
+                            style={{
+                                ...styles.loginButton,
+                                backgroundColor: isLoginEnabled ? '#5F4CCE' : '#ccc',
+                                cursor: isLoginEnabled ? 'pointer' : 'not-allowed',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            disabled={!isLoginEnabled}
+                        >
+                            Đăng nhập
+                        </button>
                     </Spin>
 
                 </div>
@@ -132,7 +135,7 @@ function LoginPage() {
 }
 
 const styles = {
-    hover : {
+    hover: {
         cursor: 'pointer'
     },
     container: {

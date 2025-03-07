@@ -89,6 +89,9 @@ function ForgotPasswordPage() {
                             ...styles.loginButton,
                             backgroundColor: isLoginEnabled ? '#5F4CCE' : '#ccc',
                             cursor: isLoginEnabled ? 'pointer' : 'not-allowed',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
                         }}
                         disabled={!isLoginEnabled}
                     >

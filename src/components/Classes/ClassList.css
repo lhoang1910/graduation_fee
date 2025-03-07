@@ -56,6 +56,7 @@ h1 {
     display: flex;
     align-items: center;
     gap: 50px;
+    cursor: pointer;
 }
 
 .sort-icons {
@@ -64,29 +65,47 @@ h1 {
     gap: 0;
 }
 
-.sort-item .sort-arrow {
+.sort-arrow {
     opacity: 0.3;
     transition: opacity 0.3s ease, color 0.3s ease;
 }
 
-.sort-item.active .sort-arrow.up {
+.sort-item.active .sort-arrow {
     opacity: 1;
+}
+
+.sort-item .sort-arrow.up {
+    color: #aaa;
+}
+
+.sort-item .sort-arrow.down {
+    color: #aaa;
+}
+
+.sort-item.active .sort-arrow.up {
     color: black;
 }
 
 .sort-item.active .sort-arrow.down {
-    opacity: 1;
-    color: #aaa;
-}
-
-.sort-item.descending .sort-arrow.up {
-    opacity: 1;
-    color: #aaa;
-}
-
-.sort-item.descending .sort-arrow.down {
-    opacity: 1;
     color: black;
+}
+
+.sort-item.active:not(.descending) .sort-arrow.up {
+    color: black;
+    opacity: 1;
+}
+
+.sort-item.active:not(.descending) .sort-arrow.down {
+    color: #aaa;
+}
+
+.sort-item.active.descending .sort-arrow.down {
+    color: black;
+    opacity: 1;
+}
+
+.sort-item.active.descending .sort-arrow.up {
+    color: #aaa;
 }
 
 .class-list {
@@ -102,7 +121,7 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
     text-align: center;
-    width: 100%;
+    width: 90%;
 }
 
 .class-card:hover {

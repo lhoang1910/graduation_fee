@@ -9,11 +9,17 @@ const CreateClassModel = ({ isOpen, setIsOpen, onSuccess}) => {
     const handleSubmit = async () => {
         const resUserDetail = await callCreateClass(className);
         if (resUserDetail?.success) {
-            notification.success("Tạo lớp học thành công");
+            notification.success({
+                message: "Thành công",
+                description: resUserDetail?.message
+            });
             setIsOpen(false);
             onSuccess()
         } else {
-            notification.error(resUserDetail?.message);
+            notification.error({
+                message: "Thất bại",
+                description: resUserDetail?.message
+            });
         }
     };
 

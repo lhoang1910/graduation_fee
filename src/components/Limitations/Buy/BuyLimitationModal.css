@@ -121,3 +121,45 @@
 .btn-close:hover {
     background: #c82333;
 }
+
+.price-section {
+    margin-top: 10px;
+}
+
+.old-price {
+    font-size: 14px;
+    text-decoration: line-through;
+    color: #999;
+}
+
+.discounted-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4d4f;
+    animation: blink 1s infinite alternate;
+}
+
+.final-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.sale-badge {
+    background-color: #ff4d4f;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+
+@keyframes blink {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.8;
+    }
+}

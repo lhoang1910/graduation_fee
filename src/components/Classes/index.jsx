@@ -1,131 +1,125 @@
 import React, { useEffect, useState } from 'react';
-import {callDeleteClass, callListClass} from '../../services/api.js';
-import { FaUsers, FaFileAlt, FaEdit, FaTrash, FaSignInAlt, FaSortUp, FaSortDown, FaPlus } from 'react-icons/fa';
+import { callListClass } from '../../services/api.js';
+import { FaPlus } from 'react-icons/fa';
 import './ClassList.css';
 import CreateClassModel from "./Create/Index.jsx";
-import {notification} from "antd";
-import UpdateClassModel from "./Update/Index.jsx";
+import { Empty, Input, Pagination, Row, Space, Spin } from "antd";
+import ClassCards from "./ClassItem/Index.jsx";
+import { SearchOutlined } from "@ant-design/icons";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 
-const ClassList = ({ typeView }) => {
-    const [pageNumber, setPageNumber] = useState(0);
+const ClassList = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
+
     const [pageSize, setPageSize] = useState(10);
     const [sortCriteria, setSortCriteria] = useState([]);
     const [searchingKeys, setSearchingKeys] = useState('');
-    const [data, setData] = useState([]);
-    const [totalPages, setTotalPages] = useState(1);
+    const [data, setData] = useState({ content: [], totalElements: 0 });
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
-    const [isOpenUpdateModal, setIsOpenUpdateModal] = useState(false);
-    const [selectedClassId, setSelectedClassId] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const [currentPage, setCurrentPage] = useState(() => {
+        const page = parseInt(searchParams.get("page"));
+        return isNaN(page) ? 1 : page;
+    });
+
+    const [typeView, setTypeView] = useState(() => {
+        const param = location.pathname;
+        if (param.includes("/member-view")) return 'CLASS_MEMBER_VIEW';
+        if (param.includes("/author-view")) return 'AUTHOR_VIEW';
+        return 'RECENT_VIEW';
+    });
+
+    useEffect(() => {
+        const param = location.pathname;
+        if (param.includes("/member-view")) {
+            setTypeView('CLASS_MEMBER_VIEW');
+        } else if (param.includes("/author-view")) {
+            setTypeView('AUTHOR_VIEW');
+        } else {
+            setTypeView('RECENT_VIEW');
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         fetchData();
-    }, [typeView, pageNumber, pageSize, sortCriteria, searchingKeys]);
+    }, [typeView, currentPage, pageSize, sortCriteria, searchingKeys]);
 
     const fetchData = async () => {
-        const res = await callListClass(searchingKeys, pageNumber, pageSize, typeView, sortCriteria);
-        if (res?.data) {
-            setData(res.data.content || []);
-            setTotalPages(res.data.totalPages || 1);
-        }
-    };
-
-    const handleSearch = (e) => {
-        setSearchingKeys(e.target.value);
-        setPageNumber(0);
-    };
-
-    const toggleSort = (key) => {
-        setSortCriteria(prev => {
-            const existing = prev.find(s => s.key === key);
-            if (existing) {
-                return prev.map(s => s.key === key ? { key, asc: !s.asc } : s);
+        try {
+            setLoading(true);
+            const res = await callListClass(searchingKeys, currentPage - 1, pageSize, typeView, sortCriteria);
+            if (res?.data) {
+                setData(res.data);
+            } else {
+                setData({ content: [], totalElements: 0 });
             }
-            return [...prev, { key, asc: true }];
-        });
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getTitle = () => {
         switch (typeView) {
-            case 'CLASS_MEMBER_VIEW': return 'Danh sách lớp học của tôi';
-            case 'AUTHOR_VIEW': return 'Danh sách lớp học đã tạo';
-            case 'RECENT_VIEW': return 'Lớp học gần đây';
-            default: return 'Danh sách lớp học';
+            case 'CLASS_MEMBER_VIEW':
+                return 'Danh sách lớp học của tôi';
+            case 'AUTHOR_VIEW':
+                return 'Danh sách lớp học đã tạo';
+            case 'RECENT_VIEW':
+                return 'Lớp học gần đây';
+            default:
+                return 'Danh sách lớp học';
         }
     };
 
     const handleCreateClassSuccess = () => {
+        setCurrentPage(1);
+        setSearchParams({ page: 1 });
         fetchData();
     };
 
-    const handleDeleteClass = async (classId) => {
-        if (!classId) {
-            notification.error("Lớp học không tồn tại")
-            return;
-        }
-        const res = await callDeleteClass(classId);
-        if (res?.success){
-            notification.success(res.message)
-            fetchData();
-        } else {
-            notification.error(res.message);
-        }
-    }
-
     return (
-        <div className="container">
-            <h1>{getTitle()}</h1>
-            <div className="search-container">
-                <select className="page-size-selector" onChange={(e) => setPageSize(Number(e.target.value))}>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                </select>
-                <input type="text" placeholder="Tìm kiếm lớp học..." onChange={handleSearch} className="search-box" />
-                <button className="create-class" onClick={() => setIsOpenCreateModal(true)}><FaPlus /> Tạo lớp</button>
-                <CreateClassModel isOpen={isOpenCreateModal} setIsOpen={setIsOpenCreateModal} onSuccess={handleCreateClassSuccess}/>
-                <UpdateClassModel isOpen={isOpenUpdateModal} setIsOpen={setIsOpenUpdateModal} onSuccess={handleCreateClassSuccess} classId={selectedClassId}/>
-            </div>
-            <div className="sort-container">
-                {['classCode', 'className', 'participationAmount', 'examineAmount'].map(key => {
-                    const sortObj = sortCriteria.find(s => s.key === key);
-                    return (
-                        <div key={key} className={`sort-item ${sortObj ? 'active' : ''}`} onClick={() => toggleSort(key)}>
-                            <span className="sort-label">
-                                {key === 'classCode' ? 'Mã lớp' : key === 'className' ? 'Tên lớp' : key === 'participationAmount' ? 'Số thành viên' : 'Số lượng đề thi'}
-                            </span>
-                            <div className="sort-icons">
-                                <FaSortUp className={`sort-arrow up ${sortObj?.asc ? 'active' : ''}`} />
-                                <FaSortDown className={`sort-arrow down ${sortObj && !sortObj.asc ? 'active' : ''}`} />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            <br/><br/>
-            <div className="class-list">
-                {data.map((classItem) => (
-                    <div key={classItem.id} className="class-card">
-                        <img src="https://img.freepik.com/free-vector/interior-classroom_1308-26552.jpg" alt="class" />
-                        <h2>{classItem.className}</h2>
-                        <p>Mã lớp: {classItem.classCode}</p>
-                        <p><FaUsers /> {classItem.participationAmount}/{classItem.limitSlot}</p>
-                        <p><FaFileAlt /> {classItem.examineAmount}</p>
-                        <p>Tạo bởi: {classItem.createdByName}</p>
-                        <div className="card-buttons">
-                            <button className="enter-class"><FaSignInAlt /> Vào lớp</button>
-                            <button className="edit-class" onClick={() => {
-                                setSelectedClassId(classItem.id);
-                                setIsOpenUpdateModal(true)}}><FaEdit /> Sửa</button>
-                            <button className="delete-class" onClick={() => handleDeleteClass(classItem.id)}><FaTrash /> Xóa</button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            <div className="pagination">
-                <button disabled={pageNumber === 0} onClick={() => setPageNumber(pageNumber - 1)}>Trước</button>
-                <span>{pageNumber + 1} / {totalPages}</span>
-                <button disabled={pageNumber + 1 >= totalPages} onClick={() => setPageNumber(pageNumber + 1)}>Tiếp</button>
-            </div>
+        <div style={{ padding: "20px" }}>
+            <Spin align="center" gap="middle" size="large" spinning={loading}>
+                <Space direction="vertical" style={{ width: "100%" }}>
+                    <Space style={{ justifyContent: "space-between", width: "100%" }}>
+                        <h2>{getTitle()}</h2>
+                        <Input
+                            placeholder="Nhập từ khóa tìm kiếm..."
+                            prefix={<SearchOutlined />}
+                            style={{ width: "300px" }}
+                            value={searchingKeys}
+                            onChange={(e) => setSearchingKeys(e.target.value)}
+                        />
+                        <button className="create-class" onClick={() => setIsOpenCreateModal(true)}>
+                            <FaPlus /> Tạo lớp
+                        </button>
+                        <CreateClassModel
+                            isOpen={isOpenCreateModal}
+                            setIsOpen={setIsOpenCreateModal}
+                            onSuccess={handleCreateClassSuccess}
+                        />
+                    </Space>
+                </Space>
+                <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+                    <ClassCards classes={data?.content} fetchData={fetchData} />
+                </Row>
+                {(data?.content?.length === 0 && !loading) && <Empty description="Không thấy lớp học" />}
+                <Pagination
+                    style={{ textAlign: "center", marginTop: "20px" }}
+                    current={currentPage}
+                    pageSize={8}
+                    total={data?.totalElements}
+                    onChange={(page) => {
+                        setCurrentPage(page);
+                        setSearchParams({ page: page });
+                    }}
+                />
+            </Spin>
         </div>
     );
 };

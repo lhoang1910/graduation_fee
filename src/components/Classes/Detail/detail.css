@@ -1,0 +1,70 @@
+.container {
+    /*width: 100%;*/
+    margin: auto;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.logo {
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.tabs {
+    display: flex;
+    background: white;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.tabs button {
+    font-size: 16px;
+}
+
+.active-tab {
+    font-weight: bold;
+    border-bottom: 2px solid #1890ff;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.add-btn {
+    background: linear-gradient(to right, #ff66b2, #a64dff);
+    border: none;
+    color: white;
+}
+
+.add-btn:hover {
+    opacity: 0.9;
+}
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.pagination {
+    margin: 0 10px;
+}

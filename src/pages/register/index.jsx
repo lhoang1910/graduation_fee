@@ -335,6 +335,9 @@ const mailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
                     ...styles.loginButton,
                     backgroundColor: isRegisterEnabled ? '#5F4CCE' : '#ccc',
                     cursor: isRegisterEnabled ? 'pointer' : 'not-allowed',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                 }}
                 disabled={!isRegisterEnabled}
             >

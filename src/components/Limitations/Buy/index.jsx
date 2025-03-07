@@ -3,6 +3,7 @@ import { callBuyLimitation } from "../../../services/api.js";
 import { notification } from "antd";
 import { FaChalkboardTeacher, FaClipboardList, FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import "./BuyLimitationModal.css";
+import {RiAiGenerate} from "react-icons/ri";
 
 const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
     const paymentTypes = [
@@ -11,14 +12,13 @@ const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
         { name: "ZALO_PAY", img: "https://img.utdstc.com/icon/653/fdd/653fdd44e6ee33b689f8dfe18ec741c75d8e25230adab2588d7e107847efcc68:200" },
     ];
 
-    const [monthAmount, setMonthAmount] = useState(1);
+    const [amount, setAmount] = useState(1);
     const [paymentType, setPaymentType] = useState("VN_PAY");
 
     const handleBuy = async () => {
-        const res = await callBuyLimitation(limitation.id, monthAmount, paymentType);
+        const res = await callBuyLimitation(limitation.id, limitation.type, amount, paymentType);
         if (res?.success){
-            // notification.success(res.message)
-            window.location.href = res?.data;
+            window.location.href = paymentType !== "MOMO" ? res?.data : res?.data?.payUrl;
         } else notification.error(res.message);
         setIsOpen(false);
     };
@@ -30,20 +30,45 @@ const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
             <div className="modal-container">
                 <h2 className="modal-title">Mua gói giới hạn</h2>
                 <div className="modal-content">
-                    <h3>{limitation.limitationName} - {limitation.limitationCode}</h3>
-                    <p><FaChalkboardTeacher /> Số lần tạo lớp tối đa: {limitation.createClass} lần</p>
-                    <p><FaClipboardList /> Số lần tạo đề thi tối đa: {limitation.createExam} lần</p>
-                    <p><FaUsers /> Số thành viên tối đa / 1 lớp: {limitation.maxMemberPerClass} thành viên</p>
-                    <p><FaMoneyBillWave /> Giá: {limitation.price.toLocaleString()} VND / tháng</p>
+                    <h3>{limitation.code} - {limitation.name}</h3>
+
+                    {limitation.createClass > 0 && (<p><FaChalkboardTeacher/> Tạo lớp: {limitation.createClass} lượt</p>)}
+                    {limitation.createExamNormally > 0 && (
+                        <p><FaClipboardList/> Tạo đề thi (Thủ công và Nhập từ file): {limitation.createExamNormally} lượt</p>
+                    )}
+                    {limitation.createExamByAI > 0 && (
+                        <p><RiAiGenerate/> Tạo đề thi Bằng AI: {limitation.createExamByAI} lượt</p>
+                    )}
+                    {limitation.memberPerClass > 0 && (
+                        <p><FaUsers/> Giới hạn thành viên/lớp: +{limitation.memberPerClass} thành viên</p>
+                    )}
+
+                    <div className="price-section">
+                        {limitation.salePercentage > 0 ? (
+                            <>
+                                <p className="old-price">
+                                    <FaMoneyBillWave/> {limitation.price.toLocaleString()} VND
+                                </p>
+                                <p className="discounted-price">
+                                    <FaMoneyBillWave/> {Math.round(limitation.price - limitation.price * (limitation.salePercentage / 100)).toLocaleString()} VND
+                                    <span className="sale-badge"> -{limitation.salePercentage}%</span>
+                                </p>
+                            </>
+                        ) : (
+                            <p className="final-price">
+                                <FaMoneyBillWave/> {limitation.price.toLocaleString()} VND
+                            </p>
+                        )}
+                    </div>
 
                     <div className="form-group">
-                        <label htmlFor="monthAmount">Số tháng:</label>
+                        <label htmlFor="monthAmount">Số lượng:</label>
                         <input
                             type="number"
                             id="monthAmount"
                             min="1"
-                            value={monthAmount}
-                            onChange={(e) => setMonthAmount(Math.max(1, parseInt(e.target.value) || 1))}
+                            value={amount}
+                            onChange={(e) => setAmount(Math.max(1, parseInt(e.target.value) || 1))}
                         />
                     </div>
 
@@ -56,14 +81,14 @@ const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
                                     className={`payment-option ${paymentType === type.name ? "selected" : ""}`}
                                     onClick={() => setPaymentType(type.name)}
                                 >
-                                    <img src={type.img} alt={type.name} />
+                                    <img src={type.img} alt={type.name}/>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     <div className="total-amount">
-                        Tổng tiền: <span>{(limitation.price * monthAmount).toLocaleString()} VND</span>
+                        Tổng tiền: <span>{((limitation.price - limitation.price * (limitation.salePercentage / 100)) * amount).toLocaleString()} VND</span>
                     </div>
 
                     <div className="modal-actions">

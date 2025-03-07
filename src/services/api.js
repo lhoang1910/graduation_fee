@@ -46,8 +46,8 @@ export const baseApiCall = async (url, method, payload = {}, secure = false) => 
     }
 };
 
-export const callBuyLimitation = (limitationId, monthAmount, paymentType) => {
-    return baseApiCall(`/api/limitations/buy/${limitationId}`, 'post', {monthAmount, paymentType},true)
+export const callBuyLimitation = (limitationId, servicePackageType, amount, paymentType) => {
+    return baseApiCall(`/api/limitations/buy/${limitationId}`, 'post', {servicePackageType, amount, paymentType},true)
 }
 
 export const callCurrentUserDashboard = () => {
@@ -59,11 +59,11 @@ export const callCurrentUserLimitation = () => {
 }
 
 export const callIPNHanlde = (param) => {
-    return baseApiCall(`/api/payment/vnpay_ipn?${param}`, 'post', {}, true);
+    return baseApiCall(`/api/payment/vnpay_ipn?${param}`, 'get', {}, true);
 }
 
 export const callMomoIPNHanlde = (param) => {
-    return baseApiCall(`/api/payment/momo_ipn?${param}`, 'post', {}, true);
+    return baseApiCall(`/api/payment/momo_ipn?${param}`, 'get', {}, true);
 }
 
 export const callForgotPassword = (email) => {
@@ -108,16 +108,16 @@ export const callListClass = (searchingKeys, pageNumber, pageSize, typeView, sor
     return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView, sortCriteria}, true);
 };
 
-export const callListLimitation = (pageNumber, pageSize, searchingKeys, startPrice, endPrice) => {
-    return baseApiCall(`/api/limitations/all`, 'post', {pageNumber, pageSize, searchingKeys, startPrice, endPrice}, true);
+export const callListLimitation = (pageNumber, pageSize, searchingKeys, startPrice, endPrice, type) => {
+    return baseApiCall(`/api/limitations/all`, 'post', {pageNumber, pageSize, searchingKeys, startPrice, endPrice, type}, true);
 }
 
 export const callLimitationDetail = (limitationId) => {
     return baseApiCall(`/api/limitations/${limitationId}`, 'get', {},true);
 }
 
-export const callDetailClass = ({id}) => {
-    return baseApiCall(`/api/classes/id`, 'get', {}, true);
+export const callDetailClass = (id) => {
+    return baseApiCall(`/api/classes/${id}`, 'get', {}, true);
 };
 
 export const callDeleteClass = (classId) => {
@@ -147,3 +147,10 @@ export const callSubmitExam = (examId,historyId,payload) => {
 export const callExamResults = (payload) => {
     return baseApiCall(`/api/exam/results`, 'post',payload, true);
 };
+export const callUserDoExamResult = (payload) => {
+    return baseApiCall(`/api/exam/exam-results`, 'post', payload, true);
+}
+
+export const callALlUsers = (payload) => {
+    return baseApiCall(`/api/users/all`, 'post', payload, true);
+}

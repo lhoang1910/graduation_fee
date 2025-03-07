@@ -9,11 +9,17 @@ const UpdateClassModel = ({ isOpen, setIsOpen, onSuccess, classId}) => {
     const handleSubmit = async () => {
         const resUserDetail = await callUpdateClass(classId, className);
         if (resUserDetail?.success) {
-            notification.success("Cập nhật lớp học thành công");
+            notification.success({
+                message: "Thành công",
+                description: "Cập nhật lớp học thành công"
+            });
             setIsOpen(false);
             onSuccess()
         } else {
-            notification.error(resUserDetail?.message);
+            notification.error({
+                message: "Lỗi cập nhật lớp học",
+                description: resUserDetail?.message || "Có lỗi xảy ra"
+            });
         }
     };
 

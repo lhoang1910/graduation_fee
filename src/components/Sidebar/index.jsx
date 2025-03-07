@@ -13,7 +13,7 @@ import {
     FaUser,
     FaCode
 } from "react-icons/fa";
-import {MdAssignment} from "react-icons/md";
+import {MdAssignment, MdExplore} from "react-icons/md";
 import {SlArrowLeft, SlArrowRight} from "react-icons/sl";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -60,15 +60,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     </div>
                     {isClassOpen && isOpen && (
                         <ul className="submenu">
-                            <li onClick={() => navigate("/my-classes")}>
+                            <li onClick={() => navigate("/class/member-view")}>
                                 <FaRegHeart style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học của tôi'}
                             </li>
-                            <li onClick={() => navigate("/created-class")}>
+                            <li onClick={() => navigate("/class/recent-view")}>
                                 <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học gần đây'}
                             </li>
-                            <li onClick={() => navigate("/recent-class")}>
+                            <li onClick={() => navigate("/class/author-view")}>
                                 <FaClipboardList style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học đã tạo'}
                             </li>
@@ -89,8 +89,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     {isExamOpen && isOpen && (
                         <ul className="submenu">
                             <li onClick={() => navigate("/quiz/exam/search")}>
-                                <FaRegHeart style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
-                                {isOpen && 'Đề thi của tôi'}
+                                <MdExplore style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Khám phá'}
                             </li>
                             <li onClick={() => navigate("/recent-exams")}>
                                 <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
