@@ -105,7 +105,11 @@ export const callChangePassword = (userId, request) => {
 };
 
 export const callListClass = (searchingKeys, pageNumber, pageSize, typeView, sortCriteria) => {
-    return baseApiCall(`/api/classes/all`, 'post', {searchingKeys, pageNumber, pageSize, typeView, sortCriteria}, true);
+    return baseApiCall(`/api/classes/all`, 'post', {searchingKeys: searchingKeys, pageNumber: pageNumber, pageSize: pageSize, typeView: typeView, sortCriteria: sortCriteria}, true);
+};
+
+export const callAdminListClass = (payload) => {
+    return baseApiCall(`/api/admin/classes`, 'post', payload, true);
 };
 
 export const callListLimitation = (pageNumber, pageSize, searchingKeys, startPrice, endPrice, type) => {
@@ -128,6 +132,11 @@ export const callCreateExamWithFile = (fileType,formData) => {
     console.log("call ",formData)
     return baseApiCall(`/api/question/detect?fileType=${fileType}`, 'post', formData, true);
 };
+
+export const callGenerateExamByAI = (formData) => {
+    return baseApiCall(`/api/question/ai-generate`, "post", formData, true);
+};
+
 export const callCreateExam = (request) => {
     return baseApiCall(`/api/exam/create`, 'post', request, true);
 };
@@ -135,7 +144,6 @@ export const callListExam = (request) => {
     return baseApiCall(`/api/exam/list`, 'post', request, true);
 };
 export const callDetailExam = (id) => {
-    console.log("hí hó")
     return baseApiCall(`/api/exam/${id}`, 'get',{}, true);
 };
 export const callStartExam = (id) => {
@@ -148,9 +156,112 @@ export const callExamResults = (payload) => {
     return baseApiCall(`/api/exam/results`, 'post',payload, true);
 };
 export const callUserDoExamResult = (payload) => {
-    return baseApiCall(`/api/exam/exam-results`, 'post', payload, true);
+    return baseApiCall(`/api/exam/results`, 'post', payload, true);
 }
 
 export const callALlUsers = (payload) => {
     return baseApiCall(`/api/users/all`, 'post', payload, true);
+}
+
+export const callLimitationWallet = (payload) => {
+    return baseApiCall(`/api/limitations/my-wallet`, 'post', payload, true);
+}
+
+export const callFindLimitationByCode = (code) => {
+    return baseApiCall(`/api/limitations/find-by-code/${code}`, 'get', {}, true);
+}
+
+export const callDeleteExam = (id) => {
+    return baseApiCall(`/api/exam/${id}/delete`, 'post', {}, true)
+}
+
+export const callAllCreatedClassNameCode = () => {
+    return baseApiCall(`/api/classes/find-all-created-class-name`, 'get', {}, true)
+}
+
+export const callCheckUserExistByEmail = (email) => {
+    return baseApiCall(`/api/users/exists-by-email/${email}`, 'get', {}, true)
+}
+export const callResultDetail = (id) => {
+    return baseApiCall(`/api/exam/results/${id}`, 'post',{}, true);
+};
+
+export const callResultDashBoard = (payload) => {
+    return baseApiCall(`/api/exam/results/dash-board`, 'post',payload, true);
+};
+
+export const callAddUserToClass = (email, classId) => {
+    return baseApiCall(`/api/classes/${classId}/add`, 'post', {email}, true);
+}
+
+export const callIpnHandle = (id) => {
+    return baseApiCall(`/api/payment/ipn-handler/${id}`, 'get', {}, true);
+}
+
+export const callDeleteClassMember = (classId, email) => {
+    return baseApiCall(`/api/classes/${classId}/remove`, 'post', {email}, true);
+}
+
+export const callGetInvoiceDetail = (id) => {
+    return baseApiCall(`/api/payment/find-by-id/${id}`, 'get', {}, true);
+}
+
+export const callSetRetryExam = (id, payload) => {
+    return baseApiCall(`/api/exams/${id}/retry`, 'post', payload, true);
+}
+
+// Admin
+export const callAdminDashboard = (payload) => {
+    return baseApiCall(`/api/admin/dashboard`, 'post', payload, true)
+}
+
+export const callAdminUserList = (payload) => {
+    return baseApiCall(`/api/admin/users`, 'post', {}, true);
+}
+
+export const callAdminUserDetail = (id) => {
+    return baseApiCall(`/api/admin/users/${id}`, 'get', {}, true);
+}
+
+export const callAdminUpdateUserStatus = (id) => {
+    return baseApiCall(`/api/admin/users/${id}/status`, 'post', {}, true);
+}
+
+export const callAdminExamList = (payload) => {
+    return baseApiCall(`/api/admin/exams`, 'post', payload, true)
+}
+
+export const callAdminQuestionList = (payload) => {
+    return baseApiCall(`/api/admin/questions/all-question`, 'post', payload, true);
+}
+
+export const callAdminLimitationList = (payload) => {
+    return baseApiCall(`/api/admin/limitations`, 'post', payload, true);
+}
+
+export const callAdminCreateLimitation = (payload) => {
+    return baseApiCall(`/api/admin/limitations/create`, 'post', payload, true);
+}
+
+export const callAdminUpdateLimitation = (id, payload) => {
+    return baseApiCall(`/api/admin/limitations/${id}/update`, 'post', payload, true);
+}
+
+export const callAdminDeleteLimitation = (id) => {
+    return baseApiCall(`/api/admin/limitations/delete/{limitationId}`, 'post', {}, true);
+}
+export const callAdminGetLimitationDetail = (id) => {
+    return baseApiCall(`/api/admin/limitations/${id}`, 'post', {}, true);
+}
+
+export const callAdminPaymentList = (payload) => {
+    return baseApiCall(`/api/admin/payment-histories/all`, 'post', payload, true);
+}
+
+export const callAdminReports = (payload) => {
+    return baseApiCall(`/api/admin/reports`, 'post', payload, true);
+}
+
+export const callExecuteReports = (reportId, payload) => {
+    return baseApiCall(`/api/admin/reports/${reportId}/execute`, 'post', payload, true);
 }

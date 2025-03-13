@@ -18,7 +18,8 @@ const BuyLimitationModal = ({ limitation, isOpen, setIsOpen }) => {
     const handleBuy = async () => {
         const res = await callBuyLimitation(limitation.id, limitation.type, amount, paymentType);
         if (res?.success){
-            window.location.href = paymentType !== "MOMO" ? res?.data : res?.data?.payUrl;
+            localStorage.setItem("paymentId", res?.data?.requestId)
+            window.location.href = res?.data?.qrUrl;
         } else notification.error(res.message);
         setIsOpen(false);
     };

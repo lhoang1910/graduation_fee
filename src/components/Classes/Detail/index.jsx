@@ -1,37 +1,121 @@
-import React, {useEffect, useState} from "react";
-import {Table, Input, Button, Pagination, Space, Select, Spin, Tabs, Row, Col, Empty} from "antd";
-import {PlusOutlined, ArrowLeftOutlined} from "@ant-design/icons";
+import React, {useCallback, useEffect, useState} from "react";
+import {
+    Table,
+    Input,
+    Button,
+    Spin,
+    Tabs,
+    Row,
+    Empty,
+    Select,
+    Pagination,
+    message,
+    Modal,
+    Form,
+    notification
+} from "antd";
+import {PlusOutlined, ArrowLeftOutlined, EyeOutlined} from "@ant-design/icons";
 import "./detail.css";
 import {useNavigate, useParams} from "react-router-dom";
-import {callALlUsers, callDetailClass, callDetailExam, callListExam} from "../../../services/api.js";
-import LimitationCard from "../../Limitations/Item/LimitationCard.jsx";
-import Item from "../../exam/ListExam/Item.jsx";
+import {
+    callAddUserToClass,
+    callALlUsers,
+    callCheckUserExistByEmail, callDeleteClassMember,
+    callDetailClass,
+    callListExam
+} from "../../../services/api.js";
+import ExamCards from "../../exam/ExamCards/Index.jsx";
+import {RiDeleteBinLine} from "react-icons/ri";
 
 const {Search} = Input;
 
-const ClassDetail = ({classId}) => {
+const ClassDetail = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalItems, setTotalItems] = useState(0);
     const [searchingKeys, setSearchingKeys] = useState('');
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState(null)
-    const [tableLoading, setTableLoading] = useState(true);
-    const [tableData, setTableData] = useState([])
+    const [data, setData] = useState(null);
+    const [tableLoading, setTableLoading] = useState(false);
+    const [tableData, setTableData] = useState([]);
     const [isMemberTab, setIsMemberTab] = useState(true);
+    const [isOpenEmailModal, setIsOpenEmailModal] = useState(false);
+    const [email, setEmail] = useState();
+    const [visible, setVisible] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const navigate = useNavigate();
 
     const userColumn = [
-        {title: "STT", dataIndex: "index", key: "index", render: (text, record, index) => index + 1},
-        {title: "Mã user", dataIndex: "code", key: "code", sorter: true},
-        {title: "Họ và tên", dataIndex: "fullName", key: "fullName", sorter: true},
-        {title: "Email", dataIndex: "phoneNumber", key: "phoneNumber", sorter: true},
-        {title: "Số điện thoại", dataIndex: "email", key: "email", sorter: true},
-        {title: "Giới tính", dataIndex: "gender", key: "gender", sorter: true},
-        {title: "Ngày sinh", dataIndex: "birthDay", key: "birthDay", sorter: true},
+        { title: "STT", dataIndex: "index", key: "index", render: (_, __, index) => index + 1 },
+        { title: "Mã user", dataIndex: "code", key: "code", sorter: true },
+        { title: "Họ và tên", dataIndex: "fullName", key: "fullName", sorter: true },
+        { title: "Email", dataIndex: "email", key: "email", sorter: true },
+        { title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber", sorter: true },
+        { title: "Giới tính", dataIndex: "gender", key: "gender", sorter: true },
+        { title: "Ngày sinh", dataIndex: "birthDay", key: "birthDay", sorter: true },
+        {
+            title: "Thao tác",
+            key: "action",
+            align: "center",
+            render: (_, record) => (
+                <div style={{textAlign: "center"}}>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<RiDeleteBinLine />}
+                        onClick={() => handleDeleteMember(record)}
+                    >
+                        Xóa
+                    </Button>
+
+                </div>
+            ),
+        },
     ];
 
-    const {id} = useParams();
+    const { id } = useParams();
+
+
+    const handleDeleteMember = async (user) => {
+        try {
+            setLoading(true);
+            const res = await callDeleteClassMember(id, user?.email);
+            if (res?.success) {
+                notification.success(res?.success);
+                fetchTableData();
+            } else {
+                notification.error(res?.error);
+            }
+        } catch (error){
+            notification.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleCheckEmail = async () => {
+        if (!email.trim()) {
+            message.warning("Vui lòng nhập email.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await callCheckUserExistByEmail(email.trim());
+
+            if (!res?.data) {
+                message.error("Người dùng không tồn tại.");
+            } else {
+                setSelectedUser(res.data);
+                setVisible(true);
+            }
+        } catch (error) {
+            message.error("Lỗi khi kiểm tra email.");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,85 +124,88 @@ const ClassDetail = ({classId}) => {
                 const response = await callDetailClass(id);
                 setData(response?.data);
             } catch (error) {
-                console.log(error)
+                console.error("Lỗi khi lấy dữ liệu lớp học:", error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchData();
     }, [id]);
 
-    const fetchMemberData = async (sorter = null) => {
+    const fetchTableData = async () => {
+        if (!data && !isMemberTab) return;
         setTableLoading(true);
         try {
-            const response = await callALlUsers({
-                pageNumber: currentPage-1,
+            const requestParams = {
+                pageNumber: currentPage - 1,
                 pageSize: pageSize,
                 searchingKeys: searchingKeys,
-                classId: id,
-                sortCriteria: sorter
-            });
-            setTableData(response?.data);
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setTableLoading(false);
-        }
-    }
+                ...(isMemberTab
+                    ? { classId: id,
+                        // sortCriteria: sorter
+                    }
+                    : { typeView: "CLASS_EXAM_VIEW", classCode: data?.classCode })
+            };
 
-    const fetchExamData = async () => {
-        setTableLoading(true);
-        try {
-            const response = await callListExam({
-                pageNumber: currentPage-1,
-                pageSize: pageSize,
-                searchingKeys: searchingKeys,
-                typeView: "CLASS_EXAM_VIEW",
-                classCode: data?.classCode
-            });
-            setTableData(response?.data);
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setTableLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        setCurrentPage(1);
-        setPageSize(10)
-        if (isMemberTab){
-            fetchMemberData()
-        } else {
-            fetchExamData()
-        }
-    }, [id, currentPage, pageSize, searchingKeys, isMemberTab]);
-
-    const handleTableChange = (pagination, filters, sorter) => {
-        console.log(sorter)
-        if (sorter) {
-            let asc;
-            if (sorter.order === "ascend") {
-                asc = true;
-            }
-            if (sorter.order === "descend") {
-                asc = false;
-            }
-            if (asc === false || asc === true) {
-                fetchMemberData({key: sorter.columnKey, asc});
+            let response = null;
+            if (isMemberTab) {
+                response = await callALlUsers(requestParams);
             } else {
-                fetchMemberData();
+                response = await callListExam(requestParams);
             }
+
+            setTableData(response?.data?.content || []);
+            setTotalItems(response?.data?.totalElements || 0);
+        } catch (error) {
+            console.error("Lỗi khi lấy danh sách:", error);
+        } finally {
+            setTableLoading(false);
         }
+    }
+
+    const changeTabs = (key) => {
+        setIsMemberTab(key === "2");
+        setPageSize(key === "2" ? 10 : 8);
+        setCurrentPage(1)
+        setTableData([]);
+    }
+
+    const handleCancel = () => {
+        setVisible(false);
+        setEmail("");
     };
 
+    const handleConfirmAddUser = async () => {
+        if (selectedUser) {
+            const res = await callAddUserToClass(email, id)
+            if (res?.success) {
+                notification.success({message: res?.message})
+                fetchTableData();
+            } else {
+                notification.error({message: res?.message})
+            }
+        }
+        setVisible(false);
+    };
+
+    useEffect(() => {
+        console.log(">>>", isMemberTab)
+        if (data || isMemberTab) {
+            fetchTableData();
+        }
+    }, [currentPage, pageSize, searchingKeys, data, isMemberTab]);
+
+    if (!data) {
+        return null;
+    }
     return (
         <Spin spinning={loading}>
             <h1>LỚP HỌC</h1>
-            <div style={{padding: "20px"}}>
+            <div style={{ padding: "20px" }}>
                 <div className="header">
                     <h2>{data?.classCode} - {data?.className}</h2>
-                    <Button type="primary" danger icon={<ArrowLeftOutlined/>}>
+                    <Button type="primary" danger icon={<ArrowLeftOutlined />} onClick={() => navigate("/exam/explore")}>
                         Trở về
                     </Button>
                 </div>
@@ -126,82 +213,112 @@ const ClassDetail = ({classId}) => {
                 {/* Tabs */}
                 <Tabs
                     defaultActiveKey="2"
-                    style={{marginTop: "20px"}}
-                    onChange={(key) => setIsMemberTab(key === "2")}
+                    style={{ marginTop: "20px" }}
+                    onChange={(key) => changeTabs(key)}
                 >
                     <Tabs.TabPane tab="Thành viên" key="2" />
                     <Tabs.TabPane tab="Đề thi ôn tập" key="4" />
                 </Tabs>
 
+
                 <div className="actions">
-                    <Search placeholder="Nhập từ khóa tìm kiếm..." style={{width: 300}}
-                            onSearch={() => setSearchingKeys(e.target.value)}/>
-                    {isMemberTab && (<Button type="primary" icon={<PlusOutlined/>} className="add-btn">
-                        Thêm thành viên
-                    </Button>)}
+                    <Search
+                        placeholder="Nhập từ khóa tìm kiếm..."
+                        style={{ width: 300 }}
+                        onSearch={(value) => setSearchingKeys(value)}
+                    />
+                    {isMemberTab && (
+                        <Button type="primary" icon={<PlusOutlined />} className="add-btn" onClick={() => setIsOpenEmailModal(true)}>
+                            Thêm thành viên
+                        </Button>
+                    )}
                 </div>
-
-                {/* Bảng dữ liệu */}
-                {isMemberTab && (<Spin spinning={tableLoading}>
-                    <Table
-                        columns={userColumn}
-                        dataSource={tableData?.content}
-                        pagination={{
-                            total: data?.totalElements, pageSize: 10, onChange: (page, pageSize) => {
-                                setCurrentPage(page);
-                            }
-                        }}
-                        locale={{emptyText: "Không tìm thấy dữ liệu nào!"}}
-                        onChange={handleTableChange}
-                    />
-                </Spin>)}
-
-                {!isMemberTab && (<Spin spinning={tableLoading}>
-                    <Row gutter={[16, 16]} style={{marginTop: "20px"}}>
-                        {tableData.content?.map((item) => (
-                            <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
-                                <Item item={item}></Item>
-                            </Col>
-                        ))}
-                    </Row>
-                    {tableData.content?.length === 0 && loading === false && <Empty description="Không thấy đề thi"></Empty>}
-                </Spin>)}
-
-                {/* Phân trang */}
-                <div className="pagination-container">
-                    <span>Số hàng hiển thị trên trang: </span>
-                    <Select
-                        value={pageSize}
-                        onChange={(value) => setPageSize(value)}
-                        options={[
-                            {value: 10, label: "10"},
-                            {value: 20, label: "20"},
-                            {value: 50, label: "50"},
-                        ]}
-                    />
-                    <span> của tổng số {totalItems}</span>
-
-                    <Pagination
-                        current={currentPage}
-                        total={totalItems}
-                        pageSize={pageSize}
-                        onChange={(page) => setCurrentPage(page)}
-                        showSizeChanger={false}
-                        className="pagination"
-                    />
-
-                    <span>Chuyển đến trang: </span>
+                <Modal
+                    title="Thêm thành viên"
+                    open={isOpenEmailModal}
+                    onCancel={() => setIsOpenEmailModal(false)}
+                    onOk={handleCheckEmail}
+                    okText="Gửi"
+                    cancelText="Hủy"
+                >
                     <Input
-                        type="number"
-                        min={1}
-                        value={currentPage}
-                        onChange={(e) => setCurrentPage(Number(e.target.value))}
-                        style={{width: 50, marginLeft: 5}}
+                        placeholder="Nhập email người dùng..."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        style={{ marginBottom: 10 }}
                     />
-                </div>
+                </Modal>
+                <Modal
+                    title={`Bạn có muốn thêm người dùng ${selectedUser?.code} - ${selectedUser?.fullName} vào lớp học?`}
+                    open={visible}
+                    onCancel={handleCancel}
+                    onOk={handleConfirmAddUser}
+                    okText="Xác nhận"
+                    cancelText="Hủy"
+                >
+                    <Form layout="vertical">
+                        <Form.Item label="Mã người dùng">
+                            <Input value={selectedUser?.code} disabled />
+                        </Form.Item>
+                        <Form.Item label="Họ và tên">
+                            <Input value={selectedUser?.fullName} disabled />
+                        </Form.Item>
+                        <Form.Item label="Email">
+                            <Input value={selectedUser?.email} disabled />
+                        </Form.Item>
+                        <Form.Item label="Giới tính">
+                            <Input value={selectedUser?.gender} disabled />
+                        </Form.Item>
+                        <Form.Item label="Ngày sinh">
+                            <Input value={selectedUser?.birthDay} disabled />
+                        </Form.Item>
+                    </Form>
+                </Modal>
+
+                <Spin spinning={tableLoading}>
+                    {isMemberTab ? (
+                        <Table
+                            columns={data.createdbyEmail === localStorage.getItem("currentEmail")
+                                ? userColumn
+                                : userColumn.filter((col) => col.key !== "action")}
+                            dataSource={tableData}
+                            pagination={{
+                                total: totalItems,
+                                pageSize: pageSize,
+                                current: currentPage,
+                                showSizeChanger: true,
+                                pageSizeOptions: ["10", "20", "50"],
+                                onChange: (page, size) => {
+                                    setCurrentPage(page);
+                                    setPageSize(size);
+                                },
+                            }}
+                            locale={{ emptyText: "Không tìm thấy dữ liệu nào!" }}
+                        />
+                    ) : (
+                        <>
+                            <Row gutter={[16, 16]} style={{ marginTop: "20px" }}>
+                                <ExamCards exams={tableData} canUpdate={data.createdbyEmail === localStorage.getItem("currentEmail")} />
+                            </Row>
+                            {(tableData.length === 0 && !tableLoading) && <Empty description="Không có đề thi" />}
+                            <Pagination
+                                style={{ textAlign: "center", marginTop: "20px" }}
+                                current={currentPage}
+                                pageSize={pageSize}
+                                total={totalItems}
+                                onChange={(page) => setCurrentPage(page)}
+                            />
+                            <Select defaultValue={8} className="filter-select" onChange={(value) => setPageSize(value)}>
+                                <Select.Option value={8}>8 / trang</Select.Option>
+                                <Select.Option value={16}>16 / trang</Select.Option>
+                                <Select.Option value={32}>32 / trang</Select.Option>
+                            </Select>
+                        </>
+                    )}
+                </Spin>
             </div>
         </Spin>
     );
-}
+};
 
 export default ClassDetail;

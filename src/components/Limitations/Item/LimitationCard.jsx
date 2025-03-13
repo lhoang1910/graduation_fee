@@ -1,8 +1,9 @@
-import {FaChalkboardTeacher, FaClipboardList, FaMoneyBillWave, FaUsers} from "react-icons/fa";
+import {FaChalkboardTeacher, FaClipboardList, FaMoneyBillWave} from "react-icons/fa";
 import {RiAiGenerate} from "react-icons/ri";
 import BuyLimitationModal from "../Buy/index.jsx";
 import {useState} from "react";
 import '../index.css';
+import {SiGoogleclassroom} from "react-icons/si";
 
 const LimitationCard = ({limitations}) => {
     const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
@@ -29,7 +30,7 @@ const LimitationCard = ({limitations}) => {
                             <p><RiAiGenerate/> Tạo đề thi Bằng AI: {item.createExamByAI} lượt</p>
                         )}
                         {item.memberPerClass > 0 && (
-                            <p><FaUsers/> Giới hạn thành viên/lớp: +{item.memberPerClass} thành viên</p>
+                            <p><SiGoogleclassroom/> Giới hạn thành viên/lớp: +{item.memberPerClass} thành viên</p>
                         )}
 
                         <div className="price-section">
@@ -62,7 +63,6 @@ const LimitationCard = ({limitations}) => {
                 )}
             </div>
         </>
-
     );
 };
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { callCreateClass } from "../../../services/api.js";
 import "./create.css";
-import {notification} from "antd";
+import {Button, Input, Modal, notification} from "antd";
+import {EditOutlined} from "@ant-design/icons";
 
 const CreateClassModel = ({ isOpen, setIsOpen, onSuccess}) => {
     const [className, setClassName] = useState("");
@@ -26,28 +27,37 @@ const CreateClassModel = ({ isOpen, setIsOpen, onSuccess}) => {
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h2 className="modal-title">Thêm mới</h2>
-                    <button className="modal-close" onClick={() => setIsOpen(false)}>&times;</button>
+        <Modal
+            title={
+                <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "1.5rem" }}>
+                    <span>TẠO LỚP HỌC</span>
                 </div>
-                <div className="modal-body">
-                    <label className="modal-label" htmlFor="className">Tên lớp học</label>
-                    <input
-                        id="className"
-                        className="modal-input"
-                        type="text"
-                        placeholder="Nhập tên lớp học"
-                        value={className}
-                        onChange={(e) => setClassName(e.target.value)}
-                    />
-                </div>
-                <div className="modal-footer">
-                    <button className="modal-button confirm" onClick={handleSubmit}>Xác nhận</button>
-                </div>
-            </div>
-        </div>
+            }
+            open={isOpen}
+            onCancel={() => setIsOpen(false)}
+            footer={[
+                <Button key="cancel" size="large" onClick={() => setIsOpen(false)}>
+                    Hủy
+                </Button>,
+                <Button key="submit" type="primary" size="large" onClick={handleSubmit}>
+                    Gửi
+                </Button>,
+            ]}
+            style={{ fontSize: "1.2rem" }}
+        >
+            <Input
+                prefix={<EditOutlined style={{ fontSize: "1.5rem" }} />}
+                placeholder="Nhập tên lớp học..."
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                style={{
+                    marginBottom: 15,
+                    borderRadius: 10,
+                    padding: "12px",
+                    fontSize: "1.3rem",
+                }}
+            />
+        </Modal>
     );
 };
 

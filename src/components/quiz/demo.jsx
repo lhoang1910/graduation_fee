@@ -1,27 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { Layout, Button, Form, Input, Radio, Space, Typography, Row, Col, Checkbox, Divider, notification, Spin } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { callCreateExam } from "../../services/api";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { resetExam, updateQuestions } from "../../redux/examCreating/examCreating.Slice";
+import React, {useEffect, useState} from "react";
+import {
+    Layout,
+    Button,
+    Form,
+    Input,
+    Radio,
+    Space,
+    Typography,
+    Row,
+    Col,
+    Checkbox,
+    Divider,
+    notification,
+    Spin
+} from "antd";
+import {PlusOutlined, DeleteOutlined} from "@ant-design/icons";
+import {callCreateExam} from "../../services/api";
+import {useDispatch, useSelector} from "react-redux";
+import {useLocation} from "react-router-dom";
+import {resetExam, updateQuestions} from "../../redux/examCreating/examCreating.Slice";
 
-const { Content, Sider } = Layout;
-const { TextArea } = Input;
-const { Text } = Typography;
+const {Content, Sider} = Layout;
+const {TextArea} = Input;
+const {Text} = Typography;
 
 const QuestionForm = () => {
     const [loading, setLoading] = useState(false);
 
     const location = useLocation();
-  const { message } = location.state || {};
+    const {message} = location.state || {};
     const [form] = Form.useForm();
     const questions = useSelector((state) => state.examCreating.questions);
 
     const [selectedQuestion, setSelectedQuestion] = useState(0); // Câu hỏi được chọn
-const examRequest = useSelector(state=>state.examCreating);
+    const examRequest = useSelector(state => state.examCreating);
     const [correctAnswer, setCorrectAnswer] = useState(1); // ID của đáp án đúng
-    const [exam,setExam] = useState({
+    const [exam, setExam] = useState({
         "examName": "test tạo bài thi",
         "description": "Chỉ là test thôi",
         "examPermissionType": "Công khai",
@@ -40,20 +54,21 @@ const examRequest = useSelector(state=>state.examCreating);
         updatedQuestions[selectedQuestion] = {
             ...updatedQuestions[selectedQuestion], // Tạo bản sao của câu hỏi cần cập nhật
             question: e.target.value, // Cập nhật câu hỏi
-        };        setExam( (exam)=>({ ...exam, questions: updatedQuestions }))
-        form.setFieldsValue({ questionContent: e.target.value });
+        };
+        setExam((exam) => ({...exam, questions: updatedQuestions}))
+        form.setFieldsValue({questionContent: e.target.value});
     };
     useEffect(() => {
-        console.log("question",exam.questions)
+        console.log("question", exam.questions)
         form.setFieldsValue({
             questionContent: exam.questions[selectedQuestion]?.question || "",
         });
     }, [selectedQuestion, exam, form]);
     const addQuestion = () => {
         const questions = exam.questions;
-            setExam((preExam)=>{
+        setExam((preExam) => {
                 const questions = preExam.questions;
-                const updatedQuestions = [...questions,               
+                const updatedQuestions = [...questions,
                     {
                         "id": null,
                         "code": null,
@@ -82,21 +97,21 @@ const examRequest = useSelector(state=>state.examCreating);
                         "explain": null,
                         "explainFilePath": null
                     }
-                ] 
-                
-                return {...preExam,questions:updatedQuestions};
+                ]
+
+                return {...preExam, questions: updatedQuestions};
             }
         )
         setSelectedQuestion(questions.length);
-        
+
     };
 
     // Thêm đáp án mới
     const addAnswer = () => {
-        setExam((prevExam)=>{
+        setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions];
 
-           const  updatedAnswers= [...updatedQuestions[selectedQuestion].answers,   {
+            const updatedAnswers = [...updatedQuestions[selectedQuestion].answers, {
                 "id": null,
                 "index": null,
                 "questionCode": null,
@@ -104,8 +119,8 @@ const examRequest = useSelector(state=>state.examCreating);
                 "attachmentPath": null,
                 "correct": false
             }];
-            updatedQuestions[selectedQuestion] = {...updatedQuestions[selectedQuestion],answers:updatedAnswers}
-            return {...prevExam,questions:updatedQuestions}
+            updatedQuestions[selectedQuestion] = {...updatedQuestions[selectedQuestion], answers: updatedAnswers}
+            return {...prevExam, questions: updatedQuestions}
         })
     };
 
@@ -114,12 +129,11 @@ const examRequest = useSelector(state=>state.examCreating);
         setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions]; // Sao chép mảng questions để tránh thay đổi trực tiếp state
             const selectedQ = updatedQuestions[selectedQuestion]; // Lấy câu hỏi hiện tại
-    
 
-    
+
             // Lọc bỏ đáp án có index tương ứng
             selectedQ.answers = selectedQ.answers.filter((_, index) => index !== answerIndex);
-    
+
             return {
                 ...prevExam,
                 questions: updatedQuestions,
@@ -130,16 +144,16 @@ const examRequest = useSelector(state=>state.examCreating);
     const updateAnswerText = (index, newText) => {
         setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions]; // Sao chép mảng questions để tránh thay đổi trực tiếp state
-            const selectedQ = { ...updatedQuestions[selectedQuestion] }; // Sao chép câu hỏi hiện tại
+            const selectedQ = {...updatedQuestions[selectedQuestion]}; // Sao chép câu hỏi hiện tại
             const updatedAnswers = [...selectedQ.answers];
 
-            
+
             updatedAnswers[index] = {
                 ...updatedAnswers[index],
                 answer: newText,
             };
             // selectedQ = {...selectedQ,answers:updatedAnswers}
-            selectedQ.answers=updatedAnswers;
+            selectedQ.answers = updatedAnswers;
             updatedQuestions[selectedQuestion] = selectedQ;
 
             return {
@@ -148,86 +162,85 @@ const examRequest = useSelector(state=>state.examCreating);
             };
         });
     };
-    
-    
+
 
     // Chọn đáp án đúng
     const selectCorrectAnswer = (id) => {
         setCorrectAnswer(id);
     };
-    const handleCreateExam = async()=>{
+    const handleCreateExam = async () => {
 
         try {
             if (examRequest.examName.trim() === "") {
-                notification.error({message:"Tên đề thi trống"});
+                notification.error({message: "Tên đề thi trống"});
                 return;
-              }
-              if (examRequest.effectiveDate === null) {
-                notification.error({message:"Thêm thời gian đề thi có hiệu lực"});
+            }
+            if (examRequest.effectiveDate === null) {
+                notification.error({message: "Thêm thời gian đề thi có hiệu lực"});
                 return;
-              }
-              if(examRequest.examPermissionType==="Người được cấp quyền"  ){
+            }
+            if (examRequest.examPermissionType === "Người được cấp quyền") {
 
 
-              }
-              if(examRequest.examPermissionType==="Thành viên lớp học" && examRequest.classCode.trim() ==="" ){
-                notification.error({message:"Thêm mã lớp học"});
+            }
+            if (examRequest.examPermissionType === "Thành viên lớp học" && examRequest.classCode.trim() === "") {
+                notification.error({message: "Thêm mã lớp học"});
                 return;
 
-              }
+            }
             const invalidQuestions = exam.questions.filter((question, index) => {
                 if (!question.question || !question.answers || question.answers.length === 0) {
-                  notification.error( { message:`Câu hỏi ${index + 1} không được để trống câu hỏi hoặc đáp án`});
-                  return true;
-                }
-          
-                const invalidAnswers = question.answers.filter(answer => !answer.answer || answer.correct === undefined);
-                if (invalidAnswers.length > 0) {
-                    notification.error( {message:`Câu hỏi ${index + 1} có câu trả lời không hợp lệ`});
-                  return true;
-                }
-                const hasCorrectAnswer = question.answers.some(answer => answer.correct === true);
-                if(!hasCorrectAnswer){
-                    notification.error( {message:`Thêm đáp án vào câu hỏi ${index + 1}`});
+                    notification.error({message: `Câu hỏi ${index + 1} không được để trống câu hỏi hoặc đáp án`});
                     return true;
                 }
 
-          
-                return false;
-              });
-          
-              if (invalidQuestions.length > 0) {
-                return;
-              }
+                const invalidAnswers = question.answers.filter(answer => !answer.answer || answer.correct === undefined);
+                if (invalidAnswers.length > 0) {
+                    notification.error({message: `Câu hỏi ${index + 1} có câu trả lời không hợp lệ`});
+                    return true;
+                }
+                const hasCorrectAnswer = question.answers.some(answer => answer.correct === true);
+                if (!hasCorrectAnswer) {
+                    notification.error({message: `Thêm đáp án vào câu hỏi ${index + 1}`});
+                    return true;
+                }
 
-              let request  ;
-              if(examRequest.examPermissionType==="Người được cấp quyền"  ){
-                const { classCode, ...examRequestWithoutExecutorEmail } = examRequest;
+
+                return false;
+            });
+
+            if (invalidQuestions.length > 0) {
+                return;
+            }
+
+            let request;
+            if (examRequest.examPermissionType === "Người được cấp quyền") {
+                const {classCode, ...examRequestWithoutExecutorEmail} = examRequest;
                 request = examRequestWithoutExecutorEmail;
 
-              }else  if(examRequest.examPermissionType==="Thành viên lớp học" ){
-                const { executorEmail, ...examRequestWithoutClassCode } = examRequest;
+            } else if (examRequest.examPermissionType === "Thành viên lớp học") {
+                const {executorEmail, ...examRequestWithoutClassCode} = examRequest;
                 request = examRequestWithoutClassCode;
 
-              }else{
+            } else {
                 // const { executorEmails, ...examRequestWithoutClassCode } = examRequest;
                 // request = examRequestWithoutClassCode;
                 request = examRequest;
-              }
-              setLoading(true);
-           const response = await callCreateExam({...request,questions:exam.questions});
-            // console.log({...examRequest,questions:exam.questions})
-            notification.info({message:response.message})
-            if(response.success){
-                dispatch(resetExam());
-                console.log("repsonse exam",response.message)
-                
             }
-  
+            setLoading(true);
+            const response = await callCreateExam({...request, questions: exam.questions});
+            // console.log({...examRequest,questions:exam.questions})
+            notification.info({message: response.message})
+            if (response.success) {
+                dispatch(resetExam());
+                console.log("repsonse exam", response.message)
+
+            }
+
         } catch (error) {
             console.log(error)
 
-        }finally{
+        } finally {
             setLoading(false)
         }
     }
@@ -235,204 +248,171 @@ const examRequest = useSelector(state=>state.examCreating);
         setExam((prevExam) => {
             const updatedQuestions = [...prevExam.questions]; // Sao chép mảng questions để tránh thay đổi trực tiếp state
             const selectedQ = updatedQuestions[selectedQuestion]; // Lấy câu hỏi hiện tại
-    
+
             if (!selectedQ) return prevExam; // Nếu không tìm thấy câu hỏi, giữ nguyên state
-    
+
             // Cập nhật nội dung giải thích
             selectedQ.explain = newText;
-    
+
             return {
                 ...prevExam,
                 questions: updatedQuestions,
             };
         });
     };
-    
+
     const dispatch = useDispatch();
 
     useEffect(() => {
         return () => {
 
-    
-          dispatch(updateQuestions(exam.questions));
+
+            dispatch(updateQuestions(exam.questions));
         };
-      }, [dispatch]);
-    
+    }, [dispatch]);
+
     return (
-        <Spin  spinning={loading}>
+        <Spin spinning={loading}>
 
-        <Layout style={{ minHeight: "100vh", padding: "20px", backgroundColor: "#f4f6f9" }}>
+            <Layout style={{minHeight: "100vh", padding: "20px", backgroundColor: "#f4f6f9"}}>
 
-            {/* Sidebar bên trái */}
-            <Sider width={250} style={styles.sidebar}>
-                <h3>Danh mục câu hỏi</h3>
-                <Button 
-    type="primary" 
-    block 
-    danger 
-    icon={<DeleteOutlined />} 
-    onClick={() => {
-        if (exam.questions.length > 1) {
-            setExam((prevExam) => {
-                const updatedQuestions = [...prevExam.questions];
-                updatedQuestions.splice(selectedQuestion, 1); // Xóa câu hỏi hiện tại
-                
-                const newSelected = selectedQuestion === updatedQuestions.length ? selectedQuestion - 1 : selectedQuestion;
+                {/* Sidebar bên trái */}
+                <Sider width={250} style={styles.sidebar}>
+                    <h3>Danh mục câu hỏi</h3>
+                    <Button
+                        type="primary"
+                        block
+                        danger
+                        icon={<DeleteOutlined/>}
+                        onClick={() => {
+                            if (exam.questions.length > 1) {
+                                setExam((prevExam) => {
+                                    const updatedQuestions = [...prevExam.questions];
+                                    updatedQuestions.splice(selectedQuestion, 1); // Xóa câu hỏi hiện tại
 
-                return { 
-                    ...prevExam, 
-                    questions: updatedQuestions 
-                };
-            });
+                                    const newSelected = selectedQuestion === updatedQuestions.length ? selectedQuestion - 1 : selectedQuestion;
 
-            // Cập nhật index câu hỏi được chọn
-            setSelectedQuestion((prev) => (prev > 0 ? prev - 1 : 0));
-        }
-    }}
->
-    Xóa câu hỏi
-</Button>
-<Divider></Divider>
+                                    return {
+                                        ...prevExam,
+                                        questions: updatedQuestions
+                                    };
+                                });
 
-                {/* <Space style={styles.questionList}> */}
+                                // Cập nhật index câu hỏi được chọn
+                                setSelectedQuestion((prev) => (prev > 0 ? prev - 1 : 0));
+                            }
+                        }}
+                    >
+                        Xóa câu hỏi
+                    </Button>
+                    <Divider></Divider>
 
-                                {/* <Space style={styles.questionList}> */}
+                    <Row gutter={[16, 16]} gap={5}>
+                        {exam.questions.map((q, i) => (
+                            <Col span={6} key={i}>
+                                <Button
+                                    type={selectedQuestion === i ? "primary" : "default"}
+                                    // shape="square"
+                                    // size="large"
+                                    style={selectedQuestion === i ? styles.activeButton : styles.defaultButton}
+                                    onClick={() => setSelectedQuestion(i)}
+                                >
+                                    {i + 1}
+                                </Button>
+                            </Col>
+                        ))}
+                    </Row>
+                    {/* </Space> */}
 
-                <Row gutter={[16, 16]} gap={5}>
-    {exam.questions.map((q, i) => (
-        <Col span={6} key={i}> 
-            <Button
-                type={selectedQuestion === i ? "primary" : "default"}
-                // shape="square"
-                // size="large"
-                style={selectedQuestion === i ? styles.activeButton : styles.defaultButton}
-                onClick={() => setSelectedQuestion(i)}
-            >
-                {i + 1}
-            </Button>
-        </Col>
-    ))}
-</Row>
-                {/* </Space> */}
+                    <Divider></Divider>
+                    <div style={styles.createExamButton}>
+                        <Button type="primary" size="large" block onClick={handleCreateExam}>
+                            Tạo đề thi
+                        </Button>
+                    </div>
+                </Sider>
 
-    <Divider></Divider>
-                <div style={styles.createExamButton}>
-        <Button type="primary" size="large" block onClick={handleCreateExam}>
-            Tạo đề thi
-        </Button>
-    </div>
-            </Sider>
-
-            {/* Nội dung chính bên phải */}
-            <Layout style={{ padding: " 0 20px 20px 20px" }}>
-                <Content style={{ background: "#fff", padding: "20px", borderRadius: "8px" }}>
-                    <h2>Chỉnh sửa câu hỏi</h2>
-                    <Form form={form} layout="vertical">
-                        {/* Nhập nội dung câu hỏi */}
-                        <Form.Item label="Soạn câu hỏi" name="questionContent">
-                            <TextArea rows={3} placeholder="Nhập nội dung câu hỏi" onChange={updateQuestionContent}  />
-                        </Form.Item>
-
-                        {/* Danh sách đáp án
-                        <Form.Item label="Câu trả lời">
-                            <Radio.Group value={correctAnswer} onChange={(e) => selectCorrectAnswer(e.target.value)} style={styles.radio} >
-                                {answers.map((answer, index) => (
-                                    <div key={answer.id} style={styles.answerWrapper}>
+                {/* Nội dung chính bên phải */}
+                <Layout style={{padding: " 0 20px 20px 20px"}}>
+                    <Content style={{background: "#fff", padding: "20px", borderRadius: "8px"}}>
+                        <h2>Chỉnh sửa câu hỏi</h2>
+                        <Form form={form} layout="vertical">
+                            {/* Nhập nội dung câu hỏi */}
+                            <Form.Item label="Soạn câu hỏi" name="questionContent">
+                                <TextArea rows={3} placeholder="Nhập nội dung câu hỏi"
+                                          onChange={updateQuestionContent}/>
+                            </Form.Item>
+                            <Form.Item label="Câu trả lời">
+                                {exam.questions[selectedQuestion].answers.map((answer, index) => (
+                                    <div key={index} style={styles.answerWrapper}>
                                         <div style={styles.answerHeader}>
-                                            <Radio value={answer.id}>
+                                            <Checkbox
+                                                checked={answer.correct}
+
+                                                onChange={() => {
+                                                    setExam((prevExam) => {
+                                                        const updatedQuestions = [...prevExam.questions];
+                                                        const updatedAnswers = updatedQuestions[selectedQuestion].answers.map((a, i) =>
+                                                            i === index ? {...a, correct: !a.correct} : a
+                                                        );
+                                                        const updatedQuestion = {
+                                                            ...updatedQuestions[selectedQuestion],
+                                                            answers: updatedAnswers  // Cập nhật lại answers
+                                                        };
+                                                        updatedQuestions[selectedQuestion] = updatedQuestion;
+
+
+                                                        return {...prevExam, questions: updatedQuestions};
+                                                    });
+                                                }}
+                                            >
                                                 <Text strong>Đáp án {index + 1}</Text>
-                                            </Radio>
+                                            </Checkbox>
                                             <Button
                                                 type="text"
                                                 danger
-                                                icon={<DeleteOutlined />}
-                                                onClick={() => removeAnswer(answer.id)}
+                                                icon={<DeleteOutlined/>}
+                                                onClick={() => removeAnswer(index)}
                                             >
                                                 Xóa đáp án
                                             </Button>
                                         </div>
                                         <TextArea
                                             placeholder="Nhập nội dung đáp án"
-                                            value={answer.text}
-                                            onChange={(e) => updateAnswerText(answer.id, e.target.value)}
+                                            value={answer.answer}
+                                            onChange={(e) => updateAnswerText(index, e.target.value)}
                                             rows={3}
                                             style={styles.answerInput}
                                         />
                                     </div>
                                 ))}
-                            </Radio.Group>
-                        </Form.Item> */}
-                        <Form.Item label="Câu trả lời">
-    {exam.questions[selectedQuestion].answers.map((answer, index) => (
-        <div key={index} style={styles.answerWrapper}>
-            <div style={styles.answerHeader}>
-                <Checkbox
-                    checked={answer.correct}
-                    
-                    onChange={() => {
-                        setExam((prevExam) => {
-                            const updatedQuestions = [...prevExam.questions];
-                            const updatedAnswers = updatedQuestions[selectedQuestion].answers.map((a,i) =>
-                            i === index ? { ...a, correct: !a.correct } : a
-                            );
-                            const updatedQuestion = { 
-                                ...updatedQuestions[selectedQuestion], 
-                                answers: updatedAnswers  // Cập nhật lại answers
-                              };
-                              updatedQuestions[selectedQuestion] = updatedQuestion;
-
-                
-                            return { ...prevExam, questions: updatedQuestions };
-                        });
-                    }}
-                >
-                    <Text strong>Đáp án {index + 1}</Text>
-                </Checkbox>
-                <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => removeAnswer(index)}
-                >
-                    Xóa đáp án
-                </Button>
-            </div>
-            <TextArea
-                placeholder="Nhập nội dung đáp án"
-                value={answer.answer}
-                onChange={(e) => updateAnswerText(index, e.target.value)}
-                rows={3}
-                style={styles.answerInput}
-            />
-        </div>
-    ))}
-</Form.Item>
+                            </Form.Item>
 
 
-
-                        {/* Nút thêm đáp án */}
-                        <Button type="dashed"  block onClick={addAnswer} icon={<PlusOutlined />}>
-                            Thêm đáp án
-                        </Button>
-                        <TextArea
-                                            placeholder="Nhập nội dung giải thích đáp án"
-                                            rows={3}
-                                            value={exam.questions[selectedQuestion]?.explain || ""} // Hiển thị giá trị hiện tại hoặc rỗng
-    onChange={(e) => updateExplainText(e.target.value)} // Gọi hàm cập nhật khi người dùng nhập
-                                            style={{...styles.answerInput,marginTop:"20px", fontStyle: "italic" }}
-                                        />
-                        <Form.Item style={{ marginTop: "20px", textAlign: "right" }}>
-                            <Space>
-                                {/* <Button type="primary">Lưu câu hỏi</Button> */}
-                                <Button type="primary" onClick={addQuestion} style={{ background: "linear-gradient(to right, #1890ff, #722ed1)" }}>
-                                    Thêm câu hỏi
-                                </Button>
-                            </Space>
-                        </Form.Item>
-                    </Form>
-                </Content>
+                            {/* Nút thêm đáp án */}
+                            <Button type="dashed" block onClick={addAnswer} icon={<PlusOutlined/>}>
+                                Thêm đáp án
+                            </Button>
+                            <TextArea
+                                placeholder="Nhập nội dung giải thích đáp án"
+                                rows={3}
+                                value={exam.questions[selectedQuestion]?.explain || ""} // Hiển thị giá trị hiện tại hoặc rỗng
+                                onChange={(e) => updateExplainText(e.target.value)} // Gọi hàm cập nhật khi người dùng nhập
+                                style={{...styles.answerInput, marginTop: "20px", fontStyle: "italic"}}
+                            />
+                            <Form.Item style={{marginTop: "20px", textAlign: "right"}}>
+                                <Space>
+                                    {/* <Button type="primary">Lưu câu hỏi</Button> */}
+                                    <Button type="primary" onClick={addQuestion}
+                                            style={{background: "linear-gradient(to right, #1890ff, #722ed1)"}}>
+                                        Thêm câu hỏi
+                                    </Button>
+                                </Space>
+                            </Form.Item>
+                        </Form>
+                    </Content>
+                </Layout>
             </Layout>
-        </Layout>
         </Spin>
     );
 };
@@ -487,7 +467,7 @@ const styles = {
     answerInput: {
         width: "100%",
     },
-    radio:{
+    radio: {
         width: "100%",
 
 

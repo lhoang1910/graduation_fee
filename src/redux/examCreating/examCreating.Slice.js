@@ -1,5 +1,6 @@
 
 import { createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 
 const initialState = {
     examName: "",
@@ -8,13 +9,12 @@ const initialState = {
     classCode: "",
     executorEmail: [],
     time: 60,
-    effectiveDate: null,
+    effectiveDate: moment().toISOString(),
     expirationDate: null,
     randomAmount: 5,
     limitation: null,
     scoreType: "Chấm điểm theo câu hỏi",
-    "totalQuestion": 20           ,       
-
+    totalQuestion: 20,
     questions: [
         {
             "id": null,
@@ -52,6 +52,7 @@ const examSlice = createSlice({
     reducers: {
         updateQuestions: (state, action) => {
             state.questions = action.payload; // Thay thế mảng questions hiện tại bằng mảng mới
+            console.log(">>>>question updated successfully")
         },
         // Cập nhật một trường dữ liệu chung
         setExamField: (state, action) => {

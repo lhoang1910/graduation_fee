@@ -11,7 +11,6 @@ const instance = axios.create({
 instance.interceptors.request.use(function (config) {
     const token = localStorage.getItem('access_token');
     if (token && !config.url.includes('/api/auth/')) {
-        console.log('Token added to header:', token); // Kiểm tra token
         config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;

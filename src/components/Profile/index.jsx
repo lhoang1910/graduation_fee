@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import './index.css';
-import { Form, Input, Select, DatePicker, Button, message, notification, Avatar } from "antd";
+import {Form, Input, Select, DatePicker, Button, message, notification, Avatar} from "antd";
 import {callChangePassword, callUpdateUserProfile, callUserDetail} from "../../services/api.js";
 import dayjs from 'dayjs';
+import {ArrowLeftOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 
-const { Option } = Select;
+const {Option} = Select;
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('accountInfo');
@@ -16,6 +18,7 @@ const Profile = () => {
         birthDate: '',
         avatar: '',
     });
+    const navigate = useNavigate();
 
     const fetchUserDetails = async () => {
         try {
@@ -43,55 +46,116 @@ const Profile = () => {
     };
 
     return (
-        <div className="pf-container">
-            <div className="pf-sidebar">
-                <button
-                    onClick={() => handleTabChange('accountInfo')}
-                    className={activeTab === 'accountInfo' ? 'active' : ''}
+        <div style={{padding: "20px", fontFamily: "Arial, sans-serif", margin: "auto"}}>
+            {/* Header */}
+            <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "20px",
+                padding: "16px",
+                background: "#f5f5f5",
+                borderRadius: "8px"
+            }}>
+                <h2 style={{margin: 0, color: "#333"}}>THÔNG TIN TÀI KHOẢN</h2>
+                <Button
+                    type="primary" danger icon={<ArrowLeftOutlined/>}
+                    onClick={() => navigate("/")}
+                    style={{borderRadius: "6px", padding: "8px 16px"}}
                 >
-                    Thông tin tài khoản
-                </button>
-                <button
-                    onClick={() => handleTabChange('changePassword')}
-                    className={activeTab === 'changePassword' ? 'active' : ''}
-                >
-                    Đổi mật khẩu
-                </button>
+                    Trở về
+                </Button>
             </div>
 
-            <div className="pf-content">
-                {activeTab === 'accountInfo' && <AccountInfo userInfo={userInfo} setUserInfo={setUserInfo} fetchUserDetails={fetchUserDetails} />}
-                {activeTab === 'changePassword' && <ChangePassword userId={userInfo.id}/>}
+            {/* Container */}
+            <div style={{
+                display: "flex",
+                background: "#fff",
+                borderRadius: "10px",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden"
+            }}>
+                {/* Sidebar */}
+                <div style={{
+                    width: "250px",
+                    borderRight: "2px solid #f0f0f0",
+                    padding: "20px",
+                    background: "#fafafa",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px"
+                }}>
+                    <button
+                        onClick={() => handleTabChange('accountInfo')}
+                        style={{
+                            padding: "12px",
+                            border: "none",
+                            borderRadius: "6px",
+                            background: activeTab === 'accountInfo' ? "#1890ff" : "#fff",
+                            color: activeTab === 'accountInfo' ? "#fff" : "#333",
+                            fontSize: "16px",
+                            cursor: "pointer",
+                            transition: "0.3s",
+                            textAlign: "left"
+                        }}
+                    >
+                        Thông tin tài khoản
+                    </button>
+
+                    <button
+                        onClick={() => handleTabChange('changePassword')}
+                        style={{
+                            padding: "12px",
+                            border: "none",
+                            borderRadius: "6px",
+                            background: activeTab === 'changePassword' ? "#1890ff" : "#fff",
+                            color: activeTab === 'changePassword' ? "#fff" : "#333",
+                            fontSize: "16px",
+                            cursor: "pointer",
+                            transition: "0.3s",
+                            textAlign: "left"
+                        }}
+                    >
+                        Đổi mật khẩu
+                    </button>
+                </div>
+
+                {/* Content */}
+                <div style={{
+                    flex: 1,
+                    padding: "20px",
+                    minHeight: "300px"
+                }}>
+                    {activeTab === 'accountInfo' &&
+                        <AccountInfo userInfo={userInfo} setUserInfo={setUserInfo}
+                                     fetchUserDetails={fetchUserDetails}/>}
+                    {activeTab === 'changePassword' && <ChangePassword userId={userInfo.id}/>}
+                </div>
             </div>
         </div>
     );
 };
 
-const AccountInfo = ({ userInfo, setUserInfo, fetchUserDetails }) => {
+const AccountInfo = ({userInfo, setUserInfo, fetchUserDetails}) => {
     const [form] = Form.useForm();
-    const genders ={
-        "1":"Nam","2":"Nữ","3":"Khác"
-    }
     useEffect(() => {
         form.setFieldsValue({
             email: userInfo.email,
             phone: userInfo.phone,
             fullName: userInfo.fullName,
-            gender:  genders[userInfo.gender],
-            birthDate: userInfo.birthDate ? dayjs( convertDateFormat (userInfo.birthDate)) : null,
+            gender: userInfo.gender,
+            birthDate: userInfo.birthDate ? dayjs(userInfo.birthDate, "DD-MM-YYYY") : null,
         });
     }, [userInfo, form]);
-    console.log("day", convertDateFormat (userInfo.birthDate))
-    console.log(dayjs( convertDateFormat (userInfo.birthDate))); // Đối tượng Dayjs từ chuỗi "YYYY-MM-DD"
-console.log(dayjs("16/09/2024", "DD/MM/YYYY").format("YYYY-MM-DD")); // Chuyển đổi sang YYYY-MM-DD
+
 
     const handleSubmit = async (values) => {
         try {
             const response = await callUpdateUserProfile(userInfo.id, {
                 fullName: values.fullName,
                 phoneNumber: values.phone,
-                gender: values.gender === "male" ? 1 : values.gender === "female" ? 2 : 3,
-                birthDate: values.birthDate.format("YYYY-MM-DD"),
+                gender: values.gender,
+                birthDate: values.birthDate ? values.birthDate.format("YYYY-MM-DD") : null,
             });
 
             if (response.success) {
@@ -113,9 +177,9 @@ console.log(dayjs("16/09/2024", "DD/MM/YYYY").format("YYYY-MM-DD")); // Chuyển
     };
 
     return (
-        <div className="pf-account-info">
-            <h2>Thông tin tài khoản</h2>
-            {/* <div className="pf-pic">
+        <div>
+            <div className="pf-account-info">
+                {/* <div className="pf-pic">
                 {
                     userInfo?.avatar  ?         <>      <img src={userInfo.avatar} alt="Avatar" />
                     <button className="delete-pic">Xoá ảnh</button> </>   :       <Avatar style={{ backgroundColor: 'GrayText', verticalAlign: 'middle' }} size="large" gap={6}>
@@ -124,73 +188,83 @@ console.log(dayjs("16/09/2024", "DD/MM/YYYY").format("YYYY-MM-DD")); // Chuyển
                 }
 
             </div> */}
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmit}
-            >
-                <Form.Item
-                    label="Email"
-                    name="email"
-                    rules={[{ type: "email", message: "Email không hợp lệ." }, { required: true, message: "Vui lòng nhập email." }]}
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleSubmit}
                 >
-                    <Input disabled />
-                </Form.Item>
+                    <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[{type: "email", message: "Email không hợp lệ."}, {
+                            required: true,
+                            message: "Vui lòng nhập email."
+                        }]}
+                    >
+                        <Input disabled/>
+                    </Form.Item>
 
-                <Form.Item
-                    label="Điện thoại di động"
-                    name="phone"
-                    rules={[{ pattern: /^[0-9]{9,12}$/, message: "Số điện thoại phải từ 9 đến 12 chữ số." }, { required: true, message: "Vui lòng nhập số điện thoại." }]}
-                >
-                    <Input
-                        type="tel"
-                        onKeyPress={(event) => {
-                            if (!/[0-9]/.test(event.key)) {
-                                event.preventDefault();
-                            }
-                        }}
-                    />
-                </Form.Item>
+                    <Form.Item
+                        label="Điện thoại di động"
+                        name="phone"
+                        rules={[{
+                            pattern: /^[0-9]{9,12}$/,
+                            message: "Số điện thoại phải từ 9 đến 12 chữ số."
+                        }, {required: true, message: "Vui lòng nhập số điện thoại."}]}
+                    >
+                        <Input
+                            type="tel"
+                            onKeyPress={(event) => {
+                                if (!/[0-9]/.test(event.key)) {
+                                    event.preventDefault();
+                                }
+                            }}
+                        />
+                    </Form.Item>
 
-                <Form.Item
-                    label="Họ tên"
-                    name="fullName"
-                    rules={[{ required: true, message: "Họ và tên không được để trống." }]}
-                >
-                    <Input />
-                </Form.Item>
+                    <Form.Item
+                        label="Họ tên"
+                        name="fullName"
+                        rules={[{required: true, message: "Họ và tên không được để trống."}]}
+                    >
+                        <Input/>
+                    </Form.Item>
 
-                <Form.Item
-                    label="Giới tính"
-                    name="gender"
-                    rules={[{ required: true, message: "Vui lòng chọn giới tính." }]}
-                >
-                    <Select>
-                        <Option value="male">Nam</Option>
-                        <Option value="female">Nữ</Option>
-                        <Option value="other">Khác</Option>
-                    </Select>
-                </Form.Item>
+                    <Form.Item
+                        label="Giới tính"
+                        name="gender"
+                        rules={[{required: true, message: "Vui lòng chọn giới tính."}]}
+                    >
+                        <Select>
+                            <Option value="Nam">Nam</Option>
+                            <Option value="Nữ">Nữ</Option>
+                            <Option value="Khác">Khác</Option>
+                        </Select>
+                    </Form.Item>
 
-                <Form.Item
-                    label="Ngày sinh"
-                    name="birthDate"
-                    rules={[{ required: true, message: "Ngày sinh không được để trống." }]}
-                >
-                    <DatePicker />
-                </Form.Item>
+                    <Form.Item
+                        label="Ngày sinh"
+                        name="birthDate"
+                        rules={[{required: true, message: "Ngày sinh không được để trống."}]}
+                    >
+                        <DatePicker
+                            format="DD-MM-YYYY"
+                        />
+                    </Form.Item>
 
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Lưu
-                    </Button>
-                </Form.Item>
-            </Form>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">
+                            Lưu
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </div>
+
         </div>
     );
 };
 
-const ChangePassword = ({ userId }) => {
+const ChangePassword = ({userId}) => {
     const [form] = Form.useForm();
 
     const handleSubmit = async (values) => {
@@ -223,7 +297,6 @@ const ChangePassword = ({ userId }) => {
 
     return (
         <div className="pf-change-password">
-            <h2>Đổi mật khẩu</h2>
             <Form
                 form={form}
                 layout="vertical"
@@ -232,17 +305,17 @@ const ChangePassword = ({ userId }) => {
                 <Form.Item
                     label="Mật khẩu hiện tại"
                     name="currentPassword"
-                    rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại." }]}
+                    rules={[{required: true, message: "Vui lòng nhập mật khẩu hiện tại."}]}
                 >
-                    <Input.Password />
+                    <Input.Password/>
                 </Form.Item>
 
                 <Form.Item
                     label="Mật khẩu mới"
                     name="newPassword"
-                    rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới." }]}
+                    rules={[{required: true, message: "Vui lòng nhập mật khẩu mới."}]}
                 >
-                    <Input.Password />
+                    <Input.Password/>
                 </Form.Item>
 
                 <Form.Item
@@ -250,8 +323,8 @@ const ChangePassword = ({ userId }) => {
                     name="confirmPassword"
                     dependencies={['newPassword']}
                     rules={[
-                        { required: true, message: "Vui lòng nhập lại mật khẩu mới." },
-                        ({ getFieldValue }) => ({
+                        {required: true, message: "Vui lòng nhập lại mật khẩu mới."},
+                        ({getFieldValue}) => ({
                             validator(_, value) {
                                 if (!value || getFieldValue('newPassword') === value) {
                                     return Promise.resolve();
@@ -261,7 +334,7 @@ const ChangePassword = ({ userId }) => {
                         }),
                     ]}
                 >
-                    <Input.Password />
+                    <Input.Password/>
                 </Form.Item>
 
                 <Form.Item>
@@ -277,5 +350,5 @@ const ChangePassword = ({ userId }) => {
 export default Profile;
 const convertDateFormat = (dateString) => {
     const [day, month, year] = dateString.split("-");
-    return `${year}-${month}-${day}`;
+    return `${day}-${month}-${year}`;
 };

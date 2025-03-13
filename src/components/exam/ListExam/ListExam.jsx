@@ -71,20 +71,24 @@ const ListExam = () => {
             {/* Header */}
             <Spin align="center" gap="middle" size="large" spinning={loading}>
 
-                <Space direction="vertical" style={{width: "100%"}}>
-                    <Space style={{justifyContent: "space-between", width: "100%"}}>
-                        <h2>Danh sách đề thi</h2>
-                        <Input
-                            placeholder="Nhập từ khóa tìm kiếm..."
-                            prefix={<SearchOutlined/>}
-                            style={{width: "300px"}}
-                            value={searchKeywords}
-                            onChange={(e) => {
-                                setSearchKeywords(e.target.value)
-                            }}
-                        />
-                    </Space>
-                </Space>
+                <div>
+                    <div className="header">
+                        <Space direction="vertical" style={{width: "100%"}}>
+                            <Space style={{justifyContent: "space-between", width: "100%"}}>
+                                <h2>Danh sách đề thi</h2>
+                                <Input
+                                    placeholder="Nhập từ khóa tìm kiếm..."
+                                    prefix={<SearchOutlined/>}
+                                    style={{width: "300px"}}
+                                    value={searchKeywords}
+                                    onChange={(e) => {
+                                        setSearchKeywords(e.target.value)
+                                    }}
+                                />
+                            </Space>
+                        </Space>
+                    </div>
+                </div>
 
                 {/* Grid */}
                 <Row gutter={[16, 16]} style={{marginTop: "20px"}}>
@@ -98,7 +102,8 @@ const ListExam = () => {
                         </Col>
                     ))}
                 </Row>
-                {exams.content?.length === 0 && loading === false && <Empty description="Không thấy đề thi"></Empty>}
+                {exams.content?.length === 0 && loading === false &&
+                    <Empty description="Không thấy đề thi"></Empty>}
 
             </Spin>
 
@@ -106,7 +111,7 @@ const ListExam = () => {
             <Pagination
                 style={{textAlign: "center", marginTop: "20px"}}
                 current={currentPage}
-                pageSize={8}
+                pageSize={pageSize}
                 total={exams.totalElements}
                 onChange={(page) => {
                     setCurrentPage(page);

@@ -54,6 +54,9 @@ function LoginPage() {
                 localStorage.setItem('access_token', res.data.token);
                 message.success(res?.message);
                 const resUserDetail = await callUserDetail();
+                localStorage.setItem('currentEmail', resUserDetail.data.email);
+                localStorage.setItem("FirstNameChar", resUserDetail.data.fullName);
+                localStorage.setItem('role', resUserDetail.data.role);
                 console.log("detail",resUserDetail)
                 if(resUserDetail?.data?.role ==="Quản trị viên"){
                     navigate('/admin');

@@ -7,7 +7,7 @@ const Item = ({ item, likes, dislikes, handleLike, handleDislike }) => {
     const navigate = useNavigate();
     return (
         <Card
-        onClick={(e)=>{navigate(`/de-thi/${item.id}`)}}
+        onClick={(e)=>{navigate(`/exam/${item.id}`)}}
             hoverable
             cover={
                 <img

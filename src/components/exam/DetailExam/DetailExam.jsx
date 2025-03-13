@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input, Avatar, Empty, Spin} from "antd";
 import {
-    DownloadOutlined,
     PlayCircleOutlined,
-    BookOutlined,
     LikeOutlined,
     DislikeOutlined,
-    SendOutlined
+    SendOutlined, ArrowLeftOutlined
 } from "@ant-design/icons";
 import {callDetailExam} from "../../../services/api";
 import {useNavigate, useParams} from "react-router-dom";
@@ -84,80 +82,86 @@ const ExamDetail = () => {
     return (
         <Spin spinning={loading}>
             <div style={{padding: "20px"}}>
-                {exam && <div><Card>
-                    <Row gutter={[16, 16]}>
-                        {/* Left section: Exam details */}
-                        <Col xs={24} sm={16}>
-                            <Row gutter={[16, 16]}>
-                                <Col span={6}>
-                                    <img
-                                        alt="exam"
-                                        src="https://s3.eduquiz.io.vn/default/exam/exam-04.png"
-                                        style={{width: "100%", borderRadius: "8px"}}
-                                    />
-                                </Col>
-                                <Col span={18}>
-                                    <h2>{exam.examName}</h2>
-                                    <p><b>Mã đề thi:</b> {exam.examCode}</p>
-                                    <p><b>Mô tả:</b> {exam.description}</p>
-                                    <p><b>Thời gian làm bài:</b> {exam.time} phút</p>
-                                    <p><b>Thời gian bắt đầu:</b> {new Date(exam.effectiveDate).toLocaleString("vi-VN", {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                        hour12: false, // Hiển thị 24h
-                                    })}</p>
-                                    <p>
-                                        <b>Thời gian hết hạn:</b>{" "}
-                                        {exam.expirationDate ? (
-                                            exam.expirationDate
-                                        ) : (
-                                            <Tooltip title="Không có hạn">
-                                                {/* <InfinityOutlined /> */}∞
-                                            </Tooltip>
-                                        )}
-                                    </p>
-                                    <p><b>Số lượng mã đề:</b> {exam.randomAmount}</p>
-                                    <p><b>Tổng số câu hỏi:</b> {exam.totalQuestion}</p>
-                                    <p><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}</p>
-                                    <p><b>Cách tính điểm:</b> {exam.scoreType}</p>
-                                    <p><b>Số thí sinh:</b> {exam.executionAmount}</p>
-                                    <Space size="large">
-                                        <Tooltip title="Like">
-                                            <Button icon={<LikeOutlined/>} type="text">{exam.likes}</Button>
-                                        </Tooltip>
-                                        <Tooltip title="Dislike">
-                                            <Button icon={<DislikeOutlined/>} type="text">{exam.unlikes}</Button>
-                                        </Tooltip>
-                                    </Space>
-                                    <Space style={{marginTop: "10px"}}>
-                                        <Button
-                                            type="primary"
-                                            icon={<PlayCircleOutlined/>}
-                                            style={{backgroundColor: "#9254de"}}
-                                            // onClick={()=>{navigate(`quiz/${exam.id}`))}}
-                                            disabled={new Date() < new Date(exam.effectiveDate)}
-                                            onClick={() => {
-                                                navigate(`/quiz/${exam.id}`)
-                                            }}
+                {exam && <div>
+                    <div className="header">
+                        <h2>ĐỀ THI: {exam.examCode} - {exam.examName}</h2>
+                        <Button
+                            type="primary" danger icon={<ArrowLeftOutlined/>}
+                            onClick={() => navigate("/")}
+                        >
+                            Trở về
+                        </Button>
+                    </div>
+                </div>}
+                {exam && <div>
+                    <Card>
+                        <Row gutter={[16, 16]}>
+                            {/* Left section: Exam details */}
+                            <Col xs={24} sm={16}>
+                                <Row gutter={[16, 16]}>
+                                    <Col span={6}>
+                                        <img
+                                            alt="exam"
+                                            src="https://s3.eduquiz.io.vn/default/exam/exam-04.png"
+                                            style={{width: "100%", borderRadius: "8px"}}
+                                        />
+                                    </Col>
+                                    <Col span={18}>
+                                        <h2>{exam.examName}</h2>
+                                        <p><b>Mã đề thi:</b> {exam.examCode}</p>
+                                        <p><b>Mô tả:</b> {exam.description}</p>
+                                        <p><b>Thời gian làm bài:</b> {exam.time} phút</p>
+                                        <p><b>Thời gian bắt
+                                            đầu:</b> {new Date(exam.effectiveDate).toLocaleString("vi-VN", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                            hour12: false, // Hiển thị 24h
+                                        })}</p>
+                                        <p>
+                                            <b>Thời gian hết hạn:</b>{" "}
+                                            {exam.expirationDate ? (
+                                                exam.expirationDate
+                                            ) : (
+                                                <Tooltip title="Không có hạn">
+                                                    {/* <InfinityOutlined /> */}∞
+                                                </Tooltip>
+                                            )}
+                                        </p>
+                                        <p><b>Số lượng mã đề:</b> {exam.randomAmount}</p>
+                                        <p><b>Tổng số câu hỏi:</b> {exam.totalQuestion}</p>
+                                        <p><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}</p>
+                                        <p><b>Cách tính điểm:</b> {exam.scoreType}</p>
+                                        <p><b>Số thí sinh:</b> {exam.executorEmail.length}</p>
 
-                                        >
-                                            {new Date() < new Date(exam.effectiveDate) && "Đề thi chưa mở"}
-                                            {new Date() >= new Date(exam.effectiveDate) && "Vào thi"}
+                                        <Space style={{marginTop: "10px"}}>
+                                            <Button
+                                                type="primary"
+                                                icon={<PlayCircleOutlined/>}
+                                                style={{backgroundColor: "#9254de"}}
+                                                // onClick={()=>{navigate(`quiz/${exam.id}`))}}
+                                                disabled={new Date() < new Date(exam.effectiveDate)}
+                                                onClick={() => {
+                                                    navigate(`/quiz/${exam.id}`)
+                                                }}
 
-                                        </Button>
+                                            >
+                                                {new Date() < new Date(exam.effectiveDate) && "Đề thi chưa mở"}
+                                                {new Date() >= new Date(exam.effectiveDate) && "Vào thi"}
 
-                                    </Space>
-                                </Col>
-                            </Row>
-                        </Col>
+                                            </Button>
 
-                        {/* Right section: Sharing options */}
-                        <Col xs={24} sm={8} style={{textAlign: "center"}}>
-                            {/* <h4>Chia sẻ đề thi</h4>
+                                        </Space>
+                                    </Col>
+                                </Row>
+                            </Col>
+
+                            {/* Right section: Sharing options */}
+                            <Col xs={24} sm={8} style={{textAlign: "center"}}>
+                                {/* <h4>Chia sẻ đề thi</h4>
                         <Space size="large">
                             <Button shape="circle" icon={<DownloadOutlined />} />
                         </Space>
@@ -166,18 +170,18 @@ const ExamDetail = () => {
                             <Button>Sao chép link</Button>
                             <Button>Quét mã QRCode</Button>
                         </Space> */}
-                        </Col>
-                    </Row>
-                </Card>
+                            </Col>
+                        </Row>
+                    </Card>
 
                     {/* Tabs for additional information */}
                     <Tabs defaultActiveKey="2" style={{marginTop: "20px"}}>
 
                         <TabPane tab="Thí sinh" key="2">
-                            <ExamineeTable examId={exam.id}></ExamineeTable>
+                            <ExamineeTable executors={exam.executors} loading={loading}></ExamineeTable>
                         </TabPane>
                         <TabPane tab="Kết quả" key="6">
-                            <ResultLists examId={exam.id} />
+                            <ResultLists examId={exam.id} createdBy={exam.createdBy} />
                         </TabPane>
 
                         <TabPane tab="Bình luận" key="4">

@@ -21,18 +21,18 @@
 }
 
 .modal-title {
-    font-size: 22px;
+    font-size: 30px;
     font-weight: bold;
     margin-bottom: 15px;
 }
 
 .modal-content h3 {
-    font-size: 18px;
+    font-size: 24px;
     margin-bottom: 10px;
 }
 
 .modal-content p {
-    font-size: 14px;
+    font-size: 20px;
     margin: 5px 0;
 }
 
@@ -43,6 +43,7 @@
 
 .form-group label {
     font-weight: bold;
+    font-size: 20px;
     display: block;
     margin-bottom: 5px;
 }
@@ -90,36 +91,40 @@
 }
 
 .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
     margin-top: 20px;
+}
+
+.btn-buy, .btn-close {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
 }
 
 .btn-buy {
     background: #28a745;
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
-    font-size: 16px;
 }
 
 .btn-buy:hover {
     background: #218838;
+    transform: scale(1.05);
 }
 
 .btn-close {
     background: #dc3545;
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
 }
 
 .btn-close:hover {
     background: #c82333;
+    transform: scale(1.05);
 }
 
 .price-section {

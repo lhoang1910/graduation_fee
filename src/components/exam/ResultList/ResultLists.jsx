@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {notification, Table, Checkbox, Input} from "antd";
+import {notification, Table, Checkbox, Input, Card, Space, Button} from "antd";
 import {callUserDoExamResult} from "../../../services/api";
+import {EyeOutlined} from "@ant-design/icons";
 
-const { Search } = Input;
+const {Search} = Input;
 
 const columns = [
     {
@@ -12,9 +13,9 @@ const columns = [
         render: (text, record, index) => index + 1,
     },
     {
-        title: "Mã thành viên",
-        dataIndex: "userCode",
-        key: "userCode",
+        title: "Số báo danh",
+        dataIndex: "candidateNumber",
+        key: "candidateNumber",
         sorter: true,
     },
     {
@@ -40,177 +41,39 @@ const columns = [
         dataIndex: "timeTracking",
         key: "timeTracking",
         sorter: true,
+        render: (time) => {
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes} phút ${seconds} giây`;
+        },
     },
     {
         title: "Điểm",
         dataIndex: "score",
         key: "score",
         sorter: true,
-    }
+    },
+    {
+        title: "Thao tác",
+        key: "action",
+        align: "center",
+        render: (_, record) => (
+            <div style={{textAlign: "center"}}>
+                <Button
+                    type="primary"
+                    icon={<EyeOutlined/>}
+                    onClick={() => handleViewDetail(record)}
+                >
+                    Xem chi tiết
+                </Button>
+            </div>
+        ),
+    },
 ];
 
 
-const ResultLists = ({examId}) => {
+const ResultLists = ({examId, createdBy}) => {
 
-    // const result= {
-    //     "content": [
-    //         {
-    //             "id": "c5db8f95-6dd6-4c64-9c18-ed0a7d385e7f",
-    //             "examId": "b8f7475b-37e7-477d-9ffd-3c720c7ebb1a",
-    //             "candidateNumber": "Q25-04-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-04-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "a61a73ba-245a-4ced-a7f4-110e4a71eea7",
-    //             "examId": "82e8f1e9-1a5b-4998-a180-0edf205f2d27",
-    //             "candidateNumber": "Q25-05-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-05-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "e0eff97e-eff5-4732-8729-a5e5d4523629",
-    //             "examId": "5962e507-211e-449b-a847-7331b99a9872",
-    //             "candidateNumber": "Q25-06-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-06-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "e0e2fc48-b84b-4901-931d-8804b1b3a000",
-    //             "examId": "fd6151a6-1b24-4914-8e97-b48010c734d1",
-    //             "candidateNumber": "Q25-07-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-07-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "e1c6a4bd-cd88-4e75-a3d0-eb60dbb5ae27",
-    //             "examId": "6cdb3363-b0af-4523-9203-5db3ba7ce5fd",
-    //             "candidateNumber": "Q25-08-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-08-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "11f4063d-c803-4b47-a0b6-4e81efde7b14",
-    //             "examId": "99f1e9e2-c3a4-43cc-999a-ca1c642bb600",
-    //             "candidateNumber": "Q25-09-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-09-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "41c36d52-fd7e-4bb7-8f90-7ca688d56a75",
-    //             "examId": "1a0061f2-2288-48d9-bef9-05e869e745d4",
-    //             "candidateNumber": "Q25-10-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-10-MĐ01",
-    //             "classCode": null,
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "bf9702d1-95e8-4df6-be84-268b93c7cb3a",
-    //             "examId": "0a5e725f-628a-46f0-ab52-170a6a48bebe",
-    //             "candidateNumber": "Q25-12-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-12-MĐ01",
-    //             "classCode": "C2500001",
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "1d97f0d6-9cc7-473b-bf92-dcf41f5cea7e",
-    //             "examId": "c5d728b4-8287-4697-a14d-f3a736284815",
-    //             "candidateNumber": "Q25-13-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-13-MĐ01",
-    //             "classCode": "C2500001",
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         },
-    //         {
-    //             "id": "ba9bdc69-a581-417d-bf88-590ca69a6b17",
-    //             "examId": "a9592dd4-85b0-4d87-9999-bbe47304c3aa",
-    //             "candidateNumber": "Q25-14-MĐ00",
-    //             "examineeId": "39d0d41f-d61d-4948-9df5-d99e0a529899",
-    //             "examineeName": "Lê Huy Hoàngg",
-    //             "examineeCode": "U2500001",
-    //             "examineeEmail": "hoang03.it@gmail.com",
-    //             "paperCode": "Q25-14-MĐ01",
-    //             "classCode": "C2500001",
-    //             "executionAmount": 0,
-    //             "averageScore": 0.0
-    //         }
-    //     ],
-    //     "pageable": {
-    //         "sort": {
-    //             "empty": true,
-    //             "sorted": false,
-    //             "unsorted": true
-    //         },
-    //         "offset": 0,
-    //         "pageNumber": 0,
-    //         "pageSize": 10,
-    //         "paged": true,
-    //         "unpaged": false
-    //     },
-    //     "last": false,
-    //     "totalPages": 2,
-    //     "totalElements": 19,
-    //     "size": 10,
-    //     "number": 0,
-    //     "sort": {
-    //         "empty": true,
-    //         "sorted": false,
-    //         "unsorted": true
-    //     },
-    //     "numberOfElements": 10,
-    //     "first": true,
-    //     "empty": false
-    // }
     const handleTableChange = (pagination, filters, sorter) => {
         console.log(sorter)
         if (sorter) {
@@ -231,9 +94,9 @@ const ResultLists = ({examId}) => {
 
     };
 
-
     const [data, setData] = useState({});
-    const [page, setPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
     const [searchingKeys, setSearchingKeys] = useState('');
 
     const [loading, setLoading] = useState(false);
@@ -244,11 +107,11 @@ const ResultLists = ({examId}) => {
         setLoading(true);
         try {
             let request = {
-                highestOnly: isHighestOnly,
+                highest: isHighestOnly,
                 examId: examId,
                 searchingKeys: searchingKeys,
                 pageSize: 10,
-                pageNumber: page - 1
+                pageNumber: currentPage - 1
             }
             if (sorter) {
                 request = {
@@ -256,7 +119,7 @@ const ResultLists = ({examId}) => {
                     examId: examId,
                     searchingKeys: searchingKeys,
                     pageSize: 10,
-                    pageNumber: page - 1,
+                    pageNumber: currentPage - 1,
                     "sortCriteria": [
                         {
                             "key": sorter.key, // tên field cần sort theo
@@ -280,26 +143,43 @@ const ResultLists = ({examId}) => {
 
     useEffect(() => {
         fetchData();
-    }, [isHighestOnly, examId, searchingKeys, page]);
-    return <>
-        <div>
-            <Checkbox checked={isHighestOnly} onChange={() => setIsHighestOnly(e.target.checked)}>Hiển thị theo kết quả
-                tốt nhất</Checkbox>
-            <Search placeholder="input search text" onSearch={() => setSearchingKeys(e.target.value)} enterButton />
-        </div>
-        <br />
-        <Table loading={loading}
-               columns={columns}
-               dataSource={data?.content}
-               onChange={handleTableChange}
-               pagination={{
-                   total: data?.totalElements,
-                   pageSize: 10,
-                   onChange: (page, pageSize) => {
-                       setPage(page);
-                   }
-               }}/>
-    </>;
+    }, [isHighestOnly, examId, searchingKeys, currentPage, pageSize]);
+    return (
+        <Card style={{padding: 20, borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)"}}>
+            <Space direction="vertical" style={{width: "100%"}}>
+                <Space style={{display: "flex", justifyContent: "space-between"}}>
+                    <Checkbox checked={isHighestOnly} onChange={(e) => setIsHighestOnly(e.target.checked)}>
+                        Hiển thị theo kết quả tốt nhất
+                    </Checkbox>
+                    <Search
+                        placeholder="Nhập từ khóa tìm kiếm"
+                        onSearch={setSearchingKeys}
+                        enterButton
+                        style={{width: 300}}
+                    />
+                </Space>
+                <Table
+                    loading={loading}
+                    columns={createdBy === localStorage.getItem("currentEmail")
+                        ? columns
+                        : columns.filter((col) => col.key !== "action")}
+                    dataSource={data?.content}
+                    onChange={handleTableChange}
+                    pagination={{
+                        total: data?.totalElements,
+                        pageSize: pageSize,
+                        current: currentPage,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "20", "50"],
+                        onChange: (page, size) => {
+                            setCurrentPage(page);
+                            setPageSize(size);
+                        },
+                    }}
+                />
+            </Space>
+        </Card>
+    )
 };
 
 export default ResultLists;

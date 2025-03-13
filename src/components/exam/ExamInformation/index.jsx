@@ -13,7 +13,7 @@ function ExamInformation({detailExam,setIsLoading}) {
   const submitHandler =async ()=>{
     try {
       setIsLoading(true)
-      const response = await callSubmitExam(id,exam.data?.historyId,{questionResults:exam.data?.questionResults});
+      const response = await callSubmitExam(id,exam.data?.id,{questionResults:exam.data?.questionResults});
       console.log(response)
       if(response.success){
         dispatch(setExam(null))

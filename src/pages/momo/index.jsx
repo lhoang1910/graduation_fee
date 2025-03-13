@@ -25,7 +25,7 @@ const MomoPaymentTmpPage = () => {
                     description: error?.response?.data?.message || "Có lỗi xảy ra!"
                 });
             } finally {
-                navigate("/limitations");
+                navigate("/limitation-wallet");
             }
         };
 

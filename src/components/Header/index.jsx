@@ -1,22 +1,22 @@
 import './index.css';
-import React, { useState, useEffect } from 'react';
-import { RiVipCrownLine } from "react-icons/ri";
+import React, {useState, useEffect} from 'react';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BadgeIcon from '@mui/icons-material/Badge';
-import { Menu, MenuItem, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
-import { useNavigate } from "react-router-dom";
+import {Menu, MenuItem, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, Button} from '@mui/material';
+import {useNavigate} from "react-router-dom";
 import ReportBugModal from "../Report/index.jsx";
-import { Avatar, Card, Modal,Typography,Col,Row, notification } from 'antd';
-// import { Modal, Card, Row, Col, Typography } from "antd";
-const { Title, Text } = Typography;
+import {Avatar, Card, Modal, Typography, Col, Row} from 'antd';
 
-import { CodeOutlined, EditOutlined, FileTextOutlined } from '@ant-design/icons';
+const {Title, Text} = Typography;
+
+import {CodeOutlined, EditOutlined, FileTextOutlined} from '@ant-design/icons';
 import ServicePackage from "../CurrentLimitation/index.jsx";
 import {callCurrentUserLimitation} from "../../services/api.js";
+import {MdOutlineDashboardCustomize} from "react-icons/md";
 
-const Header = ({ isSidebarOpen }) => {
+const Header = ({isSidebarOpen}) => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [isProfile, setIsProfile] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
@@ -39,14 +39,6 @@ const Header = ({ isSidebarOpen }) => {
         setIsReportModalOpen(true);
     };
 
-    const handleLimitationClick = () => {
-        setIsLimitationModalOpen(true);
-    };
-
-    const handleCreateMenuClick = () => {
-        setOpenDialog(true)
-    };
-
     const handleClose = (profile) => {
         setAnchorEl(null);
         setIsProfile(profile);
@@ -61,15 +53,10 @@ const Header = ({ isSidebarOpen }) => {
     };
 
     const showModal = () => {
-      setIsModalOpen(true);
+        setIsModalOpen(true);
     };
-
-    const handleOk = () => {
-      setIsModalOpen(false);
-    };
-
     const closeModal = () => {
-      setIsModalOpen(false);
+        setIsModalOpen(false);
     };
 
     useEffect(() => {
@@ -83,16 +70,6 @@ const Header = ({ isSidebarOpen }) => {
             setIsProfile(null);
         }
     }, [isProfile, navigate]);
-
-    const getLimitationViewName = () => {
-        useEffect(() => {
-            fetchUserLimitation().then(setLimitation);
-        }, []);
-        if (limitation?.limitationCode && limitation?.limitationName) {
-            return limitation?.limitationCode + "-" + limitation?.limitationName
-        }
-        return "Gói dịch vụ"
-    }
 
     return (
         <div className={`header ${isSidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
@@ -111,28 +88,19 @@ const Header = ({ isSidebarOpen }) => {
             {/* Các nút và Avatar */}
             <div className="action-buttons">
                 <button className="report-button" onClick={handleReportBug}>
-                    <BugReportIcon className="icon" onClick={handleReportBug}/>
+                    <BugReportIcon className="header-icon" onClick={handleReportBug}/>
                     Báo lỗi
                 </button>
 
                 <ReportBugModal isOpen={isReportModalOpen} setIsOpen={setIsReportModalOpen}/>
                 {/* Nút Tạo đề thi */}
                 <button className="create-button" onClick={showModal}>
-                    <AddBoxIcon className="icon"/>
+                    <AddBoxIcon className="header-icon"/>
                     Tạo đề thi
                 </button>
-                {/*<button*/}
-                {/*    className="create-button" onClick={handleLimitationClick}>*/}
-                {/*    <RiVipCrownLine className="icon"/>*/}
-                {/*    <span className="font-medium">{getLimitationViewName()}</span>*/}
-                {/*</button>*/}
-                <ServicePackage isOpen={isLimitationModalOpen} setIsOpen={setIsLimitationModalOpen} limitation={limitation}/>
+                <ServicePackage isOpen={isLimitationModalOpen} setIsOpen={setIsLimitationModalOpen}
+                                limitation={limitation}/>
                 <IconButton onClick={handleAvatarClick}>
-                    {/* <img
-                        src="https://via.placeholder.com/30"
-                        alt="User"
-                        className="profile-avatar"
-                    /> */}
                     <Avatar
                         style={{
                             backgroundColor: "red",
@@ -141,7 +109,7 @@ const Header = ({ isSidebarOpen }) => {
                         size="large"
                         gap={1}
                     >
-                        K
+                        {localStorage.getItem("FirstNameChar").trim().charAt(0).toUpperCase()}
                     </Avatar>
                 </IconButton>
 
@@ -184,7 +152,7 @@ const Header = ({ isSidebarOpen }) => {
                                 }}
                                 onClick={() => {
                                     closeModal();
-                                    navigate("/workspace/exams/create-with-file?tab=upload_file_quiz")
+                                    navigate("workspace/exams/create-with-ai")
                                 }}
                             >
                                 <FileTextOutlined style={{fontSize: "40px", color: "#722ed1"}}/>
@@ -253,11 +221,18 @@ const Header = ({ isSidebarOpen }) => {
                         horizontal: 'right',
                     }}
                 >
+                    {localStorage.getItem("role") === "Quản trị viên" && (<MenuItem onClick={() => navigate("/admin")}>
+                        <MdOutlineDashboardCustomize className="icon"/>
+                        Admin Dashboard
+                    </MenuItem>)}
                     <MenuItem onClick={() => handleClose(true)}>
                         <BadgeIcon className="icon"/>
                         Hồ sơ
                     </MenuItem>
-                    <MenuItem onClick={() => handleClose(false)}>
+                    <MenuItem onClick={() => {
+                        handleClose(false)
+                        localStorage.clear();
+                    }}>
                         <LogoutIcon className="icon"/>
                         Đăng xuất
                     </MenuItem>

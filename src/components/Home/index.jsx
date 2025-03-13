@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./index.css";
 import { callCurrentUserDashboard } from "../../services/api.js";
+import ClassCards from "../Classes/ClassItem/Index.jsx";
+import {Empty} from "antd";
+import Item from "../exam/ListExam/Item.jsx";
+import ExamCards from "../exam/ExamCards/Index.jsx";
 
 const Home = () => {
     const [userDashboard, setUserDashboard] = useState(null);
@@ -61,46 +65,39 @@ const Home = () => {
 
             <div className="recent-access">
                 <div className="recent-header">
-                    <h3>Lớp học gần đây</h3>
+                    <h3>Đề thi gần đây</h3>
                 </div>
-                <div className="recent-list">
-                    {mockData.map((item, index) => (
-                        <div key={index} className="recent-item">
-                            <h4>{item.title}</h4>
-                            <p className="date">📅 {item.date}</p>
-                            <p className="stats">❓ {item.questions} 📊 {item.attempts}</p>
-                            <p className="author">👤 {item.author}</p>
-                            <button className="exam-button">Vào ôn thi</button>
-                        </div>
-                    ))}
-                </div>
+                {(!userDashboard?.recentClasses || userDashboard?.recentClasses.length === 0) ? (
+                    <Empty description="Không thấy lớp học"/>
+                ) : (
+                    <div className="recent-list">
+                        <ExamCards exams={userDashboard.recentExam}/>
+                    </div>
+                )}
             </div>
 
             <div className="recent-access">
                 <div className="recent-header">
-                    <h3>Đề thi gần đây</h3>
+                    <h3>Lớp học gần đây</h3>
                 </div>
-                <div className="recent-list">
-                    {mockData.map((item, index) => (
-                        <div key={index} className="recent-item">
-                            <h4>{item.title}</h4>
-                            <p className="date">📅 {item.date}</p>
-                            <p className="stats">❓ {item.questions} 📊 {item.attempts}</p>
-                            <p className="author">👤 {item.author}</p>
-                            <button className="exam-button">Vào ôn thi</button>
-                        </div>
-                    ))}
-                </div>
+
+                {(!userDashboard?.recentClasses || userDashboard?.recentClasses.length === 0) ? (
+                    <Empty description="Không thấy lớp học"/>
+                ) : (
+                    <div className="recent-list">
+                        <ClassCards classes={userDashboard.recentClasses}/>
+                    </div>
+                )}
             </div>
         </div>
     );
 };
 
 const mockData = [
-    { title: "Tin 4 web-mb", date: "07/10/2024", questions: 141, attempts: 112, author: "Đức Duy" },
-    { title: "Từ vựng", date: "05/10/2024", questions: 36, attempts: 9, author: "tiếng anh 1" },
-    { title: "ATTT - GK", date: "04/10/2024", questions: 49, attempts: 10, author: "ATTT" },
-    { title: "Logic.thh", date: "03/10/2024", questions: 100, attempts: 79, author: "huyen huong" }
+    {title: "Tin 4 web-mb", date: "07/10/2024", questions: 141, attempts: 112, author: "Đức Duy"},
+    {title: "Từ vựng", date: "05/10/2024", questions: 36, attempts: 9, author: "tiếng anh 1"},
+    {title: "ATTT - GK", date: "04/10/2024", questions: 49, attempts: 10, author: "ATTT"},
+    {title: "Logic.thh", date: "03/10/2024", questions: 100, attempts: 79, author: "huyen huong"}
 ];
 
 export default Home;

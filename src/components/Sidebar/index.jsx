@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import './index.css';
 import { useNavigate } from 'react-router-dom';
 import {RiCustomerService2Line, RiVipCrownLine} from "react-icons/ri";
+import { IoHome } from "react-icons/io5";
+import { MdWallet } from "react-icons/md";
 import { VscHistory } from "react-icons/vsc";
 import { LuListTodo } from "react-icons/lu";
+import { MdOutlineDisplaySettings } from "react-icons/md";
 
 import {
     FaChalkboardTeacher, FaChevronDown, FaChevronUp,
@@ -34,10 +37,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
             <div className="menu">
                 <div className="menu-item">
-                    <div className="menu-title" onClick={() => {
-                        navigate("/");
-                        setIsUserOpen(!isUserOpen);
-                    }}>
+                    <div className="menu-title" onClick={() => setIsUserOpen(!isUserOpen)}>
                         <FaUser style={{marginRight: '12px', fontSize: '30px', cursor: "pointer"}}/>
                         {isOpen && <span style={{cursor: "pointer"}}>Cá nhân</span>}
                         {isOpen && (isUserOpen ? (
@@ -46,6 +46,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             <FaChevronDown style={{marginLeft: 'auto', fontSize: '18px', cursor: "pointer"}}/>
                         ))}
                     </div>
+                    {isUserOpen && isOpen && (
+                        <ul className="submenu">
+                            <li onClick={() => navigate("/")}>
+                                <IoHome style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Thư viện của tôi'}
+                            </li>
+                            <li onClick={() => navigate("/limitation-wallet")}>
+                                <MdWallet style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Ví của tôi'}
+                            </li>
+                        </ul>
+                    )}
                 </div>
 
                 <div className="menu-item">
@@ -60,17 +72,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     </div>
                     {isClassOpen && isOpen && (
                         <ul className="submenu">
-                            <li onClick={() => navigate("/class/member-view")}>
+                            <li onClick={() => navigate("classes/my-class")}>
                                 <FaRegHeart style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Lớp học của tôi'}
                             </li>
-                            <li onClick={() => navigate("/class/recent-view")}>
-                                <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
-                                {isOpen && 'Lớp học gần đây'}
-                            </li>
-                            <li onClick={() => navigate("/class/author-view")}>
-                                <FaClipboardList style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
-                                {isOpen && 'Lớp học đã tạo'}
+                            <li onClick={() => navigate("classes/created-class")}>
+                                <MdOutlineDisplaySettings style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Quản lý lớp học'}
                             </li>
                         </ul>
                     )}
@@ -88,19 +96,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     </div>
                     {isExamOpen && isOpen && (
                         <ul className="submenu">
-                            <li onClick={() => navigate("/quiz/exam/search")}>
+                            <li onClick={() => navigate("/exam/explore")}>
                                 <MdExplore style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Khám phá'}
                             </li>
-                            <li onClick={() => navigate("/recent-exams")}>
-                                <VscHistory style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
-                                {isOpen && 'Đề thi gần đây'}
+                            <li onClick={() => navigate("/exam/created")}>
+                                <MdOutlineDisplaySettings style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Quản lý đề thi'}
                             </li>
-                            <li onClick={() => navigate("/workspace/exams/list")}>
-                                <FaClipboardList style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
-                                {isOpen && 'Đề thi đã tạo'}
-                            </li>
-                            <li onClick={() => navigate("/my-results")}>
+                            <li onClick={() => navigate("/result-dashboard")}>
                                 <LuListTodo style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Kết quả của tôi'}
                             </li>

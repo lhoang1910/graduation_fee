@@ -12,7 +12,7 @@ const {Text, Title} = Typography;
 const CreatingwithFile = () => {
     const dispatch = useDispatch();
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); 
 
     const navigate = useNavigate();
     const uploadProps = {
