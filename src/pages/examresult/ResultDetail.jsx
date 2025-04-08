@@ -92,7 +92,7 @@ const ExamResultDetail = () => {
                                           desc={examResponse?.data?.notAnswer}></CompletionStatus>
                     </Space>
                     <Flex vertical gap={"small"}>
-                        {examResponse?.data.questionResults?.map((e, i) => (
+                        {examResponse && examResponse?.data.questionResults?.map((e, i) => (
                             <Question question={e} index={i} key={i} type={"result"}></Question>))}
                     </Flex>
                 </Card>

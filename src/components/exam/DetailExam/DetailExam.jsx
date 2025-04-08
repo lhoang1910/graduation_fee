@@ -1,15 +1,26 @@
 import React, {useEffect, useState} from "react";
-import {Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input, Avatar, Empty, Spin} from "antd";
+import {Card, Row, Col, Button, Tabs, Space, Tooltip, List, Input, Avatar, Empty, Spin, Tag, notification} from "antd";
 import {
     PlayCircleOutlined,
     LikeOutlined,
     DislikeOutlined,
-    SendOutlined, ArrowLeftOutlined
+    SendOutlined,
+    ArrowLeftOutlined,
+    ClockCircleOutlined,
+    QuestionCircleOutlined,
+    UserOutlined,
+    InfoCircleOutlined,
+    CalendarOutlined, SettingOutlined, DownloadOutlined, FileExcelOutlined
 } from "@ant-design/icons";
-import {callDetailExam} from "../../../services/api";
+import {callDetailExam, callExportResult, callUpdateExam} from "../../../services/api";
 import {useNavigate, useParams} from "react-router-dom";
 import ExamineeTable from "./Results";
 import ResultLists from "../ResultList/ResultLists.jsx";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import {BsFillQuestionOctagonFill} from "react-icons/bs";
+import ExamSettingModal from "../Update/ExamSettingModal.jsx";
+import {fetchExam} from "../../../redux/exam/examSlice.js";
 
 const {TabPane} = Tabs;
 
@@ -18,7 +29,7 @@ const ExamDetail = () => {
 
     const [loading, setLoading] = useState(false);
     const [exam, setExam] = useState(null);
-
+    const [isAvailable, setIsAvailable] = useState(false)
     const [comments, setComments] = useState([
         {
             id: 1,
@@ -43,6 +54,7 @@ const ExamDetail = () => {
         },
     ]);
     const [newComment, setNewComment] = useState("");
+    const [settingVisible, setSettingVisible] = useState("");
 
     const handleAddComment = () => {
         if (newComment.trim()) {
@@ -67,8 +79,7 @@ const ExamDetail = () => {
 
                 const response = await callDetailExam(id);
                 setExam(response.data);
-                console.log(exam);
-
+                setIsAvailable(response.data && (response.data.effectiveDate == null || new Date() >= new Date(response.data.effectiveDate)) && (response.data.expirationDate == null || new Date() < new Date(response.data.expirationDate)));
             } catch (error) {
                 // setError(error.message);
                 console.log(error)
@@ -79,6 +90,92 @@ const ExamDetail = () => {
 
         fetchData();
     }, [id]);
+
+    const exportExecutorsToExcel = () => {
+        if (!exam?.executors?.length) return;
+
+        const data = exam.executors.map((executor, index) => ({
+            "Số thứ tự": index + 1,
+            "Số báo danh": executor.candidateNumber,
+            "Mã user": executor.userCode,
+            "Họ và tên": executor.fullName,
+            "Email": executor.email,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+
+        worksheet['!cols'] = [
+            { wch: 5 }, // Số thứ tự
+            { wch: 20 }, // Số báo danh
+            { wch: 20 }, // Mã user
+            { wch: 30 }, // Họ và tên
+            { wch: 30 }, // Email
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Thí sinh");
+
+        const excelBuffer = XLSX.write(workbook, {
+            bookType: "xlsx",
+            type: "array",
+        });
+
+        const fileName = `${exam?.examCode.replace(/\s+/g, "_")}_thi_sinh.xlsx`;
+        const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        saveAs(blob, fileName);
+    };
+
+    const exportResultToExcel = async () => {
+        const res = await callExportResult(id);
+
+        if (res?.success && res?.data?.length > 0) {
+            const data = res.data.map((item, index) => {
+                const totalSeconds = Math.round(item.timeTracking * 60);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+
+                return {
+                    "Số thứ tự": index + 1,
+                    "Số báo danh": item.candidateNumber,
+                    "Họ và tên": item.fullName,
+                    "Mã đề": item.paperCode,
+                    "Điểm": item.score,
+                    "Thời gian làm bài": `${minutes} phút ${seconds} giây`,
+                    "Lượt làm": item.sequenceExecute,
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(data);
+
+            // Tùy chỉnh độ rộng cột
+            worksheet['!cols'] = [
+                { wch: 12 }, // Số thứ tự
+                { wch: 20 }, // Số báo danh
+                { wch: 30 }, // Họ và tên
+                { wch: 15 }, // Mã đề
+                { wch: 10 }, // Điểm
+                { wch: 20 }, // Thời gian làm bài
+                { wch: 12 }, // Lượt làm
+            ];
+
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Kết quả");
+
+            const fileName = `ket_qua_thi_${exam.examCode}.xlsx`;
+            const excelBuffer = XLSX.write(workbook, {
+                bookType: "xlsx",
+                type: "array",
+            });
+
+            const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+            saveAs(blob, fileName);
+        } else {
+            notification.error({
+                message: "Không tìm thấy danh sách kết quả",
+            });
+        }
+    };
+
     return (
         <Spin spinning={loading}>
             <div style={{padding: "20px"}}>
@@ -94,85 +191,114 @@ const ExamDetail = () => {
                     </div>
                 </div>}
                 {exam && <div>
-                    <Card>
-                        <Row gutter={[16, 16]}>
-                            {/* Left section: Exam details */}
-                            <Col xs={24} sm={16}>
-                                <Row gutter={[16, 16]}>
-                                    <Col span={6}>
-                                        <img
-                                            alt="exam"
-                                            src="https://s3.eduquiz.io.vn/default/exam/exam-04.png"
-                                            style={{width: "100%", borderRadius: "8px"}}
-                                        />
-                                    </Col>
-                                    <Col span={18}>
-                                        <h2>{exam.examName}</h2>
-                                        <p><b>Mã đề thi:</b> {exam.examCode}</p>
-                                        <p><b>Mô tả:</b> {exam.description}</p>
-                                        <p><b>Thời gian làm bài:</b> {exam.time} phút</p>
-                                        <p><b>Thời gian bắt
-                                            đầu:</b> {new Date(exam.effectiveDate).toLocaleString("vi-VN", {
-                                            year: "numeric",
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            second: "2-digit",
-                                            hour12: false, // Hiển thị 24h
-                                        })}</p>
-                                        <p>
-                                            <b>Thời gian hết hạn:</b>{" "}
-                                            {exam.expirationDate ? (
-                                                exam.expirationDate
-                                            ) : (
-                                                <Tooltip title="Không có hạn">
-                                                    {/* <InfinityOutlined /> */}∞
-                                                </Tooltip>
-                                            )}
-                                        </p>
-                                        <p><b>Số lượng mã đề:</b> {exam.randomAmount}</p>
-                                        <p><b>Tổng số câu hỏi:</b> {exam.totalQuestion}</p>
-                                        <p><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}</p>
-                                        <p><b>Cách tính điểm:</b> {exam.scoreType}</p>
-                                        <p><b>Số thí sinh:</b> {exam.executorEmail.length}</p>
-
-                                        <Space style={{marginTop: "10px"}}>
-                                            <Button
-                                                type="primary"
-                                                icon={<PlayCircleOutlined/>}
-                                                style={{backgroundColor: "#9254de"}}
-                                                // onClick={()=>{navigate(`quiz/${exam.id}`))}}
-                                                disabled={new Date() < new Date(exam.effectiveDate)}
-                                                onClick={() => {
-                                                    navigate(`/quiz/${exam.id}`)
-                                                }}
-
-                                            >
-                                                {new Date() < new Date(exam.effectiveDate) && "Đề thi chưa mở"}
-                                                {new Date() >= new Date(exam.effectiveDate) && "Vào thi"}
-
-                                            </Button>
-
-                                        </Space>
-                                    </Col>
-                                </Row>
+                    <Card
+                        hoverable
+                        style={{ borderRadius: "16px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", padding: 24 }}
+                        bodyStyle={{ padding: 0 }}
+                    >
+                        <Row gutter={[24, 24]}>
+                            <Col xs={24} md={8}>
+                                <img
+                                    alt="exam"
+                                    src="https://s3.eduquiz.io.vn/default/exam/exam-04.png"
+                                    style={{ width: "100%", borderRadius: "12px", objectFit: "cover" }}
+                                />
                             </Col>
+                            <Col xs={24} md={16}>
+                                <Space wrap size="middle">
+                                    <Tag color="purple"><b>Mã đề:</b> {exam.examCode}</Tag>
+                                    <Tag icon={<ClockCircleOutlined/>} color="blue">
+                                        {exam.time} phút
+                                    </Tag>
+                                    <Tag icon={<QuestionCircleOutlined/>} color="volcano">
+                                        {exam.totalQuestion} câu
+                                    </Tag>
+                                    <Tag icon={<UserOutlined/>} color="green">
+                                        {exam.executorEmail?.length || 0} thí sinh
+                                    </Tag>
+                                </Space>
 
-                            {/* Right section: Sharing options */}
-                            <Col xs={24} sm={8} style={{textAlign: "center"}}>
-                                {/* <h4>Chia sẻ đề thi</h4>
-                        <Space size="large">
-                            <Button shape="circle" icon={<DownloadOutlined />} />
-                        </Space>
-                        <p>hoặc</p>
-                        <Space>
-                            <Button>Sao chép link</Button>
-                            <Button>Quét mã QRCode</Button>
-                        </Space> */}
+                                <p style={{marginTop: 16}}><InfoCircleOutlined/> <b>Mô tả:</b> {exam.description}</p>
+                                <p><CalendarOutlined/> <b>Thời gian bắt đầu:</b>{" "}
+                                    {new Date(exam.effectiveDate).toLocaleString("vi-VN", {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit",
+                                        hour12: false,
+                                    })}
+                                </p>
+                                <p><CalendarOutlined/> <b>Thời gian hết hạn:</b>{" "}
+                                    {exam.expirationDate ? (
+                                        exam.expirationDate
+                                    ) : (
+                                        <Tooltip title="Không có hạn">∞</Tooltip>
+                                    )}
+                                </p>
+
+                                <Row gutter={[16, 8]}>
+                                    <Col span={12}><b>Số lượng mã đề:</b> {exam.randomAmount}</Col>
+                                    <Col span={12}><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}
+                                    </Col>
+                                    <Col span={12}><b>Cách tính điểm:</b> {exam.scoreType}</Col>
+                                    <Col span={12}><b>Hiển thị đáp án:</b> {exam.displayAnswer ? "Có" : "Không"}</Col>
+                                </Row>
+
+                                <div style={{marginTop: 24}}>
+                                    <Button
+                                        type="primary"
+                                        icon={<PlayCircleOutlined/>}
+                                        size="large"
+                                        style={{
+                                            backgroundColor: isAvailable ? "#52c41a" : "#d9d9d9",
+                                            borderColor: isAvailable ? "#52c41a" : "#d9d9d9",
+                                        }}
+                                        disabled={!isAvailable}
+                                        onClick={() => navigate(`/quiz/${exam.id}`)}
+                                    >
+                                        {isAvailable ? "Vào thi" : "Đề thi chưa mở"}
+                                    </Button>
+
+                                    {exam.createdBy === localStorage.getItem("currentEmail") && (
+                                        <div style={{marginTop: 16}}>
+                                            <Space wrap>
+
+                                                <Button icon={<SettingOutlined />} onClick={() => setSettingVisible(true)} type="default" shape="round">
+                                                    Cài đặt
+                                                </Button>
+                                                <Button icon={<BsFillQuestionOctagonFill/>} onClick={() => exportResultToExcel()} type="default" shape="round">
+                                                    Quản lý câu hỏi
+                                                </Button>
+                                                <Button icon={<DownloadOutlined/>} onClick={() => exportExecutorsToExcel()} type="default" shape="round">
+                                                    Tải danh sách thí sinh
+                                                </Button>
+                                                <Button icon={<FileExcelOutlined/>} onClick={() => exportResultToExcel()} type="default" shape="round">
+                                                    Xuất kết quả
+                                                </Button>
+                                            </Space>
+                                        </div>
+                                    )}
+                                </div>
                             </Col>
                         </Row>
                     </Card>
+
+                    <ExamSettingModal
+                        visible={settingVisible}
+                        onCancel={() => setSettingVisible(false)}
+                        onSave={async (updatedValues) => {
+                            const res = await callUpdateExam(id, updatedValues);
+                            if (res) {
+                                notification.success(res?.data);
+                            } else {
+                                notification.error(res?.message);
+                            }
+                            setSettingVisible(false);
+                        }}
+                        exam={exam}
+                    />
 
                     {/* Tabs for additional information */}
                     <Tabs defaultActiveKey="2" style={{marginTop: "20px"}}>
@@ -181,7 +307,7 @@ const ExamDetail = () => {
                             <ExamineeTable executors={exam.executors} loading={loading}></ExamineeTable>
                         </TabPane>
                         <TabPane tab="Kết quả" key="6">
-                            <ResultLists examId={exam.id} createdBy={exam.createdBy} />
+                            <ResultLists examId={exam.id} createdBy={exam.createdBy}/>
                         </TabPane>
 
                         <TabPane tab="Bình luận" key="4">

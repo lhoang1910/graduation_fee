@@ -2,77 +2,81 @@ import React, {useEffect, useState} from "react";
 import {notification, Table, Checkbox, Input, Card, Space, Button} from "antd";
 import {callUserDoExamResult} from "../../../services/api";
 import {EyeOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router-dom";
 
 const {Search} = Input;
 
-const columns = [
-    {
-        title: "STT",
-        dataIndex: "index",
-        key: "index",
-        render: (text, record, index) => index + 1,
-    },
-    {
-        title: "Số báo danh",
-        dataIndex: "candidateNumber",
-        key: "candidateNumber",
-        sorter: true,
-    },
-    {
-        title: "Họ và tên",
-        dataIndex: "fullName",
-        key: "fullName",
-        sorter: true,
-    },
-    {
-        title: "Mã đề",
-        dataIndex: "paperCode",
-        key: "paperCode",
-        sorter: true,
-    },
-    {
-        title: "Lượt làm",
-        dataIndex: "sequenceExecute",
-        key: "sequenceExecute",
-        sorter: true,
-    },
-    {
-        title: "Thời gian",
-        dataIndex: "timeTracking",
-        key: "timeTracking",
-        sorter: true,
-        render: (time) => {
-            const minutes = Math.floor(time / 60);
-            const seconds = Math.floor(time % 60);
-            return `${minutes} phút ${seconds} giây`;
-        },
-    },
-    {
-        title: "Điểm",
-        dataIndex: "score",
-        key: "score",
-        sorter: true,
-    },
-    {
-        title: "Thao tác",
-        key: "action",
-        align: "center",
-        render: (_, record) => (
-            <div style={{textAlign: "center"}}>
-                <Button
-                    type="primary"
-                    icon={<EyeOutlined/>}
-                    onClick={() => handleViewDetail(record)}
-                >
-                    Xem chi tiết
-                </Button>
-            </div>
-        ),
-    },
-];
-
 
 const ResultLists = ({examId, createdBy}) => {
+    const navigate = useNavigate();
+
+    const columns = [
+        {
+            title: "STT",
+            dataIndex: "index",
+            key: "index",
+            render: (text, record, index) => index + 1,
+        },
+        {
+            title: "Số báo danh",
+            dataIndex: "candidateNumber",
+            key: "candidateNumber",
+            sorter: true,
+        },
+        {
+            title: "Họ và tên",
+            dataIndex: "fullName",
+            key: "fullName",
+            sorter: true,
+        },
+        {
+            title: "Mã đề",
+            dataIndex: "paperCode",
+            key: "paperCode",
+            sorter: true,
+        },
+        {
+            title: "Lượt làm",
+            dataIndex: "sequenceExecute",
+            key: "sequenceExecute",
+            sorter: true,
+        },
+        {
+            title: "Thời gian",
+            dataIndex: "timeTracking",
+            key: "timeTracking",
+            sorter: true,
+            render: (time) => {
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60);
+                return `${minutes} phút ${seconds} giây`;
+            },
+        },
+        {
+            title: "Điểm",
+            dataIndex: "score",
+            key: "score",
+            sorter: true,
+        },
+        {
+            title: "Thao tác",
+            key: "action",
+            align: "center",
+            render: (_, record) => (
+                <div style={{textAlign: "center"}}>
+                    <Button
+                        type="primary"
+                        icon={<EyeOutlined/>}
+                        onClick={() => {
+                            navigate(`result/${record?.id}`)
+                        }}
+                    >
+                        Xem chi tiết
+                    </Button>
+                </div>
+            ),
+        },
+    ];
 
     const handleTableChange = (pagination, filters, sorter) => {
         console.log(sorter)

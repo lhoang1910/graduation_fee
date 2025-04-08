@@ -265,3 +265,39 @@ export const callAdminReports = (payload) => {
 export const callExecuteReports = (reportId, payload) => {
     return baseApiCall(`/api/admin/reports/${reportId}/execute`, 'post', payload, true);
 }
+
+export const callImportUsers = async (classId, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return baseApiCall(`/api/classes/${classId}/import-class-user`, 'post', formData, true);
+};
+
+export const callExportResult = (examId) => {
+    return baseApiCall(`/api/exam/${examId}/export-result`, 'get', {}, true);
+}
+
+export const callUpdateExam = (examId, payload) => {
+    console.log(">>>>", payload)
+    return baseApiCall(`/api/exam/${examId}/update-exam`, 'post', payload, true);
+}
+
+// Categories
+export const callGetProgramCategories = () => {
+    return baseApiCall(`/api/categories/programs`, 'get', {}, true);
+}
+
+export const callGetGradeCategories = (programId) => {
+    return baseApiCall(`/api/categories/program/${programId}/grades`, 'get', {}, true);
+}
+
+export const callGetSubjectCategories = (payload) => {
+    return baseApiCall(`/api/categories/subjects`, 'post', payload, true);
+}
+
+export const callGetMyQuestions = (payload) => {
+    return baseApiCall(`/api/question/get-my-questions`, 'post', payload, true);
+}
+
+export const updateExamQuestion = (examId, payload) => {
+    return baseApiCall(`/api/exam/${examId}/update-question`, 'post', payload, true);
+}

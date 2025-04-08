@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Table,
     Input,
@@ -12,20 +12,23 @@ import {
     message,
     Modal,
     Form,
-    notification
+    notification, Upload
 } from "antd";
-import {PlusOutlined, ArrowLeftOutlined, EyeOutlined} from "@ant-design/icons";
+import {PlusOutlined, ArrowLeftOutlined, UploadOutlined, DownloadOutlined} from "@ant-design/icons";
 import "./detail.css";
 import {useNavigate, useParams} from "react-router-dom";
 import {
     callAddUserToClass,
     callALlUsers,
     callCheckUserExistByEmail, callDeleteClassMember,
-    callDetailClass,
+    callDetailClass, callImportUsers,
     callListExam
 } from "../../../services/api.js";
 import ExamCards from "../../exam/ExamCards/Index.jsx";
 import {RiDeleteBinLine} from "react-icons/ri";
+import {CiImport} from "react-icons/ci";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const {Search} = Input;
 
@@ -40,9 +43,12 @@ const ClassDetail = () => {
     const [tableData, setTableData] = useState([]);
     const [isMemberTab, setIsMemberTab] = useState(true);
     const [isOpenEmailModal, setIsOpenEmailModal] = useState(false);
+    const [isOpenImportModal, setIsOpenImportModal] = useState(false);
     const [email, setEmail] = useState();
+    const [file, setFile] = useState();
     const [visible, setVisible] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [importing, setImporting] = useState(false);
     const navigate = useNavigate();
 
     const userColumn = [
@@ -189,6 +195,52 @@ const ClassDetail = () => {
         setVisible(false);
     };
 
+    const handleImport = async () => {
+        if (!file) {
+            return message.warning("Vui lòng chọn file Excel trước khi gửi.");
+        }
+
+        setImporting(true);
+        try {
+            const res = await callImportUsers(id, file);
+            if (res?.success) {
+                notification.success({ message: res?.message });
+                setIsOpenImportModal(false);
+                setFile(null);
+                fetchTableData();
+            } else {
+                const errorData = res?.data?.filter(item => item?.success === false);
+                if (errorData && errorData.length > 0) {
+                    notification.warning({
+                        message: `Có ${errorData.length} dòng lỗi trong file import. Vui lòng tải file chi tiết để xem.`,
+                    });
+
+                    const exportData = errorData.map(item => ({
+                        Email: item?.email || '',
+                        'Họ và tên': item?.fullName || '',
+                        'Ngày sinh': item?.dateOfBirth || '',
+                        'Giới tính': item?.gender || '',
+                        'Lỗi': item?.errorDesc || '',
+                    }));
+
+                    const worksheet = XLSX.utils.json_to_sheet(exportData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lỗi Import');
+
+                    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+                    saveAs(blob, 'Import_Errors.xlsx');
+                } else {
+                    notification.error({ message: res?.message || 'Import thất bại.' });
+                }
+            }
+        } catch (error) {
+            notification.error({ message: 'Có lỗi xảy ra trong quá trình import. Vui lòng thử lại.' });
+        } finally {
+            setImporting(false);
+        }
+    };
+
     useEffect(() => {
         console.log(">>>", isMemberTab)
         if (data || isMemberTab) {
@@ -228,11 +280,80 @@ const ClassDetail = () => {
                         onSearch={(value) => setSearchingKeys(value)}
                     />
                     {isMemberTab && (
-                        <Button type="primary" icon={<PlusOutlined />} className="add-btn" onClick={() => setIsOpenEmailModal(true)}>
-                            Thêm thành viên
-                        </Button>
+                        <div style={{display: 'flex', justifyContent: 'flex-end', gap: 8}}>
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined/>}
+                                className="add-btn"
+                                onClick={() => setIsOpenEmailModal(true)}
+                            >
+                                Thêm
+                            </Button>
+                            <Button
+                                type="primary"
+                                icon={<CiImport/>}
+                                className="add-btn"
+                                onClick={() => setIsOpenImportModal(true)}
+                            >
+                                Import
+                            </Button>
+                        </div>
                     )}
                 </div>
+                <Modal
+                    title="📥 Nhập danh sách thành viên"
+                    open={isOpenImportModal}
+                    onCancel={() => setIsOpenImportModal(false)}
+                    onOk={handleImport}
+                    okText="Gửi"
+                    cancelText="Hủy"
+                    centered
+                    width={500}
+                    confirmLoading={importing}
+                >
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        <div style={{ textAlign: 'center' }}>
+                            <Button
+                                type="link"
+                                icon={<DownloadOutlined />}
+                                href="/assets/BieuMau.xlsx"
+                                download
+                                style={{ fontWeight: '500' }}
+                            >
+                                Tải về biểu mẫu Excel
+                            </Button>
+                        </div>
+
+                        <div>
+                            <Upload
+                                beforeUpload={(file) => {
+                                    const isExcel =
+                                        file.type ===
+                                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                                        file.name.endsWith('.xlsx');
+                                    if (!isExcel) {
+                                        message.error('Vui lòng chọn file Excel (.xlsx)');
+                                        return Upload.LIST_IGNORE;
+                                    }
+                                    setFile(file);
+                                    return false;
+                                }}
+                                showUploadList={false}
+                            >
+                                <Button block icon={<UploadOutlined />}>
+                                    Chọn file Excel
+                                </Button>
+                            </Upload>
+
+                            {file && (
+                                <div style={{ marginTop: 8, fontStyle: 'italic', color: '#666' }}>
+                                    📄 {file.name}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </Modal>
+
                 <Modal
                     title="Thêm thành viên"
                     open={isOpenEmailModal}

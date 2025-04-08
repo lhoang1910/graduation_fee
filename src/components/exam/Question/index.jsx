@@ -1,104 +1,112 @@
-import { Flex } from "antd";
+import {Flex} from "antd";
 import RadioButtonUncheckedSharpIcon from '@mui/icons-material/RadioButtonUncheckedSharp';
 import RadioButtonCheckedSharpIcon from '@mui/icons-material/RadioButtonCheckedSharp';
 import style from "../index.module.css"
-import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Radio, RadioGroup } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { chosenAnswer } from "../../../redux/exam/examSlice";
-import { useEffect } from "react";
+import {Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Radio, RadioGroup} from "@mui/material";
+import {useDispatch} from "react-redux";
+import {chosenAnswer} from "../../../redux/exam/examSlice";
+import {useEffect} from "react";
 
-function  Question({ question, index,type="" }) {
+function Question({question, index, type = ""}) {
 
-  const dispatch = useDispatch();
-  const handleChange = (event,i) => {
- 
-    dispatch(chosenAnswer({indexQuestion:index,answer:i,value:event.target.checked}));
-  };
+    const dispatch = useDispatch();
+    const handleChange = (event, i) => {
 
-  return (
-    <div style={styles.question}>
-      <Flex justify="space-between">
-        <span className={style.title}>{`Câu ${index + 1}`}</span>
-       { type==="result" && <span  className={style.title} style={styles.modeTitle}>Chọn một hoặc nhiều đáp án</span>}
-      </Flex>
-      <div>
-        <span  style={styles.questionTitle} className={style.title}>{question.question}</span>
+        dispatch(chosenAnswer({indexQuestion: index, answer: i, value: event.target.checked}));
+    };
 
-        <ul style={{listStyleType:"none",padding:"0"}}>
+    return (
+        <div style={styles.question}>
+            <Flex justify="space-between">
+                <span className={style.title}>{`Câu ${index + 1}`}</span>
+                {type === "result" &&
+                    <span className={style.title} style={styles.modeTitle}>Chọn một hoặc nhiều đáp án</span>}
+            </Flex>
+            <div>
+                <span style={styles.questionTitle} className={style.title}>{question.question}</span>
 
-
-
-
-   <FormControl sx={{ m: 1 }} component="fieldset" variant="standard" style={{width:"100%"}}>
-        <FormGroup style={{width:"100%"}}>
-          {
-       type!=="result"  &&  question.answers.map((e,i)=>(          <FormControlLabel
-            onChange={(event)=>{handleChange(event,i)}} 
-          key={e.id}
-            control={
-              <Checkbox checked={e.chosen}   name={i.toString()} />
-            }
-            label={e.answer}
-          />))}
-          { type==="result" &&  question.answers.map((e,i)=>(          <FormControlLabel
-            sx={{ width: "100%",  "& .MuiFormControlLabel-label": {
-              width: "100%", // Đảm bảo label trải dài
-              whiteSpace: "normal", // Cho phép xuống dòng nếu cần
-              wordBreak: "break-word", // Ngắt từ khi quá dài
-              fontSize: "16px", // Điều chỉnh kích thước chữ
-              color: "#333", // Thay đổi màu chữ nếu cần
-
-            },}}
-
-              onChange={(event)=>{console.log(e)}} 
-              style={{width:"100%"}}
-            key={e.id}
-              control={
-                <Checkbox checked={e.chosen} disabled={true} name={i.toString()} />
-              }
-              // label={  <div     >{e.answer}</div>           
-
-              label={  <div style={{backgroundColor:`${e.chosen && "#f5222d"}`,backgroundColor:`${e.correct ? "#52c41a": (e.chosen&&"#f5222d")}`,padding:"5px"}}>{e.answer}</div>           
-            }
-            />))}
+                <ul style={{listStyleType: "none", padding: "0"}}>
 
 
+                    <FormControl sx={{m: 1}} component="fieldset" variant="standard" style={{width: "100%"}}>
+                        <FormGroup style={{width: "100%"}}>
+                            {
+                                type !== "result" && question.answers.map((e, i) => (<FormControlLabel
+                                    onChange={(event) => {
+                                        handleChange(event, i)
+                                    }}
+                                    key={e.id}
+                                    control={
+                                        <Checkbox checked={e.chosen} name={i.toString()}/>
+                                    }
+                                    label={e.answer}
+                                />))}
+                            {type === "result" && question.answers.map((e, i) => (<FormControlLabel
+                                sx={{
+                                    width: "100%", "& .MuiFormControlLabel-label": {
+                                        width: "100%", // Đảm bảo label trải dài
+                                        whiteSpace: "normal", // Cho phép xuống dòng nếu cần
+                                        wordBreak: "break-word", // Ngắt từ khi quá dài
+                                        fontSize: "16px", // Điều chỉnh kích thước chữ
+                                        color: "#333", // Thay đổi màu chữ nếu cần
 
-        </FormGroup>
-        </FormControl>
+                                    },
+                                }}
 
-        </ul>
-      </div>
-    </div>
-  );
+                                onChange={(event) => {
+                                    console.log(e)
+                                }}
+                                style={{width: "100%"}}
+                                key={e.id}
+                                control={
+                                    <Checkbox checked={e.chosen} disabled={true} name={i.toString()}/>
+                                }
+
+                                label={<div style={{
+                                    backgroundColor: `${e.chosen && "#f5222d"}`,
+                                    backgroundColor: `${e.correct ? "#52c41a" : (e.chosen && "#f5222d")}`,
+                                    padding: "5px"
+                                }}>{e.answer}</div>
+                                }
+                            />))}
+
+
+                        </FormGroup>
+                    </FormControl>
+
+                </ul>
+            </div>
+        </div>
+    );
 }
+
 const styles = {
-  question:{
-    border:"1px solid #eee",
-    borderRadius:"5px",
-    backgroundColor:"white",
-    padding:"16px 16px 24px 16px"
-  },
-  modeTitle:{
-    fontWeigh:"300",
-    fontSize:"14px",
-    color:"#00000099"
-  },
-  answerContent:{
-    fontWeight:"300",
-    lineHeight:"1.25rem",
+    question: {
+        border: "1px solid #eee",
+        borderRadius: "5px",
+        backgroundColor: "white",
+        padding: "16px 16px 24px 16px"
+    },
+    modeTitle: {
+        fontWeigh: "300",
+        fontSize: "14px",
+        color: "#00000099"
+    },
+    answerContent: {
+        fontWeight: "300",
+        lineHeight: "1.25rem",
 
-  },
-  questionTitle:{
-    fontSize:"14px",
-    lineHeight:"1.25rem"
-  },
-  answer:{
-    padding:"8px 16px "
+    },
+    questionTitle: {
+        fontSize: "14px",
+        lineHeight: "1.25rem"
+    },
+    answer: {
+        padding: "8px 16px "
 
-  }
+    }
 
-  
+
 }
 export default Question;
 // const answer ={answer
@@ -113,13 +121,6 @@ export default Question;
 //   correct
 //   : 
 //   false}
-
-
-
-
-
-
-
 
 
 // Màu xanh lá (Đáp án đúng ✅): Thường là #52c41a hoặc #28a745 trong thiết kế giao diện.

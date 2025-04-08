@@ -88,7 +88,7 @@ const AdminUsers = () => {
         {title: "Email", dataIndex: "email", key: "email", sorter: true},
         {title: "Số điện thoại", dataIndex: "phoneNumber", key: "phoneNumber", sorter: true},
         {title: "Giới tính", dataIndex: "gender", key: "gender", sorter: true},
-        {title: "Ngày sinh", dataIndex: "birthDay", key: "birthDay", sorter: true},
+        {title: "Ngày sinh", dataIndex: "birthDay", key: "birthDay", sorter: true, render: (text) => text ? new Date(text).toLocaleDateString("vi-VN") : "-"},
         {
             title: "Trạng thái",
             key: "isActive",
