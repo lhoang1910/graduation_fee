@@ -271,7 +271,7 @@ const ExamDetail = () => {
                                                 <Button icon={<SettingOutlined />} onClick={() => setSettingVisible(true)} type="default" shape="round">
                                                     Cài đặt
                                                 </Button>
-                                                <Button icon={<BsFillQuestionOctagonFill/>} onClick={() => exportResultToExcel()} type="default" shape="round">
+                                                <Button icon={<BsFillQuestionOctagonFill/>} type="default" shape="round">
                                                     Ngân hàng câu hỏi
                                                 </Button>
                                                 <Button icon={<DownloadOutlined/>} onClick={() => exportExecutorsToExcel()} type="default" shape="round">
