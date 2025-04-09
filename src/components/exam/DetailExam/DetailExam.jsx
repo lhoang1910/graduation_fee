@@ -246,7 +246,7 @@ const ExamDetail = () => {
                                     <Col span={12}><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}</Col>
                                     <Col span={12}><b>Cách tính điểm:</b> {exam.scoreType}</Col>
                                     <Col span={12}><b>Hiển thị đáp án:</b> {exam.displayAnswer ? "Có" : "Không"}</Col>
-                                    <Col span={12}><b>Tỉ lệ câu hỏi:</b> Khó: {exam.questionRate.hardRate || 0} - Vừa: {exam.questionRate.hardRate || 0} - Dễ {exam.questionRate.hardRate || 0} (%)</Col>
+                                    <Col span={12}><b>Tỉ lệ câu hỏi:</b> Khó: {exam.questionRate.hardRate || 0} - Vừa: {exam.questionRate.mediumRate || 0} - Dễ {exam.questionRate.easyRate || 0} (%)</Col>
                                 </Row>
 
                                 <div style={{marginTop: 24}}>
