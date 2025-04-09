@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Card, Form, Layout, Select, Tabs, Typography, Tag, Modal} from "antd";
+import {Card, Form, Layout, Select, Tabs, Typography, Tag, Modal, Row, Col} from "antd";
 import {Input, Button, DatePicker, InputNumber, message} from "antd";
 import QuestionForm from "./demo.jsx";
 import {useDispatch, useSelector} from "react-redux";
@@ -282,7 +282,13 @@ const ExamForm = ({setActiveTab}) => {
         console.log("Form values:", {
             exam
         });
+        const { questionRate } = values;
+        const total = (questionRate?.hardRate || 0) + (questionRate?.mediumRate || 0) + (questionRate?.easyRate || 0);
 
+        if (total !== 100) {
+            message.error("Tổng tỉ lệ câu hỏi phải bằng 100%");
+            return;
+        }
         setActiveTab("3");
     };
 
@@ -290,7 +296,14 @@ const ExamForm = ({setActiveTab}) => {
         <div style={stylesForm.container}>
             <Card title="Thông tin chung" bordered={false} style={stylesForm.card}>
 
-                <Form form={form} layout="vertical" onFinish={onFinish}>
+                <Form form={form} layout="vertical" onFinish={onFinish}
+                      initialValues={{
+                          questionRate: {
+                              hardRate: 0,
+                              mediumRate: 0,
+                              easyRate: 100,
+                          },
+                      }}>
                     {/* Tên đề thi */}
                     <Form.Item label="Tên đề thi" required>
                         <Input
@@ -347,6 +360,73 @@ const ExamForm = ({setActiveTab}) => {
                             <Option value="Chấm điểm theo câu hỏi">Chấm điểm theo câu hỏi</Option>
                             <Option value="Chấm điểm theo đáp án">Chấm điểm theo đáp án</Option>
                         </Select>
+                    </Form.Item>
+
+                    <Form.Item label="Tỉ lệ câu hỏi (%)" required style={{ marginBottom: 12 }}>
+                        <Row gutter={12}>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "hardRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu khó" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Khó" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "mediumRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu vừa" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Vừa" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "easyRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu dễ" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Dễ" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form.Item>
+                    <Form.Item shouldUpdate>
+                        {() => {
+                            const { hardRate = 0, mediumRate = 0, easyRate = 0 } = form.getFieldValue("questionRate") || {};
+                            const total = (hardRate || 0) + (mediumRate || 0) + (easyRate || 0);
+                            return total !== 100 ? (
+                                <div style={{ color: "red", marginBottom: 12 }}>
+                                    Tổng tỉ lệ phải bằng 100% (hiện tại: {total}%)
+                                </div>
+                            ) : null;
+                        }}
                     </Form.Item>
 
                     {/* Quyền truy cập */}
