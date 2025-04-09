@@ -72,6 +72,13 @@ const ExamSettingModal = ({exam, visible, onCancel, onSave}) => {
     };
 
     const handleFinish = (values) => {
+        const { questionRate } = values;
+        const total = (questionRate?.hardRate || 0) + (questionRate?.mediumRate || 0) + (questionRate?.easyRate || 0);
+
+        if (total !== 100) {
+            message.error("Tổng tỉ lệ câu hỏi phải bằng 100%");
+            return;
+        }
         onSave(values);
     };
 
@@ -97,6 +104,11 @@ const ExamSettingModal = ({exam, visible, onCancel, onSave}) => {
                         ...exam,
                         effectiveDate: exam.effectiveDate ? moment(exam.effectiveDate) : null,
                         expirationDate: exam.expirationDate ? moment(exam.expirationDate) : null,
+                        questionRate: {
+                            hardRate: exam?.questionRate?.hardRate || 0,
+                            mediumRate: exam?.questionRate?.mediumRate || 0,
+                            easyRate: exam?.questionRate?.easyRate || 100,
+                        },
                     }}
                     onFinish={handleFinish}
                 >
@@ -173,6 +185,73 @@ const ExamSettingModal = ({exam, visible, onCancel, onSave}) => {
                             </Form.Item>
                         </Col>
                     </Row>
+
+                    <Form.Item label="Tỉ lệ câu hỏi (%)" required style={{ marginBottom: 12 }}>
+                        <Row gutter={12}>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "hardRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu khó" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Khó" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "mediumRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu vừa" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Vừa" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                            <Col span={8}>
+                                <Form.Item
+                                    name={["questionRate", "easyRate"]}
+                                    rules={[
+                                        { required: true, message: "Nhập % câu dễ" },
+                                        {
+                                            type: "number",
+                                            min: 0,
+                                            max: 100,
+                                            message: "Giá trị từ 0 đến 100",
+                                        },
+                                    ]}
+                                    noStyle
+                                >
+                                    <InputNumber placeholder="Dễ" min={0} max={100} style={{ width: "100%" }} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form.Item>
+                    <Form.Item shouldUpdate>
+                        {() => {
+                            const { hardRate = 0, mediumRate = 0, easyRate = 0 } = form.getFieldValue("questionRate") || {};
+                            const total = (hardRate || 0) + (mediumRate || 0) + (easyRate || 0);
+                            return total !== 100 ? (
+                                <div style={{ color: "red", marginBottom: 12 }}>
+                                    Tổng tỉ lệ phải bằng 100% (hiện tại: {total}%)
+                                </div>
+                            ) : null;
+                        }}
+                    </Form.Item>
 
                     <Form.Item
                         label="Quyền truy cập"

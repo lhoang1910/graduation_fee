@@ -239,11 +239,14 @@ const ExamDetail = () => {
                                 </p>
 
                                 <Row gutter={[16, 8]}>
+                                    <Col span={12}><b>Cấp bậc / Trình độ:</b> {exam.programCategory}</Col>
+                                    {exam.gradeCategory ? (<Col span={12}><b>Khối / Lớp:</b> {exam.gradeCategory}</Col> ) : ""}
+                                    <Col span={12}><b>Môn học / Chủ đề:</b> {exam.subjectCategory}</Col>
                                     <Col span={12}><b>Số lượng mã đề:</b> {exam.randomAmount}</Col>
-                                    <Col span={12}><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}
-                                    </Col>
+                                    <Col span={12}><b>Số lượt làm bài tối đa:</b> {exam.limitation || "Không giới hạn"}</Col>
                                     <Col span={12}><b>Cách tính điểm:</b> {exam.scoreType}</Col>
                                     <Col span={12}><b>Hiển thị đáp án:</b> {exam.displayAnswer ? "Có" : "Không"}</Col>
+                                    <Col span={12}><b>Tỉ lệ câu hỏi:</b> Khó: {exam.questionRate.hardRate || 0} - Vừa: {exam.questionRate.hardRate || 0} - Dễ {exam.questionRate.hardRate || 0} (%)</Col>
                                 </Row>
 
                                 <div style={{marginTop: 24}}>
@@ -269,7 +272,7 @@ const ExamDetail = () => {
                                                     Cài đặt
                                                 </Button>
                                                 <Button icon={<BsFillQuestionOctagonFill/>} onClick={() => exportResultToExcel()} type="default" shape="round">
-                                                    Quản lý câu hỏi
+                                                    Ngân hàng câu hỏi
                                                 </Button>
                                                 <Button icon={<DownloadOutlined/>} onClick={() => exportExecutorsToExcel()} type="default" shape="round">
                                                     Tải danh sách thí sinh
