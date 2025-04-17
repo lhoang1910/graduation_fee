@@ -24,6 +24,7 @@ const MyLevel = ({ level }) => {
   return <Tag color={color}>{level} </Tag>;
 };
 function Question({ question, index, type = "" }) {
+  console.log("question", question);
   const dispatch = useDispatch();
   const handleChange = (event, i) => {
     dispatch(
@@ -62,18 +63,27 @@ function Question({ question, index, type = "" }) {
           >
             <FormGroup style={{ width: "100%" }}>
               {type !== "result" &&
-                question.answers.map((e, i) => (
-                  <FormControlLabel
-                    onChange={(event) => {
-                      handleChange(event, i);
-                    }}
-                    key={e.id}
-                    control={
-                      <Checkbox checked={e.chosen} name={i.toString()} />
-                    }
-                    label={e.answer}
-                  />
-                ))}
+                question.answers.map((e, i) => {
+                  const countCorrect = question.answers.filter(
+                    (item) => item.correct === true
+                  ).length;
+                  return (
+                    <FormControlLabel
+                      onChange={(event) => {
+                        handleChange(event, i);
+                      }}
+                      key={e.id}
+                      control={
+                        countCorrect > 1 ? (
+                          <Checkbox checked={e.chosen} name={i.toString()} />
+                        ) : (
+                          <Radio checked={e.chosen} name={i.toString()} />
+                        )
+                      }
+                      label={e.answer}
+                    />
+                  );
+                })}
               {type === "result" &&
                 question.answers.map((e, i) => (
                   <FormControlLabel
