@@ -17,6 +17,8 @@ import QuestionForm from "./demo.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { setExamField } from "../../redux/examCreating/examCreating.Slice.js";
 import moment from "moment";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 import {
   callAllCreatedClassNameCode,
   callCheckUserExistByEmail, callGetGradeCategories, callGetProgramCategories, callGetSubjectCategories,
@@ -509,32 +511,56 @@ const ExamForm = ({ setActiveTab }) => {
           </Row >
 
           <Row gutter={16} align="middle">
-            <Col span={8}>
+            <Col span={6}>
               {/* Thời gian đề thi có hiệu lực */}
               <Form.Item
                   label="Thời gian hiệu lực"
                   required
               >
-                <DatePicker
-                    style={{ width: "100%" }}
-                    showTime
-                    value={exam.effectiveDate ? moment(exam.effectiveDate) : defaultDate}
-                    onChange={(date) => handleChange("effectiveDate", date?.toISOString())}
+                <Datetime
+                    value={exam.effectiveDate ? moment(exam.effectiveDate) : null}
+                    onChange={(val) => {
+                      const iso = moment(val).isValid() ? moment(val).toISOString() : null;
+                      handleChange("effectiveDate", iso);
+                    }}
+                    dateFormat="DD-MM-YYYY"
+                    timeFormat="HH:mm:ss"
+                    inputProps={{
+                      placeholder: "Chọn ngày giờ",
+                      style: {
+                        width: "100%",
+                        padding: "6px 11px",
+                        borderRadius: 6,
+                        border: "1px solid #d9d9d9",
+                        fontSize: 14,
+                      },
+                    }}
+                    className="custom-datetime-picker"
                 />
               </Form.Item>
             </Col>
 
-            <Col span={8}>
+            <Col span={6}>
               {/* Ngày đóng bài thi */}
               <Form.Item label="Thời gian hết hạn">
-                <DatePicker
-                    style={{ width: "100%" }}
-                    showTime
-                    placeholder="Để trống nếu không giới hạn"
+                <Datetime
                     value={exam.expirationDate ? moment(exam.expirationDate) : null}
-                    onChange={(date) =>
-                        handleChange("expirationDate", date ? date.toISOString() : null)
-                    }
+                    onChange={(val) => {
+                      const iso = moment(val).isValid() ? moment(val).toISOString() : null;
+                      handleChange("expirationDate", iso);
+                    }}
+                    dateFormat="DD-MM-YYYY"
+                    timeFormat="HH:mm:ss"
+                    inputProps={{
+                      placeholder: "Chọn ngày giờ",
+                      style: {
+                        width: "100%",
+                        padding: "6px 11px",
+                        borderRadius: 6,
+                        border: "1px solid #d9d9d9",
+                        fontSize: 14,
+                      },
+                    }}
                 />
               </Form.Item>
             </Col>
@@ -542,8 +568,9 @@ const ExamForm = ({ setActiveTab }) => {
             <Col span={6} style={{ display: 'flex', alignItems: 'center' }}>
               <Form.Item
                   name="displayAnswer"
+                  initialValue={false}
                   valuePropName="checked"
-                  rules={[{ required: true, message: 'Vui lòng chọn hiển thị đáp án!' }]}
+                  rules={[{ required: false}]}
                   style={{ marginBottom: 0 }}
               >
                 <Checkbox onChange={(e) => handleChange("displayAnswer", e.target.checked)}>
