@@ -4,6 +4,7 @@ import moment from "moment";
 
 const initialState = {
     examName: "",
+    questionRate: {easyRate: 100, mediumRate: 0, hardRate: 0},
     description: "",
     examPermissionType: "Công khai",
     classCode: "",

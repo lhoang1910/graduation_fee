@@ -234,9 +234,9 @@ const QuestionForm = () => {
             if (response.success) {
                 dispatch(resetExam());
                 console.log("repsonse exam", response.message)
-
+            } else {
+                notification.error({message: response.message})
             }
-
         } catch (error) {
             console.log(error)
 
