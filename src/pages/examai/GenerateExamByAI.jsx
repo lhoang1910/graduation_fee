@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Form, Input, InputNumber, Radio, Upload, Button, Card, message, notification, Spin} from "antd";
+import {Form, Input, InputNumber, Radio, Upload, Button, Card, message, notification, Spin, Row, Col} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";
@@ -83,7 +83,18 @@ const GenerateExamByAI = () => {
     };
 
     return (
-        <Card title="TẠO ĐỀ THI BẰNG AI" bordered={false} style={{ maxWidth: 600, margin: "auto" }}>
+        <Card
+            title="TẠO ĐỀ THI BẰNG AI"
+            bordered={false}
+            style={{
+                maxWidth: 700,
+                margin: "40px auto",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                borderRadius: 12,
+                padding: 24,
+                backgroundColor: "#fff",
+            }}
+        >
             <Spin spinning={loading}>
                 <Form form={form} layout="vertical">
                     <Form.Item
@@ -94,30 +105,46 @@ const GenerateExamByAI = () => {
                         <Input placeholder="Nhập chủ đề" />
                     </Form.Item>
 
-                    <Form.Item label="Loại câu hỏi" name="questionType" initialValue="Một đáp án đúng">
-                        <Radio.Group>
-                            <Radio value="Một đáp án đúng">Một đáp án đúng</Radio>
-                            <Radio value="Nhiều đáp án đúng">Nhiều đáp án đúng</Radio>
-                        </Radio.Group>
-                    </Form.Item>
+                    <Row gutter={16}>
+                        <Col span={8}>
+                            <Form.Item
+                                label="Loại câu hỏi"
+                                name="questionType"
+                                initialValue="Một đáp án đúng"
+                            >
+                                <Radio.Group>
+                                    <Radio value="Một đáp án đúng">1 đáp án</Radio>
+                                    <Radio value="Nhiều đáp án đúng">Nhiều đáp án</Radio>
+                                </Radio.Group>
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={8}>
+                            <Form.Item
+                                label="Số lượng câu hỏi"
+                                name="numberQuestion"
+                                rules={[{ required: true, message: "Chọn số lượng câu hỏi!" }]}
+                            >
+                                <InputNumber min={2} max={5} style={{ width: "100%" }} placeholder="2-5" />
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={8}>
+                            <Form.Item
+                                label="Số lượng đáp án"
+                                name="numberAnswer"
+                                rules={[{ required: true, message: "Chọn số lượng đáp án!" }]}
+                            >
+                                <InputNumber min={2} max={4} style={{ width: "100%" }} placeholder="2-4" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
 
                     <Form.Item
-                        label="Số lượng câu hỏi"
-                        name="numberQuestion"
-                        rules={[{ required: true, message: "Chọn số lượng câu hỏi!" }]}
+                        label="Nội dung"
+                        name="contentType"
+                        initialValue="text"
                     >
-                        <InputNumber min={2} max={5} style={{ width: "100%" }} placeholder="Chọn từ 2 đến 5" />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Số lượng đáp án"
-                        name="numberAnswer"
-                        rules={[{ required: true, message: "Chọn số lượng đáp án!" }]}
-                    >
-                        <InputNumber min={2} max={4} style={{ width: "100%" }} placeholder="Chọn từ 2 đến 4" />
-                    </Form.Item>
-
-                    <Form.Item label="Nội dung" name="contentType" initialValue="text">
                         <Radio.Group onChange={(e) => setContentType(e.target.value)}>
                             <Radio value="file">Upload file</Radio>
                             <Radio value="text">Nhập văn bản</Radio>

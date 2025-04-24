@@ -46,6 +46,7 @@ const ExamResults = () => {
           <p><strong>Email:</strong> {examData.email}</p> */}
                         <p><strong>Số báo danh: {examResponse.data.candidateNumber}</strong></p>
                         <p><strong>Họ và tên: {examResponse.data.fullName}</strong></p>
+                        <p><strong>Mã đề: {examResponse.data.paperCode}</strong></p>
                         <p><strong>Thời gian bắt đầu:</strong> {new Intl.DateTimeFormat("vi-VN", {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -54,7 +55,7 @@ const ExamResults = () => {
                             year: "numeric",
                             hour12: false, // Đảm bảo dùng 24 giờ
                         }).format(new Date(examResponse.data.startAt))}</p>
-                        <p><strong>Thời gian kết thúc:</strong> {new Intl.DateTimeFormat("vi-VN", {
+                        <p><strong>Thời gian nộp bài:</strong> {new Intl.DateTimeFormat("vi-VN", {
                             hour: "2-digit",
                             minute: "2-digit",
                             day: "2-digit",

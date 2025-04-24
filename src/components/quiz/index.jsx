@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {
   Card,
   Form,
@@ -12,14 +12,16 @@ import {
   Col,
   Flex,
 } from "antd";
-import { Input, Button, DatePicker, InputNumber, message } from "antd";
+import { Input, Button, DatePicker, InputNumber, Checkbox, message } from "antd";
 import QuestionForm from "./demo.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { setExamField } from "../../redux/examCreating/examCreating.Slice.js";
 import moment from "moment";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 import {
   callAllCreatedClassNameCode,
-  callCheckUserExistByEmail,
+  callCheckUserExistByEmail, callGetGradeCategories, callGetProgramCategories, callGetSubjectCategories,
 } from "../../services/api.js";
 
 const { Sider, Content } = Layout;
@@ -137,8 +139,8 @@ const Quiz = () => {
       explain: "",
       explainFilePath: "",
       answers: [
-        { answer: "", attachmentPath: "", isCorrect: false },
-        { answer: "", attachmentPath: "", isCorrect: false },
+        { answer: "", attachmentPath: "", correct: false },
+        { answer: "", attachmentPath: "", correct: false },
       ],
     };
 
@@ -228,6 +230,11 @@ const ExamForm = ({ setActiveTab }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [programCategory, setProgramCategory] = useState([]);
+  const [gradeCategory, setGradeCategory] = useState([]);
+  const [subjectCategory, setSubjectCategory] = useState([]);
+  const [chosenProgramId, setChosenProgramId] = useState(null);
+  const [chosenGradeId, setChosenGradeId] = useState(null);
 
   const handleCheckEmail = async () => {
     if (!email.trim()) {
@@ -311,12 +318,57 @@ const ExamForm = ({ setActiveTab }) => {
     setActiveTab("3");
   };
 
+  useEffect(() => {
+    const getProgramCategory = async () => {
+      const res = await callGetProgramCategories();
+      if (res) {
+        setProgramCategory(res?.data)
+      }
+    }
+    getProgramCategory()
+  }, [])
+
+  useEffect(() => {
+    if (programCategory?.length === 0) {
+        return;
+    }
+    const getGradeCategory = async () => {
+      const res = await callGetGradeCategories(chosenProgramId);
+      if (res) {
+        setGradeCategory(res?.data)
+      }
+    }
+    getGradeCategory()
+  }, [chosenProgramId])
+
+  useEffect(() => {
+    if (programCategory?.length === 0) {
+      return;
+    }
+    const getSubjectCategory = async () => {
+      const res = await callGetSubjectCategories({programCategoryId: chosenProgramId, gradeCategoryId: chosenGradeId});
+      if (res) {
+        setSubjectCategory(res?.data)
+      }
+    }
+    getSubjectCategory()
+  }, [chosenProgramId, chosenGradeId])
+
+  const onRateChange = (field) => (value) => {
+    const current = form.getFieldValue("questionRate") || {};
+    handleChange("questionRate", {
+      ...current,
+      [field]: value,
+    });
+  };
+
+  const [defaultDate] = useState(moment());
+
   return (
     <div style={stylesForm.container}>
       <Card title="Thông tin chung" bordered={false} style={stylesForm.card}>
         <Form
           form={form}
-          //   layout="vertical"
           layout="vertical"
           onFinish={onFinish}
           initialValues={{
@@ -328,8 +380,9 @@ const ExamForm = ({ setActiveTab }) => {
           }}
         >
           {/* Tên đề thi */}
-          <Row gutter={16} justify={"space-between"}>
-            <Col span={10}>
+          {/*<Row gutter={16} justify={"space-between"}>*/}
+          <Row gutter={16}>
+            <Col span={8}>
               <Form.Item label="Tên đề thi" required>
                 <Input
                   placeholder="Nhập tên đề thi"
@@ -338,9 +391,11 @@ const ExamForm = ({ setActiveTab }) => {
                 />
               </Form.Item>
             </Col>
+          </Row >
 
             {/* Mô tả */}
-            <Col span={10}>
+          <Row gutter={16}>
+            <Col span={16}>
               <Form.Item span={10} label="Mô tả">
                 <Input.TextArea
                   placeholder="Mô tả bổ sung"
@@ -350,10 +405,65 @@ const ExamForm = ({ setActiveTab }) => {
                 />
               </Form.Item>
             </Col>
+          </Row >
 
-            {/* Thời gian làm bài */}
+          <Row gutter={16}>
             <Col span={10}>
-              <Form.Item span={10} label="Thời gian làm bài (phút)" required>
+              <Form.Item span={10} label="Cấp độ / chương trình" required>
+                <Select
+                    placeholder="Chọn cấp độ / chương trình"
+                    onChange={(value) => {
+                      const selectedProgram = programCategory.find(item => item.program === value);
+                      if (selectedProgram) {
+                        setChosenProgramId(selectedProgram.id);
+                      }
+                      handleChange("programCategory", value);
+                    }}
+                >
+                  {programCategory?.map((val, i) => (
+                      <Option key={i} value={val.program}>
+                        {val.program}
+                      </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={5}>
+              <Form.Item span={10} label="Khối / Lớp" required>
+                <Select
+                    placeholder=" Chọn lớp học"
+                    onChange={(value) => {
+                      setChosenGradeId(value?.id);
+                      handleChange("gradeCategory", value);
+                    }}
+                >
+                  {gradeCategory?.map((val, i) => (
+                      <Option value={val.grade}>{val.grade}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={9}>
+              <Form.Item span={10} label="Môn học" required>
+                <Select
+                    placeholder="Chọn môn học"
+                    onChange={(value) => {
+                      setChosenGradeId(value?.id);
+                      handleChange("subjectCategory", value);
+                    }}
+                >
+                  {subjectCategory?.map((val, i) => (
+                      <Option value={val.subject}>{val.subject}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row >
+
+          <Row gutter={16}>
+            {/* Thời gian làm bài */}
+            <Col span={6}>
+              <Form.Item span={2} label="Thời gian (phút)" required>
                 <InputNumber
                   min={1}
                   value={exam.time}
@@ -362,63 +472,126 @@ const ExamForm = ({ setActiveTab }) => {
                 />
               </Form.Item>
             </Col>
-
-            <Col span={10}>
-              {/* Thời gian đề thi có hiệu lực */}
-              <Form.Item
-                span={10}
-                label="Thời gian đề thi có hiệu lực"
-                required
-              >
-                <DatePicker
-                  style={{ width: "100%" }}
-                  showTime
-                  value={
-                    exam.effectiveDate ? moment(exam.effectiveDate) : moment()
-                  }
-                  onChange={(date) => handleChange("effectiveDate", date)}
+            <Col span={6}>
+              <Form.Item span={2} label="Số lượng mã đề" required>
+                <InputNumber
+                    min={1}
+                    value={exam.randomAmount}
+                    onChange={(value) => handleChange("randomAmount", value)}
+                    style={{ width: "100%" }}
                 />
               </Form.Item>
             </Col>
-
-            <Col span={10}>
-              {/* Ngày đóng bài thi */}
-              <Form.Item span={10} label="Ngày đóng bài thi">
-                <DatePicker
-                  style={{ width: "100%" }}
-                  showTime
-                  placeholder="Để trống nếu không giới hạn"
-                  value={
-                    exam.expirationDate ? moment(exam.expirationDate) : null
-                  }
-                  onChange={(date) =>
-                    handleChange(
-                      "expirationDate",
-                      date ? date.toISOString() : null
-                    )
-                  }
+            <Col span={6}>
+              <Form.Item span={2} label="Lượt làm tối đa" required>
+                <InputNumber
+                    min={1}
+                    value={exam.limitation}
+                    onChange={(value) => handleChange("limitation", value)}
+                    style={{ width: "100%" }}
                 />
               </Form.Item>
             </Col>
-
-            <Col span={10}>
+            <Col span={6}>
               {/* Cách tính điểm */}
               <Form.Item span={10} label="Cách tính điểm" required>
                 <Select
-                  value={exam.scoreType}
-                  onChange={(value) => handleChange("scoreType", value)}
+                    value={exam.scoreType}
+                    onChange={(value) => handleChange("scoreType", value)}
                 >
                   <Option value="Chấm điểm theo câu hỏi">
-                    Chấm điểm theo câu hỏi
+                    Theo câu hỏi
                   </Option>
                   <Option value="Chấm điểm theo đáp án">
-                    Chấm điểm theo đáp án
+                    Theo đáp án
                   </Option>
                 </Select>
               </Form.Item>
             </Col>
+          </Row >
 
-            <Col span={10}>
+          <Row gutter={16} align="middle">
+            <Col span={6}>
+              {/* Thời gian đề thi có hiệu lực */}
+              <Form.Item
+                  label="Thời gian hiệu lực"
+                  required
+              >
+                <Datetime
+                    value={exam.effectiveDate ? moment(exam.effectiveDate) : null}
+                    onChange={(val) => {
+                      const iso = moment(val).isValid() ? moment(val).toISOString() : null;
+                      handleChange("effectiveDate", iso);
+                    }}
+                    dateFormat="DD-MM-YYYY"
+                    timeFormat="HH:mm:ss"
+                    inputProps={{
+                      placeholder: "Chọn ngày giờ",
+                      style: {
+                        width: "100%",
+                        padding: "6px 11px",
+                        borderRadius: 6,
+                        border: "1px solid #d9d9d9",
+                        fontSize: 14,
+                      },
+                    }}
+                    className="custom-datetime-picker"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={6}>
+              {/* Ngày đóng bài thi */}
+              <Form.Item label="Thời gian hết hạn">
+                <Datetime
+                    value={exam.expirationDate ? moment(exam.expirationDate) : null}
+                    onChange={(val) => {
+                      const iso = moment(val).isValid() ? moment(val).toISOString() : null;
+                      handleChange("expirationDate", iso);
+                    }}
+                    dateFormat="DD-MM-YYYY"
+                    timeFormat="HH:mm:ss"
+                    inputProps={{
+                      placeholder: "Chọn ngày giờ",
+                      style: {
+                        width: "100%",
+                        padding: "6px 11px",
+                        borderRadius: 6,
+                        border: "1px solid #d9d9d9",
+                        fontSize: 14,
+                      },
+                    }}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={6} style={{ display: 'flex', alignItems: 'center' }}>
+              <Form.Item
+                  name="displayAnswer"
+                  initialValue={false}
+                  valuePropName="checked"
+                  rules={[{ required: false}]}
+                  style={{ marginBottom: 0 }}
+              >
+                <Checkbox onChange={(e) => handleChange("displayAnswer", e.target.checked)}>
+                  Hiển thị đáp án
+                </Checkbox>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={6}>
+              <Form.Item span={2} label="Số câu hỏi trong đề thi" required>
+                <InputNumber
+                    min={1}
+                    value={exam.totalQuestion}
+                    onChange={(value) => handleChange("totalQuestion", value)}
+                    style={{ width: "50%" }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item
                 span={10}
                 label="Tỉ lệ câu hỏi (%)"
@@ -445,6 +618,7 @@ const ExamForm = ({ setActiveTab }) => {
                         min={0}
                         max={100}
                         style={{ width: "100%" }}
+                        onChange={onRateChange("hardRate")}
                       />
                     </Form.Item>
                   </Col>
@@ -467,6 +641,7 @@ const ExamForm = ({ setActiveTab }) => {
                         min={0}
                         max={100}
                         style={{ width: "100%" }}
+                        onChange={onRateChange("mediumRate")}
                       />
                     </Form.Item>
                   </Col>
@@ -489,6 +664,7 @@ const ExamForm = ({ setActiveTab }) => {
                         min={0}
                         max={100}
                         style={{ width: "100%" }}
+                        onChange={onRateChange("easyRate")}
                       />
                     </Form.Item>
                   </Col>
@@ -504,8 +680,10 @@ const ExamForm = ({ setActiveTab }) => {
                     mediumRate = 0,
                     easyRate = 0,
                   } = form.getFieldValue("questionRate") || {};
-                  const total =
-                    (hardRate || 0) + (mediumRate || 0) + (easyRate || 0);
+                  const total = (hardRate || 0) + (mediumRate || 0) + (easyRate || 0);
+                  // if (total === 100) {
+                  //   handleChange("questionRate", {hardRate, mediumRate, easyRate});
+                  // }
                   return total !== 100 ? (
                     <div style={{ color: "red", marginBottom: 12 }}>
                       Tổng tỉ lệ phải bằng 100% (hiện tại: {total}%)
@@ -514,7 +692,8 @@ const ExamForm = ({ setActiveTab }) => {
                 }}
               </Form.Item>
             </Col>
-
+          </Row>
+          <Row gutter={16}>
             <Col span={10}>
               {/* Quyền truy cập */}
               <Form.Item span={10} label="Quyền truy cập" required>
@@ -567,6 +746,25 @@ const ExamForm = ({ setActiveTab }) => {
                 </Form.Item>
               </Col>
             )}
+            {exam.examPermissionType === "Thành viên lớp học" && (
+                <Col span={10}>
+                  <Form.Item label="Chọn lớp học" required>
+                    <Select
+                        placeholder="Chọn lớp học"
+                        value={exam.classCode}
+                        onChange={(value) => handleChange("classCode", value)}
+                        style={{ width: "100%" }}
+                    >
+                      {classes.map((cls) => (
+                          <Select.Option key={cls.classCode} value={cls.classCode}>
+                            {cls.classCode} - {cls.className}
+                          </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+            )}
+          </Row>
 
             {/* Popup xác nhận */}
             <Modal
@@ -595,85 +793,6 @@ const ExamForm = ({ setActiveTab }) => {
                 </Form.Item>
               </Form>
             </Modal>
-
-            {exam.examPermissionType === "Thành viên lớp học" && (
-              <Col span={10}>
-                <Form.Item label="Chọn lớp học" required>
-                  <Select
-                    placeholder="Chọn lớp học"
-                    value={exam.classCode}
-                    onChange={(value) => handleChange("classCode", value)}
-                    style={{ width: "100%" }}
-                  >
-                    {classes.map((cls) => (
-                      <Select.Option key={cls.classCode} value={cls.classCode}>
-                        {cls.classCode} - {cls.className}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-            )}
-            <Col span={10}>
-              {/* Quyền truy cập */}
-              <Form.Item span={10} label="Cấp độ / chương trình" required>
-                <Select
-                  placeholder="Chọn cấp độ / chương trình"
-                  //   value={exam.examPermissionType}
-                  onChange={
-                    (value) => 0
-                    // handleChange("examPermissionType", value)
-                  }
-                >
-                  <Option value="Công khai">Công khai</Option>
-                  <Option value="Chỉ mình tôi">Chỉ mình tôi</Option>
-                  <Option value="Người được cấp quyền">
-                    Người được cấp quyền
-                  </Option>
-                  <Option value="Thành viên lớp học">Thành viên lớp học</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={10}>
-              {/* Quyền truy cập */}
-              <Form.Item span={10} label="Lớp học" required>
-                <Select
-                  placeholder=" Chọn lớp học"
-                  //   value={exam.examPermissionType}
-                  onChange={
-                    (value) => 0
-                    // handleChange("examPermissionType", value)
-                  }
-                >
-                  <Option value="Công khai">Công khai</Option>
-                  <Option value="Chỉ mình tôi">Chỉ mình tôi</Option>
-                  <Option value="Người được cấp quyền">
-                    Người được cấp quyền
-                  </Option>
-                  <Option value="Thành viên lớp học">Thành viên lớp học</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={10}>
-              {/* Quyền truy cập */}
-              <Form.Item span={10} label="Môn học" required>
-                <Select
-                  placeholder="Chọn môn học"
-                  //   value={exam.examPermissionType}
-                  onChange={
-                    (value) => 0
-                    // handleChange("examPermissionType", value)
-                  }
-                >
-                  <Option value="Công khai">Công khai</Option>
-                  <Option value="Chỉ mình tôi">Chỉ mình tôi</Option>
-                  <Option value="Người được cấp quyền">
-                    Người được cấp quyền
-                  </Option>
-                  <Option value="Thành viên lớp học">Thành viên lớp học</Option>
-                </Select>
-              </Form.Item>
-            </Col>
             {/* Nút tạo đề thi */}
             <Col span={24}>
               <Form.Item>
@@ -682,7 +801,7 @@ const ExamForm = ({ setActiveTab }) => {
                 </Button>
               </Form.Item>
             </Col>
-          </Row>
+          {/*</Row>*/}
         </Form>
       </Card>
     </div>
