@@ -33,7 +33,6 @@ function ExamPage() {
   const dispatch = useDispatch();
   const exam = useSelector((state) => state.exam?.exam?.data);
 
-  console.log("detail exam ", detailExam);
   useEffect(() => {
     // Hàm gọi API
     const fetchData = async () => {

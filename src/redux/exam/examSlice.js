@@ -8,9 +8,9 @@ const initialState = {};
 export const fetchExam = createAsyncThunk(
   "exam/fetchExam",
   async (id, thunkApi) => {
-return await callStartExam(id)
+    return await callStartExam(id);
   }
-);      
+);
 export const examSlice = createSlice({
   name: "exam",
   initialState: {
@@ -32,8 +32,22 @@ export const examSlice = createSlice({
     },
     chosenAnswer: (state, action) => {
       const { answer, indexQuestion, value } = action.payload;
-      console.log(state.exam);
-      state.exam.data.questionResults[indexQuestion].answers[answer].chosen = value;
+      console.log("state.exam,", answer, indexQuestion, value);
+      state.exam.data.questionResults[indexQuestion].answers[answer].chosen =
+        value;
+      const count = state.exam.data.questionResults[
+        indexQuestion
+      ].answers.filter((answer) => answer.correct === true).length;
+      if (count < 2) {
+        state.exam.data.questionResults[indexQuestion].answers.forEach(
+          (a, i) => {
+            // Nếu câu trả lời đã được chọn (chosen = true), thì đặt chosen = false
+            if (a.chosen === true && i != answer) {
+              a.chosen = false;
+            }
+          }
+        );
+      }
       console.log("done");
     },
     setExam: (state, action) => {
@@ -48,11 +62,12 @@ export const examSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { increment,setExam ,decrement, incrementByAmount, chosenAnswer } =
-  examSlice.actions;
+export const {
+  increment,
+  setExam,
+  decrement,
+  incrementByAmount,
+  chosenAnswer,
+} = examSlice.actions;
 
 export default examSlice.reducer;
-
-
-
-

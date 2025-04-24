@@ -61,7 +61,11 @@ function Question({ question, index, type = "" }) {
             variant="standard"
             style={{ width: "100%" }}
           >
-            <FormGroup style={{ width: "100%" }}>
+            {/* <FormGroup style={{ width: "100%" }}> */}
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
+            >
               {type !== "result" &&
                 question.answers.map((e, i) => {
                   const countCorrect = question.answers.filter(
@@ -84,47 +88,49 @@ function Question({ question, index, type = "" }) {
                     />
                   );
                 })}
-              {type === "result" &&
-                question.answers.map((e, i) => (
-                  <FormControlLabel
-                    sx={{
-                      width: "100%",
-                      "& .MuiFormControlLabel-label": {
-                        width: "100%", // Đảm bảo label trải dài
-                        whiteSpace: "normal", // Cho phép xuống dòng nếu cần
-                        wordBreak: "break-word", // Ngắt từ khi quá dài
-                        fontSize: "16px", // Điều chỉnh kích thước chữ
-                        color: "#333", // Thay đổi màu chữ nếu cần
-                      },
-                    }}
-                    onChange={(event) => {
-                      console.log(e);
-                    }}
-                    style={{ width: "100%" }}
-                    key={e.id}
-                    control={
-                      <Checkbox
-                        checked={e.chosen}
-                        disabled={true}
-                        name={i.toString()}
-                      />
-                    }
-                    label={
-                      <div
-                        style={{
-                          backgroundColor: `${e.chosen && "#f5222d"}`,
-                          backgroundColor: `${
-                            e.correct ? "#52c41a" : e.chosen && "#f5222d"
-                          }`,
-                          padding: "5px",
-                        }}
-                      >
-                        {e.answer}
-                      </div>
-                    }
-                  />
-                ))}
-            </FormGroup>
+            </RadioGroup>
+
+            {type === "result" &&
+              question.answers.map((e, i) => (
+                <FormControlLabel
+                  sx={{
+                    width: "100%",
+                    "& .MuiFormControlLabel-label": {
+                      width: "100%", // Đảm bảo label trải dài
+                      whiteSpace: "normal", // Cho phép xuống dòng nếu cần
+                      wordBreak: "break-word", // Ngắt từ khi quá dài
+                      fontSize: "16px", // Điều chỉnh kích thước chữ
+                      color: "#333", // Thay đổi màu chữ nếu cần
+                    },
+                  }}
+                  onChange={(event) => {
+                    console.log(e);
+                  }}
+                  style={{ width: "100%" }}
+                  key={e.id}
+                  control={
+                    <Checkbox
+                      checked={e.chosen}
+                      disabled={true}
+                      name={i.toString()}
+                    />
+                  }
+                  label={
+                    <div
+                      style={{
+                        backgroundColor: `${e.chosen && "#f5222d"}`,
+                        backgroundColor: `${
+                          e.correct ? "#52c41a" : e.chosen && "#f5222d"
+                        }`,
+                        padding: "5px",
+                      }}
+                    >
+                      {e.answer}
+                    </div>
+                  }
+                />
+              ))}
+            {/* </FormGroup> */}
           </FormControl>
         </ul>
       </div>
