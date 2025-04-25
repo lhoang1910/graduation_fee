@@ -15,6 +15,7 @@ function ExamInformation({ detailExam, setIsLoading }) {
 
   const submitHandler = async () => {
     try {
+      console.log("submit");
       setIsLoading(true);
       const response = await callSubmitExam(id, exam.data?.id, {
         questionResults: exam.data?.questionResults,

@@ -298,7 +298,9 @@ const QuestionForm = () => {
       if (!selectedQ) return prevExam; // Nếu không tìm thấy câu hỏi, giữ nguyên state
 
       // Cập nhật nội dung giải thích
-      selectedQ.questionLevel = newText;
+      // selectedQ.questionLevel = newText;
+      const updatedQuestion = { ...selectedQ, questionLevel: newText };
+      updatedQuestions[selectedQuestion] = updatedQuestion;
 
       return {
         ...prevExam,
