@@ -49,7 +49,12 @@ const GenerateExamByAI = () => {
                 numberQuestion: Number(values.numberQuestion) || 0,
                 numberAnswer: Number(values.numberAnswer) || 0,
                 topic: typeof values.topic === "string" ? values.topic : "",
-                content: typeof values.content === "string" ? values.content : ""
+                content: typeof values.content === "string" ? values.content : "",
+                questionRate: {
+                    hardRate: Number(values.hardRate) || 0,
+                    mediumRate: Number(values.mediumRate) || 0,
+                    easyRate: Number(values.easyRate) || 0,
+                }
             };
 
             console.log("Request Data:", requestData);
@@ -121,11 +126,89 @@ const GenerateExamByAI = () => {
 
                         <Col span={8}>
                             <Form.Item
+                                span={10}
+                                label="Tỉ lệ câu hỏi (%)"
+                                required
+                                style={{ marginBottom: 12 }}
+                            >
+                                <Row gutter={12}>
+                                    <Col span={8}>
+                                        <Form.Item
+                                            name={"hardRate"}
+                                            rules={[
+                                                { required: true, message: "Nhập % câu khó" },
+                                                {
+                                                    type: "number",
+                                                    min: 0,
+                                                    max: 100,
+                                                    message: "Giá trị từ 0 đến 100",
+                                                },
+                                            ]}
+                                            noStyle
+                                        >
+                                            <InputNumber
+                                                placeholder="Khó"
+                                                min={0}
+                                                max={100}
+                                                style={{ width: "100%" }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Form.Item
+                                            name={"mediumRate"}
+                                            rules={[
+                                                { required: true, message: "Nhập % câu vừa" },
+                                                {
+                                                    type: "number",
+                                                    min: 0,
+                                                    max: 100,
+                                                    message: "Giá trị từ 0 đến 100",
+                                                },
+                                            ]}
+                                            noStyle
+                                        >
+                                            <InputNumber
+                                                placeholder="Vừa"
+                                                min={0}
+                                                max={100}
+                                                style={{ width: "100%" }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Form.Item
+                                            name={"easyRate"}
+                                            rules={[
+                                                { required: true, message: "Nhập % câu dễ" },
+                                                {
+                                                    type: "number",
+                                                    min: 0,
+                                                    max: 100,
+                                                    message: "Giá trị từ 0 đến 100",
+                                                },
+                                            ]}
+                                            noStyle
+                                        >
+                                            <InputNumber
+                                                placeholder="Dễ"
+                                                min={0}
+                                                max={100}
+                                                style={{ width: "100%" }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                            </Form.Item>
+                        </Col>
+
+                        <Col span={8}>
+                            <Form.Item
                                 label="Số lượng câu hỏi"
                                 name="numberQuestion"
                                 rules={[{ required: true, message: "Chọn số lượng câu hỏi!" }]}
                             >
-                                <InputNumber min={2} max={5} style={{ width: "100%" }} placeholder="2-5" />
+                                <InputNumber min={2} style={{ width: "100%" }} />
                             </Form.Item>
                         </Col>
 
@@ -135,7 +218,7 @@ const GenerateExamByAI = () => {
                                 name="numberAnswer"
                                 rules={[{ required: true, message: "Chọn số lượng đáp án!" }]}
                             >
-                                <InputNumber min={2} max={4} style={{ width: "100%" }} placeholder="2-4" />
+                                <InputNumber min={2} style={{ width: "100%" }}  />
                             </Form.Item>
                         </Col>
                     </Row>
