@@ -15,7 +15,7 @@ const GenerateExamByAI = () => {
     const [file, setFile] = useState(null);
 
     const uploadProps = {
-        accept: ".pdf,.docx",
+        accept: ".pdf,.docx, .txt, .jpeg, .png, .mp3, .mp4",
         name: "file",
         multiple: false,
         showUploadList: false,
@@ -25,11 +25,11 @@ const GenerateExamByAI = () => {
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "application/msword",
             ];
-
-            if (!acceptedTypes.includes(file.type)) {
-                message.error(`${file.name} không phải là định dạng được hỗ trợ.`);
-                return Upload.LIST_IGNORE;
-            }
+            //
+            // if (!acceptedTypes.includes(file.type)) {
+            //     message.error(`${file.name} không phải là định dạng được hỗ trợ.`);
+            //     return Upload.LIST_IGNORE;
+            // }
 
             setFile(file);
             return false;
@@ -44,7 +44,7 @@ const GenerateExamByAI = () => {
             const formData = new FormData();
             formData.append("file", file);
             const requestData = {
-                filetype: (values.contentType === "file" && file != null) ? file.type : null,
+                // filetype: (values.contentType === "file" && file != null) ? file.type : null,
                 questionType: values.questionType || "",
                 numberQuestion: Number(values.numberQuestion) || 0,
                 numberAnswer: Number(values.numberAnswer) || 0,

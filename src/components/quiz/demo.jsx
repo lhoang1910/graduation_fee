@@ -17,7 +17,7 @@ import {
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { callCreateExam } from "../../services/api";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {
   resetExam,
   updateQuestions,
@@ -26,6 +26,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import moment from "moment/moment.js";
 
 const { Content, Sider } = Layout;
 const { TextArea } = Input;
@@ -43,21 +44,25 @@ const QuestionForm = () => {
   const { message } = location.state || {};
   const [form] = Form.useForm();
   const questions = useSelector((state) => state.examCreating.questions);
+  const navigate = useNavigate();
 
   const [selectedQuestion, setSelectedQuestion] = useState(0); // Câu hỏi được chọn
   const examRequest = useSelector((state) => state.examCreating);
   const [correctAnswer, setCorrectAnswer] = useState(1); // ID của đáp án đúng
   const [exam, setExam] = useState({
-    examName: "test tạo bài thi",
-    description: "Chỉ là test thôi",
+    examName: "",
+    questionRate: { easyRate: 100, mediumRate: 0, hardRate: 0 },
+    description: "",
     examPermissionType: "Công khai",
-    time: 60,
-    effectiveDate: "2025-01-20T10:00:00.000+00:00",
+    classCode: "",
+    executorEmail: [],
+    time: null,
+    effectiveDate: moment().add(30, 'minutes').toISOString(),
     expirationDate: null,
-    randomAmount: 5,
+    randomAmount: null,
     limitation: null,
     scoreType: "Chấm điểm theo câu hỏi",
-    totalQuestion: 20,
+    totalQuestion: 0,
     questions: questions,
   });
   // Thêm câu hỏi mới
@@ -265,6 +270,7 @@ const QuestionForm = () => {
       if (response.success) {
         dispatch(resetExam());
         console.log("repsonse exam", response.message);
+        navigate(`/exam/${response?.data?.id}`)
       } else {
         notification.error({ message: response.message });
       }

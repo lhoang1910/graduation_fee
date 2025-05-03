@@ -38,6 +38,8 @@ import AdminQuestions from "./components/Admin/Question/index.jsx";
 import AdminServicePackage from "./components/Admin/ServicePackage/index.jsx";
 import AdminPayments from "./components/Admin/Payment/index.jsx";
 import AdminReports from "./components/Admin/Report/index.jsx";
+import QuestionBankPage from "./pages/bank/QuestionBankPage.jsx";
+import EditQuestions from "./components/exam/DetailExam/EditQuestions.jsx";
 
 const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -98,11 +100,13 @@ export default function App() {
                 {path: "exam/explore", element: <ExamPages/>},
                 {path: "classes/exam/:classCode", element: <ExamPages/>},
                 {path: "exam/created", element: <ExamPages/>},
-                {path: "exam/:id", element: <ExamDetail/>},
+                {path: "/exam/:id", element: <ExamDetail />},
+                {path: "/exam/:id/edit-questions", element: <EditQuestions />},
                 {path: "result/:id", element: <ExamResultDetail />},
                 {path: "result-dashboard", element: <ResultDashBoard />},
                 {path: "limitations", element: <LimitationList />},
                 {path: "ipn-handle-page", element: <IPNHandle />},
+                {path: "question-bank", element: <QuestionBankPage />},
             ],
         },
         {

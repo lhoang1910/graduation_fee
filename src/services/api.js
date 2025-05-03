@@ -140,6 +140,11 @@ export const callGenerateExamByAI = (formData) => {
 export const callCreateExam = (request) => {
     return baseApiCall(`/api/exam/create`, 'post', request, true);
 };
+
+export const callUpdateExam = (id, request) => {
+    return baseApiCall(`/api/exam/${id}/create`, 'post', request, true);
+};
+
 export const callListExam = (request) => {
     return baseApiCall(`/api/exam/list`, 'post', request, true);
 };
@@ -276,10 +281,10 @@ export const callExportResult = (examId) => {
     return baseApiCall(`/api/exam/${examId}/export-result`, 'get', {}, true);
 }
 
-export const callUpdateExam = (examId, payload) => {
-    console.log(">>>>", payload)
-    return baseApiCall(`/api/exam/${examId}/update-exam`, 'post', payload, true);
-}
+// export const callUpdateExam = (examId, payload) => {
+//     console.log(">>>>", payload)
+//     return baseApiCall(`/api/exam/${examId}/update-exam`, 'post', payload, true);
+// }
 
 // Categories
 export const callGetProgramCategories = () => {
@@ -298,6 +303,26 @@ export const callGetMyQuestions = (payload) => {
     return baseApiCall(`/api/question/get-my-questions`, 'post', payload, true);
 }
 
-export const updateExamQuestion = (examId, payload) => {
+export const callUpdateExamQuestion = (examId, payload) => {
     return baseApiCall(`/api/exam/${examId}/update-question`, 'post', payload, true);
+}
+
+export const callGetExamQuestion = (examId) => {
+    return baseApiCall(`/api/exam/${examId}/questions`, 'get', {}, true);
+}
+
+export const getMyQuestions = (payload) => {
+    return baseApiCall(`/api/question/get-all-questions`, 'post', payload, true);
+}
+
+export const callUpdateQuestion = (id, payload) => {
+    return baseApiCall(`/api/question/${id}/update`, 'post', payload, true);
+}
+
+export const createQuestionsFromBank = (payload) => {
+    return baseApiCall(`/api/question/create-questions-from-bank`, 'post', payload, true);
+}
+
+export const callDeleteQuestion = (id) => {
+    return baseApiCall(`/api/question/${id}/delete`, 'post', {}, true);
 }

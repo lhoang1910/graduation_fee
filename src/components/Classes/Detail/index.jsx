@@ -29,6 +29,7 @@ import {RiDeleteBinLine} from "react-icons/ri";
 import {CiImport} from "react-icons/ci";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import dayjs from "dayjs";
 
 const {Search} = Input;
 
@@ -87,10 +88,10 @@ const ClassDetail = () => {
             setLoading(true);
             const res = await callDeleteClassMember(id, user?.email);
             if (res?.success) {
-                notification.success(res?.success);
+                notification.success(res?.message);
                 fetchTableData();
             } else {
-                notification.error(res?.error);
+                notification.error(res?.message);
             }
         } catch (error){
             notification.error(error);
@@ -199,8 +200,9 @@ const ClassDetail = () => {
         if (!file) {
             return message.warning("Vui lòng chọn file Excel trước khi gửi.");
         }
-
         setImporting(true);
+        let exportData = [];
+
         try {
             const res = await callImportUsers(id, file);
             if (res?.success) {
@@ -208,31 +210,26 @@ const ClassDetail = () => {
                 setIsOpenImportModal(false);
                 setFile(null);
                 fetchTableData();
-            } else {
-                const errorData = res?.data?.filter(item => item?.success === false);
-                if (errorData && errorData.length > 0) {
-                    notification.warning({
-                        message: `Có ${errorData.length} dòng lỗi trong file import. Vui lòng tải file chi tiết để xem.`,
-                    });
 
-                    const exportData = errorData.map(item => ({
-                        Email: item?.email || '',
-                        'Họ và tên': item?.fullName || '',
-                        'Ngày sinh': item?.dateOfBirth || '',
-                        'Giới tính': item?.gender || '',
-                        'Lỗi': item?.errorDesc || '',
-                    }));
+                exportData = res?.data.map(item => ({
+                    'Email': item?.email || '',
+                    'Họ và tên': item?.fullName || '',
+                    'Ngày sinh': item?.dateOfBirth ? dayjs(item.dateOfBirth).format('DD/MM/YYYY') : '',
+                    'Giới tính': item?.gender || '',
+                    'Mật khẩu': item?.password || '',
+                    'Trạng thái': item?.success ? "Thành công" : "Lỗi" || '',
+                    'Lỗi': item?.errorDesc || '',
+                }));
 
-                    const worksheet = XLSX.utils.json_to_sheet(exportData);
-                    const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Lỗi Import');
-
-                    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-                    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-                    saveAs(blob, 'Import_Errors.xlsx');
-                } else {
-                    notification.error({ message: res?.message || 'Import thất bại.' });
-                }
+                Modal.confirm({
+                    title: 'Import hoàn tất',
+                    content: 'Vui lòng tải về file Excel kết quả để xem chi tiết.',
+                    okText: 'Tải file',
+                    cancelText: 'Huỷ',
+                    onOk: () => {
+                        exportToExcel(exportData);
+                    }
+                });
             }
         } catch (error) {
             notification.error({ message: 'Có lỗi xảy ra trong quá trình import. Vui lòng thử lại.' });
@@ -240,6 +237,17 @@ const ClassDetail = () => {
             setImporting(false);
         }
     };
+
+    const exportToExcel = (data) => {
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Lỗi Import');
+
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(blob, 'Import_Results.xlsx');
+    };
+
 
     useEffect(() => {
         console.log(">>>", isMemberTab)
@@ -399,9 +407,10 @@ const ClassDetail = () => {
                 <Spin spinning={tableLoading}>
                     {isMemberTab ? (
                         <Table
-                            columns={data.createdbyEmail === localStorage.getItem("currentEmail")
-                                ? userColumn
-                                : userColumn.filter((col) => col.key !== "action")}
+                            // columns={data.createdbyEmail === localStorage.getItem("currentEmail")
+                            //     ? userColumn
+                            //     : userColumn.filter((col) => col.key !== "action")}
+                            columns={userColumn}
                             dataSource={tableData}
                             pagination={{
                                 total: totalItems,

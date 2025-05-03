@@ -10,7 +10,7 @@ import {
     QuestionCircleOutlined,
     UserOutlined,
     InfoCircleOutlined,
-    CalendarOutlined, SettingOutlined, DownloadOutlined, FileExcelOutlined
+    CalendarOutlined, SettingOutlined, DownloadOutlined, FileExcelOutlined, EditOutlined
 } from "@ant-design/icons";
 import {callDetailExam, callExportResult, callUpdateExam} from "../../../services/api";
 import {useNavigate, useParams} from "react-router-dom";
@@ -267,11 +267,13 @@ const ExamDetail = () => {
                                     {exam.createdBy === localStorage.getItem("currentEmail") && (
                                         <div style={{marginTop: 16}}>
                                             <Space wrap>
-
                                                 <Button icon={<SettingOutlined />} onClick={() => setSettingVisible(true)} type="default" shape="round">
                                                     Cài đặt
                                                 </Button>
-                                                <Button icon={<BsFillQuestionOctagonFill/>} type="default" shape="round">
+                                                <Button icon={<QuestionCircleOutlined />} onClick={() => {
+                                                    console.log(`/exam/${id}/edit-questions`);
+                                                    navigate(`/exam/${id}/edit-questions`, {replace: true});
+                                                }} type="default" shape="round">
                                                     Ngân hàng câu hỏi
                                                 </Button>
                                                 <Button icon={<DownloadOutlined/>} onClick={() => exportExecutorsToExcel()} type="default" shape="round">

@@ -8,20 +8,20 @@ const initialState = {
   examPermissionType: "Công khai",
   classCode: "",
   executorEmail: [],
-  time: 60,
-  effectiveDate: moment().toISOString(),
+  time: null,
+  effectiveDate: moment().add(30, 'minutes').toISOString(),
   expirationDate: null,
-  randomAmount: 5,
+  randomAmount: null,
   limitation: null,
   scoreType: "Chấm điểm theo câu hỏi",
-  totalQuestion: 20,
+  totalQuestion: 0,
   questions: [
     {
       questionLevel: "Dễ",
       id: null,
       code: null,
       attachmentPath: null,
-      question: "Chọn câu sai về khí quản?",
+      question: "",
       type: 0,
       answers: [
         {
@@ -70,6 +70,7 @@ const examSlice = createSlice({
         id: state.questions.length + 1, // Tạo ID tự động
         questionCode: null,
         question: "",
+        questionLevel: "Dễ",
         type: 0,
         answers: [], // Danh sách câu trả lời rỗng
         explain: null,

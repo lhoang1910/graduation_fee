@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import {MdAssignment, MdExplore} from "react-icons/md";
 import {SlArrowLeft, SlArrowRight} from "react-icons/sl";
+import {QuestionCircleOutlined} from "@ant-design/icons";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const [isUserOpen, setIsUserOpen] = useState(false);
@@ -101,8 +102,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                 {isOpen && 'Khám phá'}
                             </li>
                             <li onClick={() => navigate("/exam/created")}>
-                                <MdOutlineDisplaySettings style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                <MdOutlineDisplaySettings
+                                    style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
                                 {isOpen && 'Quản lý đề thi'}
+                            </li>
+                            <li onClick={() => navigate("/question-bank")}>
+                                <QuestionCircleOutlined style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>
+                                {isOpen && 'Ngân hàng câu hỏi'}
                             </li>
                             <li onClick={() => navigate("/result-dashboard")}>
                                 <LuListTodo style={{marginRight: '10px', fontSize: '18px', cursor: "pointer"}}/>

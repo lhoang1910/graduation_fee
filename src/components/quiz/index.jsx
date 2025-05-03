@@ -22,7 +22,7 @@ import {
 } from "antd";
 import QuestionForm from "./demo.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { setExamField } from "../../redux/examCreating/examCreating.Slice.js";
+import {resetExam, setExamField} from "../../redux/examCreating/examCreating.Slice.js";
 import moment from "moment";
 import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
@@ -612,7 +612,7 @@ const ExamForm = ({ setActiveTab }) => {
             <Col span={8}>
               <Form.Item
                 span={10}
-                label="Tỉ lệ câu hỏi (%)"
+                label="Tỉ lệ câu hỏi (Dễ - Vừa - Khó)(%)"
                 required
                 style={{ marginBottom: 12 }}
               >
