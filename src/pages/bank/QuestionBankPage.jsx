@@ -31,7 +31,7 @@ import {useDispatch} from "react-redux";
 const {Title} = Typography;
 const {RangePicker} = DatePicker;
 
-const QuestionBankPage = () =>  {
+const QuestionBankPage = () => {
 
     const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
@@ -43,6 +43,7 @@ const QuestionBankPage = () =>  {
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [onlyCreatedQuestions, setOnlyCreatedQuestions] = useState(false);
+    const [showCheckboxColumn, setShowCheckboxColumn] = useState(false);
     const [dateRange, setDateRange] = useState(null);
     const [chosenProgramId, setChosenProgramId] = useState(undefined);
     const [chosenGradeId, setChosenGradeId] = useState(undefined);
@@ -194,7 +195,7 @@ const QuestionBankPage = () =>  {
         createExam(cleanedQuestionList);
     }
 
-    const createExam = (questionList)  => {
+    const createExam = (questionList) => {
         if (questionList == null || questionList.length === 0) {
             notification.error("Vui lòng chọn câu hỏi trước khi tạo đề thi");
             return;
@@ -203,11 +204,16 @@ const QuestionBankPage = () =>  {
         navigate("/workspace/exams/news");
     }
 
+    const handleToggleCheckboxColumn = () => {
+        setShowCheckboxColumn(!showCheckboxColumn);
+    };
+
     const questionColumn = [
         {
+            key: "select",
             align: "center",
             render: (_, record) => (
-                <div style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "10px" }}>
+                <div style={{textAlign: "center", display: "flex", justifyContent: "center", gap: "10px"}}>
                     <Checkbox
                         checked={isChecked(record)}
                         onChange={(e) => handleCheck(record, e.target.checked)}
@@ -275,10 +281,10 @@ const QuestionBankPage = () =>  {
             key: "action",
             align: "center",
             render: (_, record) => (
-                <div style={{ textAlign: "center", display: "flex", justifyContent: "center", gap: "10px" }}>
+                <div style={{textAlign: "center", display: "flex", justifyContent: "center", gap: "10px"}}>
                     <Button
                         type="primary"
-                        icon={<FaEye size={18} />}
+                        icon={<FaEye size={18}/>}
                         onClick={() => handleView(record)}
                         style={{
                             background: "#1890ff",
@@ -478,6 +484,64 @@ const QuestionBankPage = () =>  {
                         marginBottom: "16px",
                     }}
                 >
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '10px',
+                    }}>
+                        <Button
+                            onClick={handleToggleCheckboxColumn}
+                            style={{
+                                height: 40,
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                fontWeight: "bold",
+                                display: "flex",
+                                alignItems: "center",
+                                borderRadius: "8px",
+                                background: "#ff4d4f",
+                                borderColor: "#ff4d4f",
+                                boxShadow: "0px 4px 12px rgba(255, 77, 79, 0.3)",
+                                color: "#ffffff",
+                                transition: "all 0.3s ease",
+                            }}
+                        >
+                            Chọn
+                        </Button>
+                        {chosenQuestionList.length > 0 && (
+                            <div
+                                style={{
+                                    fontWeight: "bold",
+                                    background: "#e6f7ff",
+                                    border: "1px solid #91d5ff",
+                                    padding: "8px 16px",
+                                    borderRadius: "8px",
+                                    color: "#096dd9",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                }}
+                            >
+                                Đã chọn {chosenQuestionList.length} câu hỏi
+
+                                <Button
+                                    type="primary"
+                                    onClick={handleCreateExam}
+                                    style={{
+                                        background: "#1890ff",
+                                        borderColor: "#1890ff",
+                                        borderRadius: "6px",
+                                        boxShadow: "0px 4px 10px rgba(24, 144, 255, 0.3)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    Tạo đề thi
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                     <Button
                         type="primary"
                         onClick={() => setOpenModal(true)}
@@ -507,43 +571,10 @@ const QuestionBankPage = () =>  {
                     >
                         Tạo đề thi từ ngân hàng câu hỏi
                     </Button>
-
-                    {chosenQuestionList.length > 0 && (
-                        <div
-                            style={{
-                                fontWeight: "bold",
-                                background: "#e6f7ff",
-                                border: "1px solid #91d5ff",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                color: "#096dd9",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                            }}
-                        >
-                            Đã chọn {chosenQuestionList.length} câu hỏi
-
-                            <Button
-                                type="primary"
-                                onClick={handleCreateExam}
-                                style={{
-                                    background: "#1890ff",
-                                    borderColor: "#1890ff",
-                                    borderRadius: "6px",
-                                    boxShadow: "0px 4px 10px rgba(24, 144, 255, 0.3)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                }}
-                            >
-                                Tạo đề thi
-                            </Button>
-                        </div>
-                    )}
                 </div>
 
                 <Table
-                    columns={questionColumn}
+                    columns={showCheckboxColumn ? questionColumn : questionColumn.filter(col => col.key !== "select")}
                     dataSource={tableData}
                     rowKey="id"
                     pagination={{
